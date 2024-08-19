@@ -4,17 +4,31 @@
  */
 package com.mycompany.snake.view;
 
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author Eduard
  */
 public class MenuPanel extends javax.swing.JDialog {
 
+    private SettingsPanel settings;
+    
     /**
      * Creates new form MenuPanel
      */
-    public MenuPanel() {
+    public MenuPanel(SnakeView gameView) {
+        super(gameView, "Game Menu", true);
         initComponents();
+        pack();
+        setLocationRelativeTo(null);
+        
+
+        setWindowClosingListener();
+        settings = new SettingsPanel(this);
     }
 
     /**
@@ -35,6 +49,7 @@ public class MenuPanel extends javax.swing.JDialog {
         exitBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         scorePic.setBackground(java.awt.Color.red);
 
@@ -72,9 +87,11 @@ public class MenuPanel extends javax.swing.JDialog {
 
         playBtn.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         playBtn.setText("Play");
+        playBtn.setPreferredSize(new java.awt.Dimension(200, 35));
 
         settingsBtn.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         settingsBtn.setText("Settings");
+        settingsBtn.setPreferredSize(new java.awt.Dimension(200, 35));
         settingsBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 settingsBtnActionPerformed(evt);
@@ -83,6 +100,7 @@ public class MenuPanel extends javax.swing.JDialog {
 
         exitBtn.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         exitBtn.setText("Exit");
+        exitBtn.setPreferredSize(new java.awt.Dimension(200, 35));
         exitBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitBtnActionPerformed(evt);
@@ -106,8 +124,8 @@ public class MenuPanel extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(50, 50, 50)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(exitBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(playBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(exitBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(playBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(settingsBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(50, 50, 50))
         );
@@ -130,16 +148,40 @@ public class MenuPanel extends javax.swing.JDialog {
                 .addComponent(exitBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30))
         );
+
+        pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_exitBtnActionPerformed
 
     private void settingsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsBtnActionPerformed
-        // TODO add your handling code here:
+        settings.setVisible(true);
     }//GEN-LAST:event_settingsBtnActionPerformed
+    
+    public void setPlayButtonListener(ActionListener listener) {
+        playBtn.addActionListener(listener);
+    }
+    
+    public void setScoreLabel(int score) {
+        scoreLabel.setText(String.valueOf(score));
+    }
+    
+    public void setWindowClosingListener () {
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                playBtn.doClick();
+            }
+        });
+    }
 
+    public SettingsPanel getSettings() {
+        return settings;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exitBtn;

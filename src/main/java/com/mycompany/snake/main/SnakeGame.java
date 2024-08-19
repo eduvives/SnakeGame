@@ -18,5 +18,6 @@ public class SnakeGame {
     
     public static void main(String[] args) {
         controller.newGame();
+        controller.openMenu();
     }
 }

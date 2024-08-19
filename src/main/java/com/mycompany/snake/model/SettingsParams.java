@@ -8,7 +8,7 @@ package com.mycompany.snake.model;
  *
  * @author Eduard
  */
-public class Board {
+public class SettingsParams {
     private int height = 15;
     private int width = 17;
     

@@ -4,10 +4,9 @@
  */
 package com.mycompany.snake.controller;
 
-import com.mycompany.snake.model.Board;
+import com.mycompany.snake.model.SettingsParams;
 import com.mycompany.snake.model.Snake;
 import com.mycompany.snake.view.SnakeView;
-import com.sun.java.accessibility.util.AWTEventMonitor;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -35,31 +34,43 @@ public class GameLogic {
     private SnakeView view;
     private Point startPos;
     private Snake snake;
-    private int SNAKE_START_LENGTH = 5;
+    private int SNAKE_START_LENGTH = 3;
     private Color SNAKE_HEAD_COLOR = new Color(0,128,0);
     private int numBoardRows;
     private int numBardCols;
-    private int numFood = 3;
+    private int numFood;
     private List<Point> availablePositions = new ArrayList<>();
     private List<Point> food = new ArrayList<>();
     
     private Timer timer;
-    private int TIMER_DELAY = 100;
-    private Point direction;
+    private int timerDelay;
+    private Point direction = new Point();
     private Queue<Point> inputQueue = new LinkedList<>();
     
-    boolean gameStarted = false;
-    boolean gameOver = false;
+    boolean gameStarted;
+    boolean gameOver;
+    boolean gameDisposed = false;
     
     int score;
     
     public GameLogic(SnakeView view) {
         this.view = view;
-        numBoardRows = view.getBoardHeight() / view.getPanel().getSquareSize();
-        numBardCols = view.getBoardWidth()/ view.getPanel().getSquareSize();
-        startPos = new Point(SNAKE_START_LENGTH + 2, numBoardRows / 2);
-        direction = new Point(1, 0);
+        setViewListeners();
         configureKeyBindings();
+    }
+    
+    private void setViewListeners() {
+        
+        this.view.getMenu().setPlayButtonListener(e -> {
+            if (!gameDisposed) {
+                newGame();
+            }
+            this.view.getMenu().dispose();
+        });
+        
+        this.view.getSettings().setSaveSettingsListener(e -> {
+            
+        });
     }
     
     private void configureKeyBindings() {
@@ -125,15 +136,28 @@ public class GameLogic {
     }
     
     public void openMenu() {
-        
+        view.getMenu().setScoreLabel(score);
+        view.openMenu();
     }
     
     public void newGame() {
         
-        availablePositions.clear();
+        gameStarted = false;
+        gameOver = false;
         score = 0;
         updateScore();
         
+        timerDelay = 100;
+        numFood = 3;
+        numBoardRows = view.getBoardHeight() / view.getPanel().getSquareSize();
+        numBardCols = view.getBoardWidth()/ view.getPanel().getSquareSize(); 
+        
+        availablePositions.clear();
+        food.clear();
+        inputQueue.clear();
+        direction.setLocation(1, 0);    
+        startPos = new Point(SNAKE_START_LENGTH + 2, numBoardRows / 2);
+
         for (int i = 0; i < numBoardRows; i++) {
             final int row = i;
             for (int j = 0; j < numBardCols; j++) {
@@ -149,7 +173,10 @@ public class GameLogic {
         availablePositions.remove(snake.getHead());
         
         placeFood();
-        updateView();        
+        updateView();
+        view.getPanel().repaint();
+        
+        gameDisposed = true;
     }
 
     public void startGame() {
@@ -162,7 +189,7 @@ public class GameLogic {
                 Point newPos = new Point(snake.getHead().x + currentDirection.x, snake.getHead().y + currentDirection.y);
                 boolean isFood = checkFood(newPos);
                 move(newPos, isFood);
-                gameOver = checkCollision(newPos);
+                gameOver = checkCollision(newPos); // TODO gameOver variable necessaria?
                        
                 if (!gameOver) {
                     updateView();
@@ -173,7 +200,7 @@ public class GameLogic {
             }
         };
         
-        timer = new Timer(TIMER_DELAY, gameListener);
+        timer = new Timer(timerDelay, gameListener);
         timer.start();
         gameStarted = true;
     }
@@ -186,7 +213,7 @@ public class GameLogic {
         if (isFood) {
             score += 1;
             updateScore();
-            food.remove(newPos);                        
+            food.remove(newPos);
         } else {
             availablePositions.add(snake.getBody().removeLast());
             availablePositions.remove(snake.getHead());
@@ -196,8 +223,18 @@ public class GameLogic {
     }
     
     private void gameOver() {
-        gameOver = true;
-        timer.stop();        
+        timer.stop();
+        gameDisposed = false;
+        openMenu();
+    }
+    
+    private void checkWin() {
+        
+        // Add String congratulation message
+        
+        timer.stop();
+        gameDisposed = false;
+        openMenu();
     }
     
     private boolean checkCollision(Point pos) {

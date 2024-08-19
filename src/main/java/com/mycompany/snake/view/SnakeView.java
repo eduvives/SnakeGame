@@ -6,8 +6,6 @@ package com.mycompany.snake.view;
 
 import com.mycompany.snake.controller.GameLogic;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
 
 /**
  *
@@ -19,18 +17,23 @@ public class SnakeView extends javax.swing.JFrame {
     private int boardWidth = 600;
     private int boardHeight = 600;
     
+    MenuPanel menu;
+    
     /**
      * Creates new form SnakeView
      */
     public SnakeView() {
         initComponents();        
         this.setTitle("Snake Game");
-        this.setSize(boardWidth, boardHeight);        
+        this.setSize(boardWidth, boardHeight);
         
         this.getContentPane().setBackground(Color.GRAY);
-        this.pack();
+        pack();
+        setLocationRelativeTo(null);
         this.setVisible(true);
         boardPanel.requestFocus();
+        
+        menu = new MenuPanel(this);
     }
 
     /**
@@ -142,6 +145,18 @@ public class SnakeView extends javax.swing.JFrame {
     
     public void setCurrentScore(int newScore) {
         currentScore.setText(String.valueOf(newScore));
+    }
+    
+    public void openMenu() {     
+        menu.setVisible(true);
+    }
+    
+    public MenuPanel getMenu() {        
+        return menu;
+    }
+    
+    public SettingsPanel getSettings() {        
+        return menu.getSettings();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
