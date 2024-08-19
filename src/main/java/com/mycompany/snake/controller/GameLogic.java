@@ -124,10 +124,15 @@ public class GameLogic {
         });
     }
     
+    public void openMenu() {
+        
+    }
+    
     public void newGame() {
         
         availablePositions.clear();
         score = 0;
+        updateScore();
         
         for (int i = 0; i < numBoardRows; i++) {
             final int row = i;
@@ -180,6 +185,7 @@ public class GameLogic {
                 
         if (isFood) {
             score += 1;
+            updateScore();
             food.remove(newPos);                        
         } else {
             availablePositions.add(snake.getBody().removeLast());
@@ -204,6 +210,10 @@ public class GameLogic {
     
     private boolean checkFood(Point newPos) {        
         return food.contains(newPos);
+    }
+    
+    public void updateScore() {
+        view.setCurrentScore(score);
     }
     
     private void updateView(){
