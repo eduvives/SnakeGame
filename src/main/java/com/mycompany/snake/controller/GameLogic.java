@@ -46,6 +46,8 @@ public class GameLogic {
     private List<Point> food = new ArrayList<>();
     private boolean isBoardUpdated;
     
+    private List<Point> spawnRadius = new ArrayList<>();
+    
     private Timer timer;
     private int timerDelay;
     private Point direction = new Point();
@@ -235,6 +237,8 @@ public class GameLogic {
         
         snake = new Snake(new Point(startPos), Snake.START_LENGTH);
         
+        generateSpawnRadius(new Point(startPos));
+        
         for (Point bodyPart : snake.getBody()) {
             availablePositions.remove(bodyPart);
         }
@@ -370,5 +374,17 @@ public class GameLogic {
         int index = rand.nextInt(availablePositions.size());
         return availablePositions.remove(index);
 
+    }
+    
+    private void generateSpawnRadius(Point startPos) {
+        int size = 3;
+
+        for (int x = -size; x <= size; x++) {
+            int yLimit = size - Math.abs(x);
+
+            for (int y = -yLimit; y <= yLimit; y++) {
+                spawnRadius.add(new Point(startPos.x + x, startPos.y + y));
+            }
+        }
     }
 }
