@@ -4,7 +4,6 @@
  */
 package com.mycompany.snake.view;
 
-import com.mycompany.snake.controller.GameLogic;
 import java.awt.Color;
 
 /**
@@ -13,9 +12,7 @@ import java.awt.Color;
  */
 public class SnakeView extends javax.swing.JFrame {
 
-    private GameLogic controller;
-    private int boardWidth = 600;
-    private int boardHeight = 600;
+    private BoardPanel castedBoardPanel;
     
     MenuPanel menu;
     
@@ -23,15 +20,15 @@ public class SnakeView extends javax.swing.JFrame {
      * Creates new form SnakeView
      */
     public SnakeView() {
-        initComponents();        
+         
+        initComponents();
+        castedBoardPanel = (BoardPanel) boardPanel;
         this.setTitle("Snake Game");
-        this.setSize(boardWidth, boardHeight);
         
         this.getContentPane().setBackground(Color.GRAY);
         pack();
         setLocationRelativeTo(null);
-        this.setVisible(true);
-        boardPanel.requestFocus();
+        castedBoardPanel.requestFocus();
         
         menu = new MenuPanel(this);
     }
@@ -45,12 +42,13 @@ public class SnakeView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        boardPanel = new BoardPanel(boardWidth, boardHeight);
+        boardPanel = new BoardPanel();
         topMenu = new javax.swing.JPanel();
         currentScorePic = new javax.swing.JPanel();
         currentScore = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(666, 687));
         setResizable(false);
 
         javax.swing.GroupLayout boardPanelLayout = new javax.swing.GroupLayout(boardPanel);
@@ -88,7 +86,7 @@ public class SnakeView extends javax.swing.JFrame {
         topMenuLayout.setHorizontalGroup(
             topMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(topMenuLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(25, 25, 25)
                 .addComponent(currentScorePic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(currentScore)
@@ -97,11 +95,11 @@ public class SnakeView extends javax.swing.JFrame {
         topMenuLayout.setVerticalGroup(
             topMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(topMenuLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(20, 20, 20)
                 .addGroup(topMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(currentScorePic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(currentScore, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16))
+                .addGap(20, 20, 20))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -109,45 +107,33 @@ public class SnakeView extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addContainerGap(25, Short.MAX_VALUE)
                 .addComponent(boardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
+                .addContainerGap(25, Short.MAX_VALUE))
             .addComponent(topMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(topMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addComponent(boardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    public void setController(GameLogic controller) {
-        this.controller = controller;
-    }
-
-    public int getBoardWidth() {
-        return boardWidth;
-    }
-
-    public int getBoardHeight() {
-        return boardHeight;
-    }
     
-    public BoardPanel getPanel() {        
-        return (BoardPanel) boardPanel;
+    public BoardPanel getBoardPanel() {
+        return castedBoardPanel;
     }
     
     public void setCurrentScore(int newScore) {
         currentScore.setText(String.valueOf(newScore));
     }
     
-    public void openMenu() {     
+    public void openMenu() {
         menu.setVisible(true);
     }
     

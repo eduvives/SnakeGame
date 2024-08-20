@@ -5,9 +5,12 @@
 package com.mycompany.snake.view;
 
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 /**
@@ -30,6 +33,8 @@ public class SettingsPanel extends javax.swing.JDialog {
         
         pack();
         setLocationRelativeTo(null);
+        setFocusable(true);
+        setWindowClosingListener();
     }
 
     /**
@@ -51,7 +56,7 @@ public class SettingsPanel extends javax.swing.JDialog {
         effectCmb = new javax.swing.JComboBox<>();
         randomBtn = new javax.swing.JButton();
         resetBtn = new javax.swing.JButton();
-        saveBtn = new javax.swing.JButton();
+        playBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -65,25 +70,21 @@ public class SettingsPanel extends javax.swing.JDialog {
         speedLabel.setPreferredSize(new java.awt.Dimension(60, 26));
 
         boardCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        boardCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Medium", "Easy", "Difficult" }));
 
         foodLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         foodLabel.setText("Food");
         foodLabel.setPreferredSize(new java.awt.Dimension(60, 26));
 
         speedCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        speedCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "Fast", "Slow" }));
         speedCmb.setPreferredSize(new java.awt.Dimension(89, 26));
 
         foodCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        foodCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "3", "5", "Random" }));
 
         effectLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         effectLabel.setText("Effect");
         effectLabel.setPreferredSize(new java.awt.Dimension(60, 26));
 
         effectCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        effectCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Wall", "Cheese", "Wings" }));
         effectCmb.setPreferredSize(new java.awt.Dimension(89, 26));
 
         randomBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -104,9 +105,9 @@ public class SettingsPanel extends javax.swing.JDialog {
             }
         });
 
-        saveBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        saveBtn.setText("Save");
-        saveBtn.setPreferredSize(new java.awt.Dimension(100, 27));
+        playBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        playBtn.setText("Play");
+        playBtn.setPreferredSize(new java.awt.Dimension(100, 27));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -129,7 +130,7 @@ public class SettingsPanel extends javax.swing.JDialog {
                             .addComponent(effectCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(100, 100, 100)
-                        .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(playBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(41, 41, 41)
                         .addComponent(randomBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -161,7 +162,7 @@ public class SettingsPanel extends javax.swing.JDialog {
                     .addComponent(randomBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(25, 25, 25)
-                .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(playBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30))
         );
 
@@ -186,9 +187,55 @@ public class SettingsPanel extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_randomBtnActionPerformed
 
-    public void setSaveSettingsListener(ActionListener listener) {
-        saveBtn.addActionListener(listener);
+    public void setPlaySettingsListener(ActionListener listener) {
+        playBtn.addActionListener(listener);
     }
+    
+    public void setBoardCmbModel(String[] names, int selectedIndex) {
+        boardCmb.setModel(new DefaultComboBoxModel<>(names));
+        boardCmb.setSelectedIndex(selectedIndex);
+    }
+    
+    public void setSpeedCmbModel(String[] names, int selectedIndex) {
+        speedCmb.setModel(new DefaultComboBoxModel<>(names));
+        speedCmb.setSelectedIndex(selectedIndex);
+    }
+    
+    public void setFoodCmbModel(String[] names, int selectedIndex) {
+        foodCmb.setModel(new DefaultComboBoxModel<>(names));
+        foodCmb.setSelectedIndex(selectedIndex);
+    }
+    
+    public void setEffectCmbModel(String[] names, int selectedIndex) {
+        effectCmb.setModel(new DefaultComboBoxModel<>(names));
+        effectCmb.setSelectedIndex(selectedIndex);
+    }
+    
+    public int getBoardCmbSelectedIndex() {
+        return boardCmb.getSelectedIndex();
+    }
+    
+    public int getSpeedCmbSelectedIndex() {
+        return speedCmb.getSelectedIndex();
+    }
+    
+    public int getFoodCmbSelectedIndex() {
+        return foodCmb.getSelectedIndex();
+    }
+    
+    public int getEffectCmbSelectedIndex() {
+        return effectCmb.getSelectedIndex();
+    }
+    
+    public void setWindowClosingListener () {
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                playBtn.doClick();
+            }
+        });
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boardCmb;
     private javax.swing.JLabel boardLabel;
@@ -196,9 +243,9 @@ public class SettingsPanel extends javax.swing.JDialog {
     private javax.swing.JLabel effectLabel;
     private javax.swing.JComboBox<String> foodCmb;
     private javax.swing.JLabel foodLabel;
+    private javax.swing.JButton playBtn;
     private javax.swing.JButton randomBtn;
     private javax.swing.JButton resetBtn;
-    private javax.swing.JButton saveBtn;
     private javax.swing.JComboBox<String> speedCmb;
     private javax.swing.JLabel speedLabel;
     // End of variables declaration//GEN-END:variables

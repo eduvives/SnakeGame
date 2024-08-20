@@ -5,13 +5,10 @@
 package com.mycompany.snake.view;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,17 +21,14 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
 
     private int boardWidth;
     private int boardHeight;
-    private int squareSize = 25;
-    Map<Color, List<Point>> squaresColors =  new HashMap<Color, List<Point>>();
+    private int squareSize;
+    private Map<Color, List<Point>> squaresColors =  new HashMap<>();
     
     /**
      * Creates new form BoardPanel
      */
-    public BoardPanel(int boardWidth, int boardHeight) {
-        this.boardWidth = boardWidth;
-        this.boardHeight = boardHeight;
+    public BoardPanel() {
         initComponents();
-        setPreferredSize(new Dimension(boardWidth, boardHeight));
         setBackground(Color.BLACK);
         setFocusable(true);
     }
@@ -60,8 +54,16 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
         );
     }// </editor-fold>//GEN-END:initComponents
     
-    public int getSquareSize() {
-        return squareSize;
+    public void setBoardWidth(int newWidth) {
+        boardWidth = newWidth;
+    }
+    
+    public void setBoardHeight(int newHeight) {
+        boardHeight = newHeight;
+    }
+    
+    public void setSquareSize(int size) {
+        squareSize = size;
     }
 
     public void setSquaresColors(Map<Color, List<Point>> squaresColors) {
@@ -76,7 +78,10 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
     
     public void draw(Graphics g) {
         for (int i = 0; i < boardWidth/squareSize; i++) {
-            g.drawLine(i * squareSize, 0, i * squareSize, boardHeight);
+            g.drawLine(i * squareSize, 0, i * squareSize, boardHeight);            
+        }
+        
+        for (int i = 0; i < boardHeight/squareSize; i++) {
             g.drawLine(0, i * squareSize, boardWidth, i * squareSize);
         }
         

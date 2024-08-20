@@ -7,7 +7,6 @@ package com.mycompany.snake.view;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -25,6 +24,7 @@ public class MenuPanel extends javax.swing.JDialog {
         initComponents();
         pack();
         setLocationRelativeTo(null);
+        setFocusable(true);
         
 
         setWindowClosingListener();
@@ -159,6 +159,7 @@ public class MenuPanel extends javax.swing.JDialog {
     }//GEN-LAST:event_exitBtnActionPerformed
 
     private void settingsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsBtnActionPerformed
+        this.dispose();
         settings.setVisible(true);
     }//GEN-LAST:event_settingsBtnActionPerformed
     

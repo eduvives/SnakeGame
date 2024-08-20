@@ -17,7 +17,7 @@ public class SnakeGame {
     private static final GameLogic controller = new GameLogic(view);
     
     public static void main(String[] args) {
-        controller.newGame();
+        controller.showGameBoard();
         controller.openMenu();
     }
 }

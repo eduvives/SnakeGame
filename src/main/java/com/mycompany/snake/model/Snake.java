@@ -4,6 +4,7 @@
  */
 package com.mycompany.snake.model;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -16,10 +17,16 @@ public class Snake {
     private LinkedList<Point> body = new LinkedList<>();
     private Point head;
     
+    public static final int START_LENGTH = 4;
+    public static final Color BODY_COLOR = Color.GREEN;
+    public static final Color HEAD_COLOR = new Color(0,128,0);
+    
     public Snake(Point startPos, int startLength) {
-        for (int i = 1; i <= startLength; i++) {
+        // Set Body
+        for (int i = 1; i <= startLength - 1; i++) {
             body.addLast(new Point(startPos.x - i, startPos.y));
         }
+        // Set Head
         head = startPos;
     }
 
