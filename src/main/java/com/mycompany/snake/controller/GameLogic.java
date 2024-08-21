@@ -211,6 +211,27 @@ public class GameLogic {
         });
     }
     
+    private boolean checkCollision(Point pos) {
+        
+        boolean bodyCollision = snake.getBody().contains(pos);
+        boolean boundariesCollision = pos.x < 0 || pos.x >= numBoardCols || pos.y < 0 || pos.y >= numBoardRows;
+        boolean wallCollision = mode.equals("Wall") && walls.contains(pos);
+        
+        return bodyCollision || boundariesCollision || wallCollision;
+    }
+    
+    private boolean checkFeast() {
+        return score == (numBoardRows * numBoardCols) - Snake.START_LENGTH;
+    }
+    
+    private boolean checkFood(Point newPos) {        
+        return food.contains(newPos);
+    }
+    
+    private void updateScore() {
+        view.setCurrentScore(score);
+    }
+    
     public void openMenu() {
         view.getMenu().setScoreLabel(score);
         view.openMenu();
@@ -293,12 +314,14 @@ public class GameLogic {
             }
             
             boolean isFood = checkFood(newPos);
-            if (mode.equals("Cheese")) {
-                moveCheese(currentDirection);
+
+            if (isFood) {
+                eatFood(newPos);
             } else {
-                move(newPos, isFood);  
+                moveUpdateAvailablePositions(newPos);
             }
-                     
+            
+            snake.move(newPos, isFood);
             
             boolean isFeast = checkFeast();
             boolean isCollision = checkCollision(newPos);
@@ -312,51 +335,34 @@ public class GameLogic {
         };
     }
     
-    private void move(Point newPos, boolean isFood){
-        snake.getBody().addFirst(new Point(snake.getHead().x, snake.getHead().y));
-        snake.getHead().x = newPos.x;
-        snake.getHead().y = newPos.y;
-                
-        if (isFood) {
-            score += 1;
-            updateScore();
-            food.remove(newPos);
-            
-            if (mode.equals("Wall") && score % 2 == 1) {
-                addWall();
-            }
-        } else {
-            availablePositions.add(snake.getBody().removeLast());
-            availablePositions.remove(snake.getHead());
+    private void eatFood(Point newPos) {
+        score += 1;
+        updateScore();
+        food.remove(newPos);
+
+        if (mode.equals("Wall") && score % 2 == 1) {
+            addWall();
         }
+
+        placeFood();
+    }
+    
+    private void moveUpdateAvailablePositions(Point newPos){
         
-        placeFood();        
+        if (snake instanceof CheeseSnake cheeseSnake) {
+            if(cheeseSnake.isLastBodyPartRemoved()) {
+                availablePositions.add(snake.getBody().getLast());                
+            }
+            availablePositions.remove(newPos);
+        } else {
+            availablePositions.add(snake.getBody().getLast());
+            availablePositions.remove(newPos);
+        }
     }
     
     private void gameEnd(boolean isFeast) {
         timer.stop();
         openMenu();
-    }
-    
-    private boolean checkCollision(Point pos) {
-        
-        boolean bodyCollision = snake.getBody().contains(pos);
-        boolean boundariesCollision = pos.x < 0 || pos.x >= numBoardCols || pos.y < 0 || pos.y >= numBoardRows;
-        boolean wallCollision = mode.equals("Wall") && walls.contains(pos);
-        
-        return bodyCollision || boundariesCollision || wallCollision;
-    }
-    
-    private boolean checkFeast() {
-        return score == (numBoardRows * numBoardCols) - Snake.START_LENGTH;
-    }
-    
-    private boolean checkFood(Point newPos) {        
-        return food.contains(newPos);
-    }
-    
-    private void updateScore() {
-        view.setCurrentScore(score);
     }
     
     private void updateView(){

@@ -39,4 +39,13 @@ public class Snake {
     public Point getHead() {
         return head;
     }
+    
+    public void move(Point newPos, boolean grow) {
+        body.addFirst(new Point(head.x, head.y));
+        head.setLocation(newPos.x, newPos.y);
+
+        if(!grow) {
+            body.removeLast();
+        }
+    }
 }
