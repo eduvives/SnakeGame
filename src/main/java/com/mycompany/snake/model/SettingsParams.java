@@ -21,6 +21,7 @@ public class SettingsParams {
     public static final String[] FOOD_NAMES = {"1", "3", "5", "Random"};
     public static final int[] FOOD_VALUES = {1, 3, 5, -1};
     
-    public static final String[] EFFECT_NAMES = {"None", "Wall", "Cheese", "Wings", "Boundless", "Stone", "Glow?", };
-    public static final int[] EFFECT_VALUES = {};
+    public static final String[] MODE_NAMES = {"None", "Wall", "Cheese", "Wings", "Boundless", "Stone", "Glow?"};
+    public static final String[] SPAWN_RADIUS_MODES = {"Wall"};
+    public static final int SPAWN_RADIUS_WIDTH = 7;
 }

@@ -29,7 +29,7 @@ public class SettingsPanel extends javax.swing.JDialog {
         super(menuPanel, "Game Settings", true);
         initComponents();
         
-        comboBoxes = Arrays.asList(boardCmb, speedCmb, foodCmb, effectCmb);
+        comboBoxes = Arrays.asList(boardCmb, speedCmb, foodCmb, modeCmb);
         
         pack();
         setLocationRelativeTo(null);
@@ -52,8 +52,8 @@ public class SettingsPanel extends javax.swing.JDialog {
         foodLabel = new javax.swing.JLabel();
         speedCmb = new javax.swing.JComboBox<>();
         foodCmb = new javax.swing.JComboBox<>();
-        effectLabel = new javax.swing.JLabel();
-        effectCmb = new javax.swing.JComboBox<>();
+        modeLabel = new javax.swing.JLabel();
+        modeCmb = new javax.swing.JComboBox<>();
         randomBtn = new javax.swing.JButton();
         resetBtn = new javax.swing.JButton();
         playBtn = new javax.swing.JButton();
@@ -80,12 +80,12 @@ public class SettingsPanel extends javax.swing.JDialog {
 
         foodCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        effectLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        effectLabel.setText("Effect");
-        effectLabel.setPreferredSize(new java.awt.Dimension(60, 26));
+        modeLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        modeLabel.setText("Mode");
+        modeLabel.setPreferredSize(new java.awt.Dimension(60, 26));
 
-        effectCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        effectCmb.setPreferredSize(new java.awt.Dimension(89, 26));
+        modeCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        modeCmb.setPreferredSize(new java.awt.Dimension(89, 26));
 
         randomBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         randomBtn.setText("Random");
@@ -118,7 +118,7 @@ public class SettingsPanel extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(50, 50, 50)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(effectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(modeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(foodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(speedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(boardLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -127,7 +127,7 @@ public class SettingsPanel extends javax.swing.JDialog {
                             .addComponent(boardCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(speedCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(foodCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(effectCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(modeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(100, 100, 100)
                         .addComponent(playBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -155,8 +155,8 @@ public class SettingsPanel extends javax.swing.JDialog {
                     .addComponent(foodCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(effectLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(effectCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(modeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(modeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(randomBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -206,9 +206,9 @@ public class SettingsPanel extends javax.swing.JDialog {
         foodCmb.setSelectedIndex(selectedIndex);
     }
     
-    public void setEffectCmbModel(String[] names, int selectedIndex) {
-        effectCmb.setModel(new DefaultComboBoxModel<>(names));
-        effectCmb.setSelectedIndex(selectedIndex);
+    public void setModeCmbModel(String[] names, int selectedIndex) {
+        modeCmb.setModel(new DefaultComboBoxModel<>(names));
+        modeCmb.setSelectedIndex(selectedIndex);
     }
     
     public int getBoardCmbSelectedIndex() {
@@ -223,8 +223,8 @@ public class SettingsPanel extends javax.swing.JDialog {
         return foodCmb.getSelectedIndex();
     }
     
-    public int getEffectCmbSelectedIndex() {
-        return effectCmb.getSelectedIndex();
+    public int getModeCmbSelectedIndex() {
+        return modeCmb.getSelectedIndex();
     }
     
     public void setWindowClosingListener () {
@@ -239,10 +239,10 @@ public class SettingsPanel extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boardCmb;
     private javax.swing.JLabel boardLabel;
-    private javax.swing.JComboBox<String> effectCmb;
-    private javax.swing.JLabel effectLabel;
     private javax.swing.JComboBox<String> foodCmb;
     private javax.swing.JLabel foodLabel;
+    private javax.swing.JComboBox<String> modeCmb;
+    private javax.swing.JLabel modeLabel;
     private javax.swing.JButton playBtn;
     private javax.swing.JButton randomBtn;
     private javax.swing.JButton resetBtn;
