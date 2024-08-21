@@ -4,6 +4,7 @@
  */
 package com.mycompany.snake.controller;
 
+import com.mycompany.snake.model.CheeseSnake;
 import com.mycompany.snake.model.SettingsParams;
 import com.mycompany.snake.model.Snake;
 import com.mycompany.snake.view.SnakeView;
@@ -217,7 +218,7 @@ public class GameLogic {
     
     public void showGameBoard() {
         startPos = new Point(Snake.START_LENGTH + 1, numBoardRows / 2);
-        snake = new Snake(new Point(startPos), Snake.START_LENGTH);
+        snake = new Snake(new Point(startPos));
         
         updateView();
         view.getBoardPanel().repaint();
@@ -245,8 +246,12 @@ public class GameLogic {
             }
         }      
         
-        snake = new Snake(new Point(startPos), Snake.START_LENGTH);
-        
+        if (mode.equals("Cheese")) {
+            snake = new CheeseSnake(new Point(startPos));
+        } else {
+            snake = new Snake(new Point(startPos));
+        }
+                
         if (isSpawnRadiusMode) {
             
             spawnRadius.clear();
@@ -288,7 +293,12 @@ public class GameLogic {
             }
             
             boolean isFood = checkFood(newPos);
-            move(newPos, isFood);           
+            if (mode.equals("Cheese")) {
+                moveCheese(currentDirection);
+            } else {
+                move(newPos, isFood);  
+            }
+                     
             
             boolean isFeast = checkFeast();
             boolean isCollision = checkCollision(newPos);
@@ -303,9 +313,9 @@ public class GameLogic {
     }
     
     private void move(Point newPos, boolean isFood){
-        snake.getBody().addFirst(new Point(snake.getHead().x, snake.getHead().y));        
+        snake.getBody().addFirst(new Point(snake.getHead().x, snake.getHead().y));
         snake.getHead().x = newPos.x;
-        snake.getHead().y = newPos.y;       
+        snake.getHead().y = newPos.y;
                 
         if (isFood) {
             score += 1;

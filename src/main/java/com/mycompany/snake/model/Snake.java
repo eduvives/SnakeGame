@@ -19,15 +19,17 @@ public class Snake {
     
     public static final int START_LENGTH = 4;
     public static final Color BODY_COLOR = Color.GREEN;
-    public static final Color HEAD_COLOR = new Color(0,128,0);
+    public static final Color HEAD_COLOR = new Color(0,128,0);        
     
-    public Snake(Point startPos, int startLength) {
-        // Set Body
-        for (int i = 1; i <= startLength - 1; i++) {
-            body.addLast(new Point(startPos.x - i, startPos.y));
-        }
-        // Set Head
+    public Snake(Point startPos) {
         head = startPos;
+        setBody();
+    }
+    
+    public void setBody() {
+        for (int i = 1; i <= START_LENGTH - 1; i++) {
+            body.addLast(new Point(head.x - i, head.y));
+        }
     }
 
     public LinkedList<Point> getBody() {
