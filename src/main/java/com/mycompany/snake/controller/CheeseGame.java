@@ -23,15 +23,6 @@ public class CheeseGame extends ClassicGame {
     protected void createSnake(){
         game.snake = new CheeseSnake(new Point(game.startPos));
         cheeseSnake = (CheeseSnake) game.snake;
-        super.updateSnakeAvailablePositions();
-    }
-    
-    @Override
-    protected void updateMoveAvailablePositions(Point newPos){
-        
-        if(cheeseSnake.isLastBodyPartRemoved()) {
-            game.availablePositions.add(cheeseSnake.getBody().getLast());                
-        }
-        game.availablePositions.remove(newPos);
+        super.removeSnakeAvailablePositions();
     }
 }

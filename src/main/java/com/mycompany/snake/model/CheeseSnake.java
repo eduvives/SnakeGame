@@ -15,7 +15,6 @@ public class CheeseSnake extends Snake {
     private static final int CHEESE_START_LENGTH = 3;
     private int growCount;
     private boolean isNextBodyPartSnake;
-    private boolean lastBodyPartRemoved;
     
     public CheeseSnake(Point startPos) {
         super(startPos);
@@ -31,9 +30,9 @@ public class CheeseSnake extends Snake {
         isNextBodyPartSnake = true;
     }
 
-    public boolean isLastBodyPartRemoved() {
-        return lastBodyPartRemoved;
-    }        
+    public boolean isNextBodyPartSnake() {
+        return isNextBodyPartSnake;
+    }
     
     @Override
     public void move(Point newPos, boolean grow) {
@@ -43,12 +42,10 @@ public class CheeseSnake extends Snake {
         if (isNextBodyPartSnake) {
             body.addFirst(new Point(head.x, head.y));
 
-            if(growCount > 0) {
-                growCount--;
-                lastBodyPartRemoved = false;
+            if (growCount > 0) {
+                growCount--;                
             } else {
                 body.removeLast();
-                lastBodyPartRemoved = true;
             }
         }
         

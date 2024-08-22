@@ -51,6 +51,7 @@ public class ClassicGame {
         game.updateScore();
         
         game.availablePositions.clear();
+        game.specificModeLists.clear();
         game.food.clear();
         game.inputQueue.clear();
         game.direction.setLocation(1, 0);
@@ -64,14 +65,21 @@ public class ClassicGame {
     
     protected void createSnake(){
         game.snake = new Snake(new Point(game.startPos));
-        updateSnakeAvailablePositions();
+        removeSnakeAvailablePositions();
     }
     
-    protected void updateSnakeAvailablePositions(){
+    protected void removeSnakeAvailablePositions(){
         for (Point bodyPart : game.snake.getBody()) {
             game.availablePositions.remove(bodyPart);
         }
         game.availablePositions.remove(game.snake.getHead());
+    }
+    
+    protected void addSnakeAvailablePositions(){
+        for (Point bodyPart : game.snake.getBody()) {
+            game.availablePositions.add(new Point(bodyPart));
+        }
+        game.availablePositions.add(new Point(game.snake.getHead()));
     }
     
     // GAME LOOP
@@ -81,16 +89,16 @@ public class ClassicGame {
         Point newPos = new Point(game.snake.getHead().x + currentDirection.x, game.snake.getHead().y + currentDirection.y);
 
         boolean isFood = checkFood(newPos);
-
+        
+        addSnakeAvailablePositions();
+        game.snake.move(newPos, isFood);
+        removeSnakeAvailablePositions();
+        
         if (isFood) {
             eatFood(newPos);
             increaseScore();
-        } else {
-            updateMoveAvailablePositions(newPos);
         }
-
-        game.snake.move(newPos, isFood);
-
+        
         boolean isFeast = checkFeast();
         boolean isCollision = checkCollision(newPos);
 
@@ -110,11 +118,6 @@ public class ClassicGame {
     protected void eatFood(Point newPos) {
         game.food.remove(newPos);
         placeFood();
-    }
-    
-    protected void updateMoveAvailablePositions(Point newPos){        
-        game.availablePositions.add(game.snake.getBody().getLast());
-        game.availablePositions.remove(newPos);
     }
     
     // OTHERS

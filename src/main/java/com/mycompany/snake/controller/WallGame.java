@@ -27,8 +27,7 @@ public class WallGame extends ClassicGame {
     public static final Color WALL_COLOR = Color.GRAY;    
     
     public WallGame(GameLogic game) {
-        super(game);
-        this.game.specificModeLists.add(new AbstractMap.SimpleEntry<>(WALL_COLOR, walls));
+        super(game);        
     }
     
     @Override
@@ -44,7 +43,9 @@ public class WallGame extends ClassicGame {
     protected void prepareNewGame() {
         
         super.prepareNewGame();
-
+        
+        game.specificModeLists.add(new AbstractMap.SimpleEntry<>(WALL_COLOR, walls));
+        
         spawnRadius.clear();
         generateSpawnRadius(game.startPos);
 
