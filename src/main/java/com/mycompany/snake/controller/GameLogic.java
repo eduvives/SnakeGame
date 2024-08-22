@@ -4,7 +4,6 @@
  */
 package com.mycompany.snake.controller;
 
-import com.mycompany.snake.model.CheeseSnake;
 import com.mycompany.snake.model.SettingsParams;
 import com.mycompany.snake.model.Snake;
 import com.mycompany.snake.view.SnakeView;
@@ -14,15 +13,11 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -36,32 +31,30 @@ import javax.swing.Timer;
  */
 public class GameLogic {
     
-    private SnakeView view;
-    private Point startPos;
-    private Snake snake;
-
+    protected SnakeView view;
+    protected Point startPos;
+    protected Snake snake;
+    private ClassicGame gameMode;
+    
     private int boardWidth;
     private int boardHeight;
     private int squareSize;
-    private int numBoardRows;
-    private int numBoardCols;
-    private int numFood;
-    private int score;
-    private List<Point> availablePositions = new ArrayList<>();
-    private List<Point> food = new ArrayList<>();
-    private boolean isBoardUpdated;
+    protected int numBoardRows;
+    protected int numBoardCols;
+    protected boolean isBoardUpdated;
+    protected List<Point> availablePositions = new ArrayList<>();
+    protected List<Map.Entry<Color, List<Point>>> specificModeLists = new ArrayList<>();
+    
+    protected int score;
+    protected int numFood;
+    protected List<Point> food = new ArrayList<>();
+    public static final Color FOOD_COLOR = Color.RED;
     
     private Timer timer;
     private int timerDelay;
-    private Point direction = new Point();
-    private Queue<Point> inputQueue = new LinkedList<>();
-    private boolean gameStarted;
-    
-    private String mode;
-    private List<Point> walls = new ArrayList<>();
-    private List<Point> spawnWalls = new ArrayList<>();
-    private List<Point> spawnRadius = new ArrayList<>();
-    private boolean isSpawnRadiusMode;
+    protected Point direction = new Point();
+    protected Queue<Point> inputQueue = new LinkedList<>();
+    protected boolean gameStarted;
     
     public GameLogic(SnakeView view) {
         this.view = view;
@@ -94,12 +87,19 @@ public class GameLogic {
         
         this.timerDelay = delay;
         this.numFood = numFood;
-                
-        this.mode = mode;
-        isSpawnRadiusMode = Arrays.asList(SettingsParams.SPAWN_RADIUS_MODES).contains(mode);
+        
+        if (mode.equals("Classic")) {
+            gameMode = new ClassicGame(this);
+        } else if (mode.equals("Wall")) {
+            gameMode = new WallGame(this);
+        } else if (mode.equals("Cheese")) {
+            gameMode = new CheeseGame(this);
+        } else {
+            gameMode = new ClassicGame(this);
+        }
     }
     
-    private void updateBoardParams() {
+    protected void updateBoardParams() {
         view.getBoardPanel().setBoardWidth(boardWidth);
         view.getBoardPanel().setBoardHeight(boardHeight);
         view.getBoardPanel().setSquareSize(squareSize);
@@ -209,33 +209,7 @@ public class GameLogic {
                 }
             }
         });
-    }
-    
-    private boolean checkCollision(Point pos) {
-        
-        boolean bodyCollision = snake.getBody().contains(pos);
-        boolean boundariesCollision = pos.x < 0 || pos.x >= numBoardCols || pos.y < 0 || pos.y >= numBoardRows;
-        boolean wallCollision = mode.equals("Wall") && walls.contains(pos);
-        
-        return bodyCollision || boundariesCollision || wallCollision;
-    }
-    
-    private boolean checkFeast() {
-        return score == (numBoardRows * numBoardCols) - Snake.START_LENGTH;
-    }
-    
-    private boolean checkFood(Point newPos) {        
-        return food.contains(newPos);
-    }
-    
-    private void updateScore() {
-        view.setCurrentScore(score);
-    }
-    
-    public void openMenu() {
-        view.getMenu().setScoreLabel(score);
-        view.openMenu();
-    }
+    }          
     
     public void showGameBoard() {
         startPos = new Point(Snake.START_LENGTH + 1, numBoardRows / 2);
@@ -245,127 +219,50 @@ public class GameLogic {
         view.getBoardPanel().repaint();
     }
     
-    private void newGame() {
+    public void openMenu() {
+        view.getMenu().setScoreLabel(score);
+        view.openMenu();
+    }
+    
+    protected void updateScore() {
+        view.setCurrentScore(score);
+    } 
+    
+    protected void newGame() {
         
-        if (!isBoardUpdated) {
-            updateBoardParams();
-            startPos = new Point(Snake.START_LENGTH + 1, numBoardRows / 2);
-        }
-        
-        gameStarted = false;
-        score = 0;
-        updateScore();
-        
-        availablePositions.clear();
-        food.clear();
-        inputQueue.clear();
-        direction.setLocation(1, 0);
+        gameMode.prepareNewGame();
+        gameMode.createSnake();
 
-        for (int i = 0; i < numBoardRows; i++) {
-            for (int j = 0; j < numBoardCols; j++) {
-                availablePositions.add(new Point(j,i));
-            }
-        }      
-        
-        if (mode.equals("Cheese")) {
-            snake = new CheeseSnake(new Point(startPos));
-        } else {
-            snake = new Snake(new Point(startPos));
-        }
-                
-        if (isSpawnRadiusMode) {
-            
-            spawnRadius.clear();
-            generateSpawnRadius(startPos);
-            
-            if (mode.equals("Wall")) {
-                walls.clear();
-                spawnWalls.clear();
-            }
-        }
-        
-        for (Point bodyPart : snake.getBody()) {
-            availablePositions.remove(bodyPart);
-        }
-        availablePositions.remove(snake.getHead());
-        
-        placeFood();
+        gameMode.placeFood();
         updateView();
         view.getBoardPanel().repaint();
     }
-
+    
     private void startGame() {
         
-        ActionListener gameListener = getTimerListener();
+        ActionListener gameLoopListener = getGameLoopListener();
         
-        timer = new Timer(timerDelay, gameListener);
+        timer = new Timer(timerDelay, gameLoopListener);
         timer.start();
         gameStarted = true;
     }
     
-    private ActionListener getTimerListener() {
+    private ActionListener getGameLoopListener() {
+        
         return (ActionEvent e) -> {
             
             Point currentDirection = inputQueue.isEmpty() ? direction : inputQueue.poll();
-            Point newPos = new Point(snake.getHead().x + currentDirection.x, snake.getHead().y + currentDirection.y);
             
-            if (isSpawnRadiusMode) {
-                moveSpawnRadius(currentDirection);
-            }
-            
-            boolean isFood = checkFood(newPos);
-
-            if (isFood) {
-                eatFood(newPos);
-            } else {
-                moveUpdateAvailablePositions(newPos);
-            }
-            
-            snake.move(newPos, isFood);
-            
-            boolean isFeast = checkFeast();
-            boolean isCollision = checkCollision(newPos);
-            
-            if (!isCollision) {
-                updateView();
-                view.getBoardPanel().actionPerformed(e);
-            } else {
-                gameEnd(isFeast);
-            }
+            gameMode.snakeMove(currentDirection);
         };
-    }
-    
-    private void eatFood(Point newPos) {
-        score += 1;
-        updateScore();
-        food.remove(newPos);
-
-        if (mode.equals("Wall") && score % 2 == 1) {
-            addWall();
-        }
-
-        placeFood();
-    }
-    
-    private void moveUpdateAvailablePositions(Point newPos){
+    }        
         
-        if (snake instanceof CheeseSnake cheeseSnake) {
-            if(cheeseSnake.isLastBodyPartRemoved()) {
-                availablePositions.add(snake.getBody().getLast());                
-            }
-            availablePositions.remove(newPos);
-        } else {
-            availablePositions.add(snake.getBody().getLast());
-            availablePositions.remove(newPos);
-        }
-    }
-    
-    private void gameEnd(boolean isFeast) {
+    protected void gameEnd(boolean isFeast) {
         timer.stop();
         openMenu();
     }
     
-    private void updateView(){
+    protected void updateView(){
         Map<Color, List<Point>> squaresColors = new HashMap<>();       
         
         // Snake Body
@@ -379,118 +276,22 @@ public class GameLogic {
         squaresColors.get(Snake.HEAD_COLOR).add(new Point(snake.getHead().x, snake.getHead().y));
         
         // Food
-        squaresColors.put(Color.RED, new ArrayList<>());
+        squaresColors.put(FOOD_COLOR, new ArrayList<>());
         
         for (Point foodPos : food) {
-            squaresColors.get(Color.RED).add(foodPos);
+            squaresColors.get(FOOD_COLOR).add(foodPos);
         }
         
-        // Wall
-        squaresColors.put(Color.GRAY, new ArrayList<>());
+        // Specific Mode Lists (Wall...)
+        for (Map.Entry<Color, List<Point>> modeList : specificModeLists) {
+            
+            squaresColors.put(modeList.getKey(), new ArrayList<>());
         
-        for (Point foodPos : walls) {
-            squaresColors.get(Color.GRAY).add(foodPos);
+            for (Point pos : modeList.getValue()) {
+                squaresColors.get(modeList.getKey()).add(pos);
+            }
         }
         
         view.getBoardPanel().setSquaresColors(squaresColors);
-    }
-    
-    private void placeFood() {
-        
-        Random rand = new Random(); 
-        
-        int numPlacedFood = food.size();
-
-        if (numFood == -1) { // Random Food Num
-            if (numPlacedFood == 0) {
-                int randNumFood = rand.nextInt(6) + 1;
-
-                for (int i = 0; i < randNumFood; i++) {
-                    if (!availablePositions.isEmpty()) {
-                        food.add(getRandomAvailablePosition());
-                    }
-                }
-            }
-        } else {
-            for (int i = 0; i < numFood - numPlacedFood; i++) {
-                if (!availablePositions.isEmpty()) {
-                    food.add(getRandomAvailablePosition());
-                }
-            }
-        }
-    }
-
-    private Point getRandomAvailablePosition() {
-        
-        Random rand = new Random();   
-        
-        int index = rand.nextInt(availablePositions.size());
-        return availablePositions.remove(index);
-
-    }
-    
-    // MODES
-    
-    private void addWall() {
-        Point wallPos = getRandomSpawnPosition(availablePositions, spawnRadius, spawnWalls);
-
-        if (wallPos != null) {
-
-            walls.add(wallPos);
-
-            for (int x = -1; x <= 1; x++) {
-                for (int y = -1; y <= 1; y++) {
-                    spawnWalls.add(new Point(wallPos.x + x, wallPos.y + y));
-                }
-            }
-        }
-    }
-        
-    private void generateSpawnRadius(Point startPos) {
-        int size = (SettingsParams.SPAWN_RADIUS_WIDTH - 1) / 2;
-
-        for (int x = -size; x <= size; x++) {
-            int yLimit = size - Math.abs(x);
-
-            for (int y = -yLimit; y <= yLimit; y++) {
-                spawnRadius.add(new Point(startPos.x + x, startPos.y + y));
-            }
-        }
-    }
-    
-    private void moveSpawnRadius(Point currentDirection) {
-        
-        for(Point pos : spawnRadius){
-            pos.setLocation(pos.x + currentDirection.x, pos.y + currentDirection.y);
-        }
-    }
-    
-    public Point getRandomSpawnPosition(List<Point> availablePositions, List<Point>... excludedLists) {
-        // Crear un conjunto para almacenar los puntos presentes en otras listas
-        Set<Point> excludedPoints = new HashSet<>();
-        for (List<Point> list : excludedLists) {
-            excludedPoints.addAll(list);
-        }
-
-        // Filtrar la lista de puntos para excluir los que ya están en otras listas
-        List<Point> candidates = new ArrayList<>();
-        for (Point p : availablePositions) {
-            if (!excludedPoints.contains(p)) {
-                candidates.add(p);
-            }
-        }
-
-        // Si no hay puntos disponibles, regresar null
-        if (candidates.isEmpty()) {
-            return null;
-        }
-
-        // Seleccionar un punto aleatorio de los candidatos disponibles
-        Random rand = new Random();
-        
-        Point candidate = candidates.get(rand.nextInt(candidates.size()));
-        availablePositions.remove(candidate);
-        
-        return candidate;
-    }
+    }    
 }

@@ -14,8 +14,8 @@ import java.util.LinkedList;
  */
 public class Snake {
     
-    private LinkedList<Point> body = new LinkedList<>();
-    private Point head;
+    protected LinkedList<Point> body = new LinkedList<>();
+    protected Point head;
     
     public static final int START_LENGTH = 4;
     public static final Color BODY_COLOR = Color.GREEN;

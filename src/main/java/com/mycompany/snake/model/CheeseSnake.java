@@ -25,7 +25,7 @@ public class CheeseSnake extends Snake {
     public void setBody() {
         growCount = 0;
         for (int i = 1; i <= CHEESE_START_LENGTH - 1; i++) {
-            getBody().addLast(new Point(getHead().x - (i * 2), getHead().y));
+            body.addLast(new Point(head.x - (i * 2), head.y));
         }
         
         isNextBodyPartSnake = true;
@@ -41,18 +41,18 @@ public class CheeseSnake extends Snake {
         if (grow) growCount++;
         
         if (isNextBodyPartSnake) {
-            getBody().addFirst(new Point(getHead().x, getHead().y));
+            body.addFirst(new Point(head.x, head.y));
 
             if(growCount > 0) {
                 growCount--;
                 lastBodyPartRemoved = false;
             } else {
-                getBody().removeLast();
+                body.removeLast();
                 lastBodyPartRemoved = true;
             }
         }
         
-        getHead().setLocation(newPos.x, newPos.y);
+        head.setLocation(newPos.x, newPos.y);
         
         isNextBodyPartSnake = !isNextBodyPartSnake;
     }
