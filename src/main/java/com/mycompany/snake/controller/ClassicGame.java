@@ -134,19 +134,29 @@ public class ClassicGame {
 
                 for (int i = 0; i < randNumFood; i++) {
                     if (!game.availablePositions.isEmpty()) {
-                        game.food.add(getRandomAvailablePosition());
+                        game.food.add(getRandomFoodPosition());
                     }
                 }
             }
         } else {
             for (int i = 0; i < game.numFood - numPlacedFood; i++) {
                 if (!game.availablePositions.isEmpty()) {
-                    game.food.add(getRandomAvailablePosition());
+                    game.food.add(getRandomFoodPosition());
                 }
             }
         }
     }
 
+    protected Point getRandomFoodPosition() {
+        
+        Random rand = new Random();   
+        
+        int index = rand.nextInt(game.availablePositions.size());
+        return game.availablePositions.remove(index);
+
+    }
+    
+    // TODO not used
     private Point getRandomAvailablePosition() {
         
         Random rand = new Random();   

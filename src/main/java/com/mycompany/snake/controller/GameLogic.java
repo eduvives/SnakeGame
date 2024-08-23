@@ -31,6 +31,8 @@ import javax.swing.Timer;
  */
 public class GameLogic {
     
+    protected List<Point> testList = new ArrayList<>(); // Test Line
+    
     protected SnakeView view;
     protected Point startPos;
     protected Snake snake;
@@ -209,6 +211,23 @@ public class GameLogic {
                 }
             }
         });
+        
+        // Test Lines Start        
+        inputMap.put(KeyStroke.getKeyStroke("SPACE"), "pauseGame");
+        
+        actionMap.put("pauseGame", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (gameStarted) {
+                    if (timer.isRunning()) {
+                        timer.stop();
+                    } else {
+                       timer.start();
+                    }
+                }
+            }
+        });
+        // Test Lines End
     }          
     
     public void showGameBoard() {
@@ -291,6 +310,16 @@ public class GameLogic {
                 squaresColors.get(modeList.getKey()).add(pos);
             }
         }
+        
+        // Test Lines Start
+        squaresColors.put(Color.CYAN, new ArrayList<>());
+        
+        for (Point foodPos : testList) {
+            squaresColors.get(Color.CYAN).add(foodPos);
+        }
+        
+        testList.clear();
+        // Test Lines End
         
         view.getBoardPanel().setSquaresColors(squaresColors);
     }    
