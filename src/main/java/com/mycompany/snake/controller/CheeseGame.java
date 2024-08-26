@@ -16,7 +16,6 @@ import java.util.Random;
  */
 public class CheeseGame extends ClassicGame {
     
-    private CheeseSnake cheeseSnake;
     private int[][] SIDES_DIRECTIONS = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
     private int numAvailableFooodPositions;
     
@@ -32,7 +31,6 @@ public class CheeseGame extends ClassicGame {
     @Override
     protected void createSnake(){
         game.snake = new CheeseSnake(new Point(game.startPos));
-        cheeseSnake = (CheeseSnake) game.snake;
         super.removeSnakeAvailablePositions();
     }
     

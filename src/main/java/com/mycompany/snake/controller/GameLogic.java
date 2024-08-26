@@ -96,6 +96,8 @@ public class GameLogic {
             gameMode = new WallGame(this);
         } else if (mode.equals("Cheese")) {
             gameMode = new CheeseGame(this);
+        } else if (mode.equals("Boundless")) {
+            gameMode = new BoundlessGame(this);
         } else {
             gameMode = new ClassicGame(this);
         }

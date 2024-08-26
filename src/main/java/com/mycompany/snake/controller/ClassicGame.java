@@ -87,7 +87,7 @@ public class ClassicGame {
     
     protected void snakeMove(Point currentDirection) {
         
-        Point newPos = new Point(game.snake.getHead().x + currentDirection.x, game.snake.getHead().y + currentDirection.y);
+        Point newPos = getNewPos(currentDirection);
 
         boolean isFood = checkFood(newPos);
         boolean isFeast = false;
@@ -112,6 +112,10 @@ public class ClassicGame {
         if (isCollision || isFeast) {
             game.gameEnd(isFeast);
         }
+    }
+    
+    protected Point getNewPos(Point currentDirection) {
+        return new Point(game.snake.getHead().x + currentDirection.x, game.snake.getHead().y + currentDirection.y);
     }
     
     private void increaseScore() {
