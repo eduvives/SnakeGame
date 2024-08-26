@@ -18,9 +18,15 @@ public class CheeseGame extends ClassicGame {
     
     private CheeseSnake cheeseSnake;
     private int[][] SIDES_DIRECTIONS = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+    private int numAvailableFooodPositions;
     
     public CheeseGame(GameLogic game) {
         super(game);
+    }
+    
+    @Override
+    protected boolean checkFeast() {
+        return numAvailableFooodPositions == 0 && game.food.isEmpty();
     }
     
     @Override
@@ -45,11 +51,10 @@ public class CheeseGame extends ClassicGame {
             if (freeSides >= 2) {
                 candidates.add(pos);
             }
-        }
+        }        
         
-        game.testList.clear();
-        game.testList.addAll(candidates);
-
+        numAvailableFooodPositions = candidates.size();
+        
         if (candidates.isEmpty()) {
             return null;
         }

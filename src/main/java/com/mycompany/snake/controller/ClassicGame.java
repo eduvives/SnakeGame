@@ -30,8 +30,9 @@ public class ClassicGame {
         return bodyCollision || boundariesCollision;
     }
     
-    private boolean checkFeast() {
-        return game.score == (game.numBoardRows * game.numBoardCols) - Snake.START_LENGTH;
+    protected boolean checkFeast() {
+        return game.availablePositions.isEmpty() && game.food.isEmpty();
+        // return game.score == (game.numBoardRows * game.numBoardCols) - Snake.START_LENGTH;
     }
     
     private boolean checkFood(Point newPos) {        
@@ -89,6 +90,7 @@ public class ClassicGame {
         Point newPos = new Point(game.snake.getHead().x + currentDirection.x, game.snake.getHead().y + currentDirection.y);
 
         boolean isFood = checkFood(newPos);
+        boolean isFeast = false;
         
         addSnakeAvailablePositions();
         game.snake.move(newPos, isFood);
@@ -96,16 +98,18 @@ public class ClassicGame {
         
         if (isFood) {
             eatFood(newPos);
+            isFeast = checkFeast();
             increaseScore();
         }
-        
-        boolean isFeast = checkFeast();
+                
         boolean isCollision = checkCollision(newPos);
-
+        
         if (!isCollision) {
             game.updateView();
             game.view.getBoardPanel().repaint();
-        } else {
+        }
+        
+        if (isCollision || isFeast) {
             game.gameEnd(isFeast);
         }
     }
@@ -133,23 +137,25 @@ public class ClassicGame {
                 int randNumFood = rand.nextInt(6) + 1;
 
                 for (int i = 0; i < randNumFood; i++) {
-                    if (!game.availablePositions.isEmpty()) {
-                        game.food.add(getRandomFoodPosition());
-                    }
+                    Point foodPos = getRandomFoodPosition();
+                    if (foodPos != null) game.food.add(foodPos);
                 }
             }
         } else {
             for (int i = 0; i < game.numFood - numPlacedFood; i++) {
-                if (!game.availablePositions.isEmpty()) {
-                    game.food.add(getRandomFoodPosition());
-                }
+                Point foodPos = getRandomFoodPosition();
+                if (foodPos != null) game.food.add(foodPos);
             }
         }
     }
 
     protected Point getRandomFoodPosition() {
         
-        Random rand = new Random();   
+        if (game.availablePositions.isEmpty()) {
+            return null;
+        }
+        
+        Random rand = new Random();
         
         int index = rand.nextInt(game.availablePositions.size());
         return game.availablePositions.remove(index);

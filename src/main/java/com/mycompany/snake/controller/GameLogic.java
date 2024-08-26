@@ -277,6 +277,7 @@ public class GameLogic {
     }        
         
     protected void gameEnd(boolean isFeast) {
+        System.out.println("Feast: " + isFeast);
         timer.stop();
         openMenu();
     }
@@ -319,6 +320,12 @@ public class GameLogic {
         }
         
         testList.clear();
+        
+        /*
+        game.testList.clear();
+        game.testList.addAll(candidates);
+        */
+        
         // Test Lines End
         
         view.getBoardPanel().setSquaresColors(squaresColors);
