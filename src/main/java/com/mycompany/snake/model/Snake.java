@@ -16,14 +16,17 @@ public class Snake {
     
     protected LinkedList<Point> body = new LinkedList<>();
     protected Point head;
+    protected Point direction = new Point();
     
     public static final int START_LENGTH = 4;
+    public static final Point START_DIRECTION = new Point(1, 0);
     public static final Color BODY_COLOR = Color.GREEN;
-    public static final Color HEAD_COLOR = new Color(0,128,0);        
+    public static final Color HEAD_COLOR = new Color(0,128,0);    
     
     public Snake(Point startPos) {
         head = startPos;
         setBody();
+        direction.setLocation(START_DIRECTION);
     }
     
     public void setBody() {
@@ -38,6 +41,10 @@ public class Snake {
 
     public Point getHead() {
         return head;
+    }
+
+    public Point getDirection() {
+        return direction;
     }
     
     public void move(Point newPos, boolean grow) {

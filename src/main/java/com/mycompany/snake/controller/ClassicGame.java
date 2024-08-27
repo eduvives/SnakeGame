@@ -55,7 +55,6 @@ public class ClassicGame {
         game.specificModeLists.clear();
         game.food.clear();
         game.inputQueue.clear();
-        game.direction.setLocation(1, 0);
 
         for (int i = 0; i < game.numBoardRows; i++) {
             for (int j = 0; j < game.numBoardCols; j++) {
@@ -91,6 +90,7 @@ public class ClassicGame {
 
         boolean isFood = checkFood(newPos);
         boolean isFeast = false;
+        boolean isCollision = false;
         
         addSnakeAvailablePositions();
         game.snake.move(newPos, isFood);
@@ -100,9 +100,9 @@ public class ClassicGame {
             eatFood(newPos);
             isFeast = checkFeast();
             increaseScore();
+        } else {
+            isCollision = checkCollision(newPos);
         }
-                
-        boolean isCollision = checkCollision(newPos);
         
         if (!isCollision) {
             game.updateView();

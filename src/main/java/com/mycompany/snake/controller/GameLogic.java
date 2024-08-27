@@ -54,7 +54,6 @@ public class GameLogic {
     
     private Timer timer;
     private int timerDelay;
-    protected Point direction = new Point();
     protected Queue<Point> inputQueue = new LinkedList<>();
     protected boolean gameStarted;
     
@@ -72,7 +71,6 @@ public class GameLogic {
         setSettingsComboBoxesModels();
         setViewListeners();
         configureKeyBindings();
-        this.view.setVisible(true);
     }        
     
     private void setGameParams(int boardWidth, int boardHeight, int squareSize, int delay, int numFood, String mode) {
@@ -98,6 +96,8 @@ public class GameLogic {
             gameMode = new CheeseGame(this);
         } else if (mode.equals("Boundless")) {
             gameMode = new BoundlessGame(this);
+        } else if (mode.equals("Twin")) {
+            gameMode = new TwinGame(this);
         } else {
             gameMode = new ClassicGame(this);
         }
@@ -165,12 +165,12 @@ public class GameLogic {
         actionMap.put("moveUp", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (direction.y != 1 && inputQueue.size() < 2) {
+                if (snake.getDirection().y != 1 && inputQueue.size() < 2) {
                     if (!gameStarted) {
                         startGame();
                     }
-                    direction.setLocation(0, -1);
-                    inputQueue.add(new Point(direction));
+                    snake.getDirection().setLocation(0, -1);
+                    inputQueue.add(new Point(snake.getDirection()));
                 }
             }
         });
@@ -178,12 +178,12 @@ public class GameLogic {
         actionMap.put("moveDown", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (direction.y != -1 && inputQueue.size() < 2) {
+                if (snake.getDirection().y != -1 && inputQueue.size() < 2) {
                     if (!gameStarted) {
                         startGame();
                     }
-                    direction.setLocation(0, 1);
-                    inputQueue.add(new Point(direction));
+                    snake.getDirection().setLocation(0, 1);
+                    inputQueue.add(new Point(snake.getDirection()));
                 }                
             }
         });
@@ -191,12 +191,12 @@ public class GameLogic {
         actionMap.put("moveLeft", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (direction.x != 1 && inputQueue.size() < 2) {
+                if (snake.getDirection().x != 1 && inputQueue.size() < 2) {
                     if (!gameStarted) {
                         startGame();
                     }
-                    direction.setLocation(-1, 0);
-                    inputQueue.add(new Point(direction));
+                    snake.getDirection().setLocation(-1, 0);
+                    inputQueue.add(new Point(snake.getDirection()));
                 }                
             }
         });
@@ -204,12 +204,12 @@ public class GameLogic {
         actionMap.put("moveRight", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (direction.x != -1 && inputQueue.size() < 2) {
+                if (snake.getDirection().x != -1 && inputQueue.size() < 2) {
                     if (!gameStarted) {
                         startGame();
                     }
-                    direction.setLocation(1, 0);
-                    inputQueue.add(new Point(direction));
+                    snake.getDirection().setLocation(1, 0);
+                    inputQueue.add(new Point(snake.getDirection()));
                 }
             }
         });
@@ -238,6 +238,8 @@ public class GameLogic {
         
         updateView();
         view.getBoardPanel().repaint();
+        
+        this.view.setVisible(true);
     }
     
     public void openMenu() {
@@ -272,7 +274,7 @@ public class GameLogic {
         
         return (ActionEvent e) -> {
             
-            Point currentDirection = inputQueue.isEmpty() ? direction : inputQueue.poll();
+            Point currentDirection = inputQueue.isEmpty() ? snake.getDirection() : inputQueue.poll();
             
             gameMode.snakeMove(currentDirection);
         };
