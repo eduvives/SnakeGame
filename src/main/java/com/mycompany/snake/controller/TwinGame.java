@@ -15,8 +15,11 @@ import javax.swing.Timer;
  */
 public class TwinGame extends ClassicGame {
     
+    private Timer switchSidesTimer;
+    
     public TwinGame(GameLogic game) {
         super(game);
+        setSwitchSidesTimer();
     }
     
     @Override
@@ -33,19 +36,19 @@ public class TwinGame extends ClassicGame {
         switchingSidesPause(); // Simular una pausa
     }
     
-    private void switchingSidesPause() {
-
-        game.timer.stop();
-        
-        Timer delayTimer = new Timer((int) Math.round(game.timerDelay * 1.5), (ActionEvent e) -> {
+    private void setSwitchSidesTimer() {
+        switchSidesTimer = new Timer((int) Math.round(game.timerDelay * 1.5), (ActionEvent e) -> {
             if (!game.gameEnded) {
                 game.timer.start();
             }
         });
-
-        // Configurar el Timer para que se ejecute solo una vez
-        delayTimer.setRepeats(false);
         
-        delayTimer.start();
+        // Configurar el Timer para que se ejecute solo una vez
+        switchSidesTimer.setRepeats(false);
+    }
+    
+    private void switchingSidesPause() {
+        game.timer.stop();
+        switchSidesTimer.start();
     }
 }
