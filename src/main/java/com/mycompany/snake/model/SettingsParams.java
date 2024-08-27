@@ -14,9 +14,9 @@ public class SettingsParams {
     
     public static final String[] BOARD_NAMES = {"Medium", "Easy", "Difficult", "Test"}; // col & row = 17 15 / 10 9 / 24 21
     public static final int[][] BOARD_VALUES = {{595, 525, 35}, {580, 522, 58}, {600, 525, 25}, {406, 116, 58}}; // { Board_Width, Board_Height, Square_Size }
-    
+        
     public static final String[] SPEED_NAMES = {"Normal", "Fast", "Slow", "Test"};
-    public static final int[] SPEED_VALUES = {127, 85, 170, 1000};
+    public static final int[] SPEED_VALUES = {135, 89, 179, 1000};
     
     public static final String[] FOOD_NAMES = {"1", "3", "5", "Random"};
     public static final int[] FOOD_VALUES = {1, 3, 5, -1};
