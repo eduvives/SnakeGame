@@ -48,6 +48,7 @@ public class ClassicGame {
         }
         
         game.gameStarted = false;
+        game.gameEnded = false;
         game.score = 0;
         game.updateScore();
         

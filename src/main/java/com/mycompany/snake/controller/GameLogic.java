@@ -52,10 +52,11 @@ public class GameLogic {
     protected List<Point> food = new ArrayList<>();
     public static final Color FOOD_COLOR = Color.RED;
     
-    private Timer timer;
-    private int timerDelay;
+    protected Timer timer;
+    protected int timerDelay;
     protected Queue<Point> inputQueue = new LinkedList<>();
     protected boolean gameStarted;
+    protected boolean gameEnded;
     
     public GameLogic(SnakeView view) {
         this.view = view;
@@ -282,6 +283,7 @@ public class GameLogic {
         
     protected void gameEnd(boolean isFeast) {
         System.out.println("Feast: " + isFeast);
+        gameEnded = true;
         timer.stop();
         openMenu();
     }

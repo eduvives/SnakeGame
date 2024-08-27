@@ -31,6 +31,5 @@ public class TwinSnake extends Snake {
             
             direction.setLocation(head.x - body.getFirst().x, head.y - body.getFirst().y);
         }
-        
     }
 }
