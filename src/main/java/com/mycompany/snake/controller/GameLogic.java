@@ -13,6 +13,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,6 +71,7 @@ public class GameLogic {
         );
         updateBoardParams();
         setSettingsComboBoxesModels();
+        setBlenderModeListModel();
         setViewListeners();
         configureKeyBindings();
     }        
@@ -123,31 +125,67 @@ public class GameLogic {
         view.getSettings().setFoodCmbModel(SettingsParams.FOOD_NAMES, SettingsParams.DEFAULT_SELECTED_INDEX);
         view.getSettings().setModeCmbModel(SettingsParams.MODE_NAMES, SettingsParams.DEFAULT_SELECTED_INDEX);
     }
+    
+    private void setBlenderModeListModel() {
+        List<String> blenderModeNames = new ArrayList<>(Arrays.asList(SettingsParams.MODE_NAMES));
+        blenderModeNames.removeAll(Arrays.asList(SettingsParams.BLENDER_MODE_EXCLUDED_NAMES));
+        view.getBlenderSettings().setModeListModel(blenderModeNames, SettingsParams.DEFAULT_SELECTED_INDEX);
+    }
         
     private void setViewListeners() {
         
-        view.getMenu().setPlayButtonListener(e -> {
+        // Al no abrir y cerrar las ventanas con mucha frecuencia, seguimos usando dispose() y así aprovechamos la animación de creación de ventana.
+        
+        view.getMenu().setPlayBtnListener(e -> {
             
             newGame();
-            view.getMenu().dispose();
+            view.getMenu().dispose(); // view.getMenu().setVisible(false);
         });
         
-        view.getSettings().setPlaySettingsListener(e -> {
+        view.getSettings().setPlayBtnListener(e -> {
             
-            int[] boardValues = SettingsParams.BOARD_VALUES[view.getSettings().getBoardCmbSelectedIndex()];
-            
-            setGameParams(
-                boardValues[0],
-                boardValues[1],
-                boardValues[2],
-                SettingsParams.SPEED_VALUES[view.getSettings().getSpeedCmbSelectedIndex()],
-                SettingsParams.FOOD_VALUES[view.getSettings().getFoodCmbSelectedIndex()],
-                SettingsParams.MODE_NAMES[view.getSettings().getModeCmbSelectedIndex()]
-            );
+            updateGameParamsFromView();
             
             newGame();
             view.getSettings().dispose();
         });
+        
+        view.getSettings().setBackBtnListener(e -> {
+            
+            updateGameParamsFromView();
+            
+            view.getSettings().dispose();
+            view.getMenu().setVisible(true);
+        });
+        
+        view.getBlenderSettings().setPlayBtnListener(e -> {
+            
+            updateGameParamsFromView();
+            
+            newGame();
+            view.getBlenderSettings().dispose();
+        });                
+        
+        view.getBlenderSettings().setBackBtnListener(e -> {
+            
+            updateGameParamsFromView();
+            
+            view.getBlenderSettings().dispose();
+            view.getSettings().setVisible(true);
+        });
+    }
+    
+    private void updateGameParamsFromView() {
+        int[] boardValues = SettingsParams.BOARD_VALUES[view.getSettings().getBoardCmbSelectedIndex()];
+
+        setGameParams(
+            boardValues[0],
+            boardValues[1],
+            boardValues[2],
+            SettingsParams.SPEED_VALUES[view.getSettings().getSpeedCmbSelectedIndex()],
+            SettingsParams.FOOD_VALUES[view.getSettings().getFoodCmbSelectedIndex()],
+            SettingsParams.MODE_NAMES[view.getSettings().getModeCmbSelectedIndex()]
+        );
     }
     
     private void configureKeyBindings() {

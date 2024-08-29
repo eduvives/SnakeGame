@@ -19,8 +19,8 @@ import javax.swing.JComboBox;
  */
 public class SettingsPanel extends javax.swing.JDialog {
 
-    List<JComboBox<String>> comboBoxes;
-    Random random = new Random();
+    private List<JComboBox<String>> comboBoxes;
+    private BlenderPanel blenderSettings;
     
     /**
      * Creates new form SettingsPanel
@@ -35,6 +35,8 @@ public class SettingsPanel extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         setFocusable(true);
         setWindowClosingListener();
+        
+        blenderSettings = new BlenderPanel(this);
     }
 
     /**
@@ -57,6 +59,8 @@ public class SettingsPanel extends javax.swing.JDialog {
         randomBtn = new javax.swing.JButton();
         resetBtn = new javax.swing.JButton();
         playBtn = new javax.swing.JButton();
+        blenderBtn = new javax.swing.JButton();
+        backBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -86,6 +90,11 @@ public class SettingsPanel extends javax.swing.JDialog {
 
         modeCmb.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         modeCmb.setPreferredSize(new java.awt.Dimension(89, 26));
+        modeCmb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modeCmbActionPerformed(evt);
+            }
+        });
 
         randomBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         randomBtn.setText("Random");
@@ -109,6 +118,25 @@ public class SettingsPanel extends javax.swing.JDialog {
         playBtn.setText("Play");
         playBtn.setPreferredSize(new java.awt.Dimension(100, 27));
 
+        blenderBtn.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        blenderBtn.setText("⚙");
+        blenderBtn.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        blenderBtn.setMaximumSize(new java.awt.Dimension(26, 26));
+        blenderBtn.setMinimumSize(new java.awt.Dimension(26, 26));
+        blenderBtn.setPreferredSize(new java.awt.Dimension(26, 26));
+        blenderBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                blenderBtnActionPerformed(evt);
+            }
+        });
+
+        backBtn.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        backBtn.setText("🡨");
+        backBtn.setMargin(new java.awt.Insets(0, 0, 0, 2));
+        backBtn.setMaximumSize(new java.awt.Dimension(26, 26));
+        backBtn.setMinimumSize(new java.awt.Dimension(26, 26));
+        backBtn.setPreferredSize(new java.awt.Dimension(26, 26));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -127,7 +155,10 @@ public class SettingsPanel extends javax.swing.JDialog {
                             .addComponent(boardCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(speedCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(foodCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(modeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(modeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(blenderBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(100, 100, 100)
                         .addComponent(playBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -135,13 +166,18 @@ public class SettingsPanel extends javax.swing.JDialog {
                         .addGap(41, 41, 41)
                         .addComponent(randomBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(41, 41, 41))
+                        .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(backBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(10, 10, 10)
+                .addComponent(backBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(boardLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(boardCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -156,8 +192,9 @@ public class SettingsPanel extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(modeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(modeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
+                    .addComponent(modeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(blenderBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(randomBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -172,11 +209,13 @@ public class SettingsPanel extends javax.swing.JDialog {
 
     private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
         for (JComboBox<String> comboBox : comboBoxes) {
-            comboBox.setSelectedIndex(0);
+            comboBox.setSelectedIndex(0); // TODO 0? DEFAULT INDEX MODEL
         }
     }//GEN-LAST:event_resetBtnActionPerformed
 
     private void randomBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomBtnActionPerformed
+        
+        Random random = new Random();
         
         for (JComboBox<String> comboBox : comboBoxes) {
             int itemCount = comboBox.getItemCount();
@@ -187,15 +226,33 @@ public class SettingsPanel extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_randomBtnActionPerformed
 
-    public void setPlaySettingsListener(ActionListener listener) {
+    private void modeCmbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modeCmbActionPerformed
+        if (modeCmb.getSelectedItem() == "Blender") {
+            blenderBtn.setVisible(true);
+        } else {
+            blenderBtn.setVisible(false);
+        }
+    }//GEN-LAST:event_modeCmbActionPerformed
+
+    private void blenderBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_blenderBtnActionPerformed
+        // Al no abrir y cerrar la ventana con mucha frecuencia, seguimos usando dispose() y así aprovechamos la animación de creación de ventana.
+        this.dispose(); // this.setVisible(false);
+        blenderSettings.setVisible(true);
+    }//GEN-LAST:event_blenderBtnActionPerformed
+
+    public void setBackBtnListener(ActionListener listener) {
+        backBtn.addActionListener(listener);
+    }
+    
+    public void setPlayBtnListener(ActionListener listener) {
         playBtn.addActionListener(listener);
     }
     
     public void setBoardCmbModel(String[] names, int selectedIndex) {
         boardCmb.setModel(new DefaultComboBoxModel<>(names));
         boardCmb.setSelectedIndex(selectedIndex);
-    }
-    
+    } 
+   
     public void setSpeedCmbModel(String[] names, int selectedIndex) {
         speedCmb.setModel(new DefaultComboBoxModel<>(names));
         speedCmb.setSelectedIndex(selectedIndex);
@@ -236,7 +293,13 @@ public class SettingsPanel extends javax.swing.JDialog {
         });
     }
     
+    public BlenderPanel getBlenderSettings() {
+        return blenderSettings;
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton backBtn;
+    private javax.swing.JButton blenderBtn;
     private javax.swing.JComboBox<String> boardCmb;
     private javax.swing.JLabel boardLabel;
     private javax.swing.JComboBox<String> foodCmb;

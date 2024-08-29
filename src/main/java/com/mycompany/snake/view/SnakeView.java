@@ -145,6 +145,10 @@ public class SnakeView extends javax.swing.JFrame {
         return menu.getSettings();
     }
     
+    public BlenderPanel getBlenderSettings() {        
+        return menu.getBlenderSettings();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel boardPanel;
     private javax.swing.JLabel currentScore;

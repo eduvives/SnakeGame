@@ -22,12 +22,12 @@ public class MenuPanel extends javax.swing.JDialog {
     public MenuPanel(SnakeView gameView) {
         super(gameView, "Game Menu", true);
         initComponents();
+        
         pack();
         setLocationRelativeTo(null);
         setFocusable(true);
-        
-
         setWindowClosingListener();
+        
         settings = new SettingsPanel(this);
     }
 
@@ -87,6 +87,7 @@ public class MenuPanel extends javax.swing.JDialog {
 
         playBtn.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         playBtn.setText("Play");
+        playBtn.setName(""); // NOI18N
         playBtn.setPreferredSize(new java.awt.Dimension(200, 35));
 
         settingsBtn.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -159,11 +160,12 @@ public class MenuPanel extends javax.swing.JDialog {
     }//GEN-LAST:event_exitBtnActionPerformed
 
     private void settingsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsBtnActionPerformed
-        this.dispose();
+        // Al no abrir y cerrar la ventana con mucha frecuencia, seguimos usando dispose() y así aprovechamos la animación de creación de ventana.
+        this.dispose(); // this.setVisible(false);
         settings.setVisible(true);
     }//GEN-LAST:event_settingsBtnActionPerformed
     
-    public void setPlayButtonListener(ActionListener listener) {
+    public void setPlayBtnListener(ActionListener listener) {
         playBtn.addActionListener(listener);
     }
     
@@ -182,6 +184,10 @@ public class MenuPanel extends javax.swing.JDialog {
 
     public SettingsPanel getSettings() {
         return settings;
+    }
+    
+    public BlenderPanel getBlenderSettings() {
+        return settings.getBlenderSettings();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
