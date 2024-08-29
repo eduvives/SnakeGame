@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.SwingConstants;
 
 /**
@@ -209,6 +210,10 @@ public class BlenderPanel extends javax.swing.JDialog {
         modeList.setSelectedIndex(selectedIndex);
         
         initModeList();
+    }
+
+    public List<String> getModeListSelectedValues() {
+        return modeList.getSelectedValuesList();
     }
     
     public void setWindowClosingListener () {

@@ -38,6 +38,7 @@ public class GameLogic {
     protected Point startPos;
     protected Snake snake;
     private ClassicGame gameMode;
+    private List<String> blenderSelectedModes;
     
     private int boardWidth;
     private int boardHeight;
@@ -101,6 +102,9 @@ public class GameLogic {
             gameMode = new BoundlessGame(this);
         } else if (mode.equals("Twin")) {
             gameMode = new TwinGame(this);
+        } else if (mode.equals("Blender")) {
+            blenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues(); // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
+            gameMode = new BlenderGame(this, blenderSelectedModes);
         } else {
             gameMode = new ClassicGame(this);
         }

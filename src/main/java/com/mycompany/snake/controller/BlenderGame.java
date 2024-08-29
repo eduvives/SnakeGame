@@ -4,10 +4,16 @@
  */
 package com.mycompany.snake.controller;
 
+import java.util.List;
+
 /**
  *
  * @author Eduard
  */
-public class BlenderGame {
+public class BlenderGame extends ClassicGame {
+    
+    public BlenderGame(GameLogic game, List<String> modes) {
+        super(game);
+    }
     
 }
