@@ -4,6 +4,7 @@
  */
 package com.mycompany.snake.controller;
 
+import com.mycompany.snake.model.Snake;
 import com.mycompany.snake.model.TwinSnake;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -23,18 +24,24 @@ public class TwinGame extends ClassicGame {
     }
     
     @Override
-    protected void createSnake(){
-        game.snake = new TwinSnake(new Point(game.startPos));
-        super.removeSnakeAvailablePositions();
+    protected Snake createSnakeInstance(Point startPos) {
+        return new TwinSnake(startPos);
     }
     
     @Override
     protected void eatFood(Point newPos) {
+        
         super.eatFood(newPos);
         
+        postEatFoodTwinGame();
+    }
+    
+    protected void postEatFoodTwinGame() {
         game.inputQueue.clear();
         switchingSidesPause(); // Simular una pausa
     }
+    
+    // Métodos Auxiliares
     
     private void setSwitchSidesTimer() {
         switchSidesTimer = new Timer((int) Math.round(game.timerDelay * 1.5), (ActionEvent e) -> {

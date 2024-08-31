@@ -200,7 +200,7 @@ public class BlenderPanel extends javax.swing.JDialog {
         
         DefaultListModel<String> modeListModel = new DefaultListModel<>();
         
-        modeListModel.addElement("Mix Blindly");
+        modeListModel.addElement("Select Blindly");
         
         for (String modeName : names) {
             modeListModel.addElement(modeName);

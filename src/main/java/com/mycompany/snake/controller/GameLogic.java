@@ -132,7 +132,7 @@ public class GameLogic {
     
     private void setBlenderModeListModel() {
         List<String> blenderModeNames = new ArrayList<>(Arrays.asList(SettingsParams.MODE_NAMES));
-        blenderModeNames.removeAll(Arrays.asList(SettingsParams.BLENDER_MODE_EXCLUDED_NAMES));
+        blenderModeNames.removeAll(Arrays.asList(SettingsParams.BLENDER_MODE_EXCLUDED_MODES));
         view.getBlenderSettings().setModeListModel(blenderModeNames, SettingsParams.DEFAULT_SELECTED_INDEX);
     }
         
@@ -297,7 +297,7 @@ public class GameLogic {
     protected void newGame() {
         
         gameMode.prepareNewGame();
-        gameMode.createSnake();
+        gameMode.initializeSnake();
 
         gameMode.placeFood();
         updateView();

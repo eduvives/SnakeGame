@@ -64,9 +64,13 @@ public class ClassicGame {
         }
     }
     
-    protected void createSnake(){
-        game.snake = new Snake(new Point(game.startPos));
+    protected void initializeSnake(){
+        game.snake = createSnakeInstance(new Point(game.startPos));
         removeSnakeAvailablePositions();
+    }
+    
+    protected Snake createSnakeInstance(Point startPos) {
+        return new Snake(startPos);
     }
     
     protected void removeSnakeAvailablePositions(){

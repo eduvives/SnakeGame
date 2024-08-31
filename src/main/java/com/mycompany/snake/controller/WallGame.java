@@ -43,7 +43,11 @@ public class WallGame extends ClassicGame {
     protected void prepareNewGame() {
         
         super.prepareNewGame();
-        
+
+        postPrepareNewGameWallGame();
+    }
+    
+    protected void postPrepareNewGameWallGame() {
         game.specificModeLists.add(new AbstractMap.SimpleEntry<>(WALL_COLOR, walls));
         
         spawnRadius.clear();
@@ -54,18 +58,30 @@ public class WallGame extends ClassicGame {
     }
 
     @Override
-    protected void snakeMove(Point currentDirection) { 
-        moveSpawnRadius(currentDirection);
+    protected void snakeMove(Point currentDirection) {
+        
+        prevSnakeMoveWallGame(currentDirection);
+        
         super.snakeMove(currentDirection);
+    }
+    
+    protected void prevSnakeMoveWallGame(Point currentDirection) {
+        moveSpawnRadius(currentDirection);
     }
     
     @Override
     protected void eatFood(Point newPos) {
         
-        if (game.score % 2 == 0) addWall();
+        prevEatFoodWallGame();
         
         super.eatFood(newPos);
-    }    
+    }
+    
+    protected void prevEatFoodWallGame() {
+        if (game.score % 2 == 0) addWall();
+    }
+    
+    // Métodos Auxiliares
     
     private void generateSpawnRadius(Point startPos) {
         int size = (SPAWN_RADIUS_WIDTH - 1) / 2;

@@ -14,24 +14,26 @@ public class CheeseSnake extends Snake {
     
     private static final int CHEESE_START_LENGTH = 3;
     private int growCount;
-    private boolean isNextBodyPartSnake;
+    protected boolean isNextBodyPartSnake;
     
     public CheeseSnake(Point startPos) {
         super(startPos);
     }
     
+    public CheeseSnake(Snake snake) {
+        super(snake);
+    }
+    
     @Override
-    public void setBody() {
+    public void initializeBody() {
+        
         growCount = 0;
+        
         for (int i = 1; i <= CHEESE_START_LENGTH - 1; i++) {
             body.addLast(new Point(head.x - (i * 2), head.y));
         }
         
         isNextBodyPartSnake = true;
-    }
-
-    public boolean isNextBodyPartSnake() {
-        return isNextBodyPartSnake;
     }
     
     @Override

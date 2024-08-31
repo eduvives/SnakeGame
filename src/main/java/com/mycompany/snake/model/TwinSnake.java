@@ -17,17 +17,26 @@ public class TwinSnake extends Snake {
         super(startPos);
     }
     
+    public TwinSnake(Snake snake) {
+        super(snake);
+    }
+    
     @Override
     public void move(Point newPos, boolean isFood) {
         
         super.move(newPos, isFood);
         
+        postMoveTwinSnake(newPos, isFood);
+    }
+    
+    protected void postMoveTwinSnake(Point newPos, boolean isFood) {
         if(isFood){
-            Point newHeadPos = new Point(body.getLast());
+            head.setLocation(body.getLast().x, body.getLast().y);
             
-            super.move(newPos, false);
+            body.removeLast();
+            body.addFirst(new Point(newPos.x, newPos.y));
+            
             Collections.reverse(body);
-            head.setLocation(newHeadPos.x, newHeadPos.y);
             
             direction.setLocation(head.x - body.getFirst().x, head.y - body.getFirst().y);
         }

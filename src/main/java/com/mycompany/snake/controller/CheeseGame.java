@@ -5,6 +5,7 @@
 package com.mycompany.snake.controller;
 
 import com.mycompany.snake.model.CheeseSnake;
+import com.mycompany.snake.model.Snake;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +30,8 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
-    protected void createSnake(){
-        game.snake = new CheeseSnake(new Point(game.startPos));
-        super.removeSnakeAvailablePositions();
+    protected Snake createSnakeInstance(Point startPos) {
+        return new CheeseSnake(startPos);
     }
     
     @Override

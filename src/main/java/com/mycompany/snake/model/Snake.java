@@ -14,9 +14,9 @@ import java.util.LinkedList;
  */
 public class Snake {
     
-    protected LinkedList<Point> body = new LinkedList<>();
+    protected LinkedList<Point> body;
     protected Point head;
-    protected Point direction = new Point();
+    protected Point direction;
     
     public static final int START_LENGTH = 4;
     public static final Point START_DIRECTION = new Point(1, 0);
@@ -25,11 +25,18 @@ public class Snake {
     
     public Snake(Point startPos) {
         head = startPos;
-        setBody();
-        direction.setLocation(START_DIRECTION);
+        body = new LinkedList<>();
+        direction = new Point(START_DIRECTION);
+        initializeBody();
     }
     
-    public void setBody() {
+    public Snake(Snake snake) {
+        head = snake.head;
+        body = snake.body;
+        direction = snake.direction;
+    }
+    
+    public void initializeBody() {
         for (int i = 1; i <= START_LENGTH - 1; i++) {
             body.addLast(new Point(head.x - i, head.y));
         }
