@@ -34,7 +34,7 @@ public class TwinSnake extends Snake {
             head.setLocation(body.getLast().x, body.getLast().y);
             
             body.removeLast();
-            body.addFirst(new Point(newPos.x, newPos.y));
+            body.addFirst(new Square(newPos.x, newPos.y, CellType.SNAKE_BODY));
             
             Collections.reverse(body);
             

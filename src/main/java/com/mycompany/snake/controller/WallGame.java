@@ -4,6 +4,8 @@
  */
 package com.mycompany.snake.controller;
 
+import com.mycompany.snake.model.CellType;
+import com.mycompany.snake.model.Square;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.AbstractMap;
@@ -19,12 +21,11 @@ import java.util.Set;
  */
 public class WallGame extends ClassicGame {
     
-    private List<Point> walls = new ArrayList<>();
+    private List<Square> walls = new ArrayList<>();
     private List<Point> spawnWalls = new ArrayList<>();
     private List<Point> spawnRadius = new ArrayList<>();
     
     public static final int SPAWN_RADIUS_WIDTH = 7;
-    public static final Color WALL_COLOR = Color.GRAY;    
     
     public WallGame(GameLogic game) {
         super(game);        
@@ -48,7 +49,7 @@ public class WallGame extends ClassicGame {
     }
     
     protected void postPrepareNewGameWallGame() {
-        game.specificModeLists.add(new AbstractMap.SimpleEntry<>(WALL_COLOR, walls));
+        game.specificModeLists.add(walls);
         
         spawnRadius.clear();
         generateSpawnRadius(game.startPos);
@@ -107,7 +108,7 @@ public class WallGame extends ClassicGame {
 
         if (wallPos != null) {
 
-            walls.add(wallPos);
+            walls.add(new Square(wallPos, CellType.WALL));
 
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {

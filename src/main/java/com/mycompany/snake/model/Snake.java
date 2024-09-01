@@ -14,17 +14,15 @@ import java.util.LinkedList;
  */
 public class Snake {
     
-    protected LinkedList<Point> body;
-    protected Point head;
+    protected LinkedList<Square> body;
+    protected Square head;
     protected Point direction;
     
     public static final int START_LENGTH = 4;
-    public static final Point START_DIRECTION = new Point(1, 0);
-    public static final Color BODY_COLOR = Color.GREEN;
-    public static final Color HEAD_COLOR = new Color(0,128,0);    
+    public static final Point START_DIRECTION = new Point(1, 0);   
     
     public Snake(Point startPos) {
-        head = startPos;
+        head = new Square(startPos, CellType.SNAKE_HEAD);
         body = new LinkedList<>();
         direction = new Point(START_DIRECTION);
         initializeBody();
@@ -38,15 +36,15 @@ public class Snake {
     
     public void initializeBody() {
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            body.addLast(new Point(head.x - i, head.y));
+            body.addLast(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
         }
     }
 
-    public LinkedList<Point> getBody() {
+    public LinkedList<Square> getBody() {
         return body;
     }
 
-    public Point getHead() {
+    public Square getHead() {
         return head;
     }
 
@@ -55,7 +53,7 @@ public class Snake {
     }
     
     public void move(Point newPos, boolean grow) {
-        body.addFirst(new Point(head.x, head.y));
+        body.addFirst(new Square(head.x, head.y, CellType.SNAKE_BODY));
         head.setLocation(newPos.x, newPos.y);
 
         if(!grow) {

@@ -29,7 +29,6 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
      */
     public BoardPanel() {
         initComponents();
-        setBackground(Color.BLACK);
         setFocusable(true);
     }
 
@@ -53,6 +52,10 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
             .addGap(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+    
+    public void setBackgroundColor(Color color) {
+        setBackground(color);
+    }
     
     public void setBoardWidth(int newWidth) {
         boardWidth = newWidth;

@@ -4,7 +4,9 @@
  */
 package com.mycompany.snake.controller;
 
+import com.mycompany.snake.model.CellType;
 import com.mycompany.snake.model.Snake;
+import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.util.Random;
 
@@ -147,13 +149,13 @@ public class ClassicGame {
 
                 for (int i = 0; i < randNumFood; i++) {
                     Point foodPos = getRandomFoodPosition();
-                    if (foodPos != null) game.food.add(foodPos);
+                    if (foodPos != null) game.food.add(new Square(foodPos, CellType.FOOD));
                 }
             }
         } else {
             for (int i = 0; i < game.numFood - numPlacedFood; i++) {
                 Point foodPos = getRandomFoodPosition();
-                if (foodPos != null) game.food.add(foodPos);
+                if (foodPos != null) game.food.add(new Square(foodPos, CellType.FOOD));
             }
         }
     }

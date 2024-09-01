@@ -30,7 +30,7 @@ public class CheeseSnake extends Snake {
         growCount = 0;
         
         for (int i = 1; i <= CHEESE_START_LENGTH - 1; i++) {
-            body.addLast(new Point(head.x - (i * 2), head.y));
+            body.addLast(new Square(head.x - (i * 2), head.y, CellType.SNAKE_BODY));
         }
         
         isNextBodyPartSnake = true;
@@ -42,7 +42,7 @@ public class CheeseSnake extends Snake {
         if (grow) growCount++;
         
         if (isNextBodyPartSnake) {
-            body.addFirst(new Point(head.x, head.y));
+            body.addFirst(new Square(head.x, head.y, CellType.SNAKE_BODY));
 
             if (growCount > 0) {
                 growCount--;                

@@ -4,8 +4,10 @@
  */
 package com.mycompany.snake.controller;
 
+import com.mycompany.snake.model.CellType;
 import com.mycompany.snake.model.SettingsParams;
 import com.mycompany.snake.model.Snake;
+import com.mycompany.snake.model.Square;
 import com.mycompany.snake.view.SnakeView;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -32,7 +34,7 @@ import javax.swing.Timer;
  */
 public class GameLogic {
     
-    protected List<Point> testList = new ArrayList<>(); // Test Line
+    protected List<Square> testList = new ArrayList<>(); // Test Line
     
     protected SnakeView view;
     protected Point startPos;
@@ -47,12 +49,11 @@ public class GameLogic {
     protected int numBoardCols;
     protected boolean isBoardUpdated;
     protected List<Point> availablePositions = new ArrayList<>();
-    protected List<Map.Entry<Color, List<Point>>> specificModeLists = new ArrayList<>();
+    protected List<List<Square>> specificModeLists = new ArrayList<>();
     
     protected int score;
     protected int numFood;
-    protected List<Point> food = new ArrayList<>();
-    public static final Color FOOD_COLOR = Color.RED;
+    protected List<Square> food = new ArrayList<>();
     
     protected Timer timer;
     protected int timerDelay;
@@ -62,6 +63,7 @@ public class GameLogic {
     
     public GameLogic(SnakeView view) {
         this.view = view;
+        setViewParams();
         setGameParams(
             SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX][0],
             SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX][1],
@@ -76,6 +78,10 @@ public class GameLogic {
         setViewListeners();
         configureKeyBindings();
     }        
+    
+    private void setViewParams(){
+        view.getBoardPanel().setBackgroundColor(CellType.EMPTY.getColor());
+    }
     
     private void setGameParams(int boardWidth, int boardHeight, int squareSize, int delay, int numFood, String mode) {
         
@@ -331,41 +337,25 @@ public class GameLogic {
     }
     
     protected void updateView(){
-        Map<Color, List<Point>> squaresColors = new HashMap<>();       
+        Map<Color, List<Point>> squaresColors = new HashMap<>();
+        List<Square> allSquares = new ArrayList<>();
         
         // Snake Body
-        squaresColors.put(Snake.BODY_COLOR, new ArrayList<>());
-        for (Point snakePos : snake.getBody()) {
-            squaresColors.get(Snake.BODY_COLOR).add(new Point(snakePos.x, snakePos.y));
-        }
+        allSquares.addAll(snake.getBody());
         
         // Snake Head
-        squaresColors.put(Snake.HEAD_COLOR, new ArrayList<>());
-        squaresColors.get(Snake.HEAD_COLOR).add(new Point(snake.getHead().x, snake.getHead().y));
+        allSquares.add(snake.getHead());
         
         // Food
-        squaresColors.put(FOOD_COLOR, new ArrayList<>());
-        
-        for (Point foodPos : food) {
-            squaresColors.get(FOOD_COLOR).add(foodPos);
-        }
+        allSquares.addAll(food);
         
         // Specific Mode Lists (Wall...)
-        for (Map.Entry<Color, List<Point>> modeList : specificModeLists) {
-            
-            squaresColors.put(modeList.getKey(), new ArrayList<>());
-        
-            for (Point pos : modeList.getValue()) {
-                squaresColors.get(modeList.getKey()).add(pos);
-            }
+        for (List<Square> modeList : specificModeLists) {
+            allSquares.addAll(modeList);
         }
         
         // Test Lines Start
-        squaresColors.put(Color.CYAN, new ArrayList<>());
-        
-        for (Point foodPos : testList) {
-            squaresColors.get(Color.CYAN).add(foodPos);
-        }
+        allSquares.addAll(testList);
         
         testList.clear();
         
@@ -376,6 +366,13 @@ public class GameLogic {
         
         // Test Lines End
         
+        for (Square square : allSquares) {
+            Color color = square.getColor();
+            Point position = square;
+
+            squaresColors.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
+        }
+        
         view.getBoardPanel().setSquaresColors(squaresColors);
-    }    
+    }
 }

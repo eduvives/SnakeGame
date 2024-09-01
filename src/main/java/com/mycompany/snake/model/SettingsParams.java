@@ -23,13 +23,5 @@ public class SettingsParams {
     
     public static final String[] MODE_NAMES = {"Classic", "Wall", "Cheese", "Boundless", "Twin", "Statue", "Dimension", "Blender"};
     public static final String[] BLENDER_MODE_EXCLUDED_MODES = {"Classic", "Blender"};
-    public static final String[] BLENDER_SNAKE_INCLUDED_MODES = {"Cheese", "Twin"};
-    
-    public static enum CellType {
-        EMPTY,
-        SNAKE_HEAD,
-        SNAKE_BODY,
-        FOOD,
-        WALL;
-    }
+    public static final String[] BLENDER_SNAKE_INCLUDED_MODES = {"Cheese", "Twin"};  
 }

@@ -4,7 +4,7 @@
  */
 package com.mycompany.snake.model;
 
-import com.mycompany.snake.model.SettingsParams.CellType;
+import java.awt.Color;
 import java.awt.Point;
 
 /**
@@ -15,6 +15,16 @@ public class Square extends Point {
     
     private CellType cellType;
 
+    public Square(int col, int row, CellType cellType) {
+        super(col, row);
+        this.cellType = cellType;
+    }
+    
+    public Square(Point pos, CellType cellType) {
+        super(pos);
+        this.cellType = cellType;
+    }
+    
     public CellType getCellType() {
         return cellType;
     }
@@ -23,4 +33,7 @@ public class Square extends Point {
         this.cellType = cellType;
     }
     
+    public Color getColor() {
+        return cellType.getColor();
+    }
 }
