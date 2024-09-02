@@ -30,11 +30,11 @@ public class TwinSnake extends Snake {
     }
     
     protected void postMoveTwinSnake(Point newPos, boolean isFood) {
-        if(isFood){
-            head.setLocation(body.getLast().x, body.getLast().y);
+        if (isFood) {
+            head.setLocation(body.getLast());
             
             body.removeLast();
-            body.addFirst(new Square(newPos.x, newPos.y, CellType.SNAKE_BODY));
+            body.addFirst(new Square(newPos, CellType.SNAKE_BODY));
             
             Collections.reverse(body);
             

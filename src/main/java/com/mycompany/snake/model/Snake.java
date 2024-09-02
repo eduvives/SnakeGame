@@ -4,7 +4,6 @@
  */
 package com.mycompany.snake.model;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -34,7 +33,7 @@ public class Snake {
         direction = snake.direction;
     }
     
-    public void initializeBody() {
+    protected void initializeBody() {
         for (int i = 1; i <= START_LENGTH - 1; i++) {
             body.addLast(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
         }
@@ -53,8 +52,8 @@ public class Snake {
     }
     
     public void move(Point newPos, boolean grow) {
-        body.addFirst(new Square(head.x, head.y, CellType.SNAKE_BODY));
-        head.setLocation(newPos.x, newPos.y);
+        body.addFirst(new Square(head, CellType.SNAKE_BODY));
+        head.setLocation(newPos);
 
         if(!grow) {
             body.removeLast();

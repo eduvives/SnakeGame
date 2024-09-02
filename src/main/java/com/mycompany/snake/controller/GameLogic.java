@@ -120,7 +120,7 @@ public class GameLogic {
         view.getBoardPanel().setBoardWidth(boardWidth);
         view.getBoardPanel().setBoardHeight(boardHeight);
         view.getBoardPanel().setSquareSize(squareSize);
-        view.getBoardPanel().setPreferredSize(new Dimension(boardWidth, boardHeight));   
+        view.getBoardPanel().setPreferredSize(new Dimension(boardWidth + 1, boardHeight + 1));   
         
         view.getBoardPanel().revalidate();
         view.getBoardPanel().repaint();

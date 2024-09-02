@@ -5,6 +5,7 @@
 package com.mycompany.snake.model;
 
 import java.awt.Point;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,10 +40,8 @@ public class BlenderSnake extends Snake {
     public void initializeBody() {
     }
     
-    private void postInitializeBody() {
-        if (cheeseSnake != null) {
-            cheeseSnake.initializeBody();
-        } else {
+    private void postInitializeBody() { // TODO revisar
+        if (cheeseSnake == null) {
             super.initializeBody();
         }
     }
@@ -59,7 +58,41 @@ public class BlenderSnake extends Snake {
         }
         
         if (twinSnake != null) {
-            twinSnake.postMoveTwinSnake(newPos, isFood); // TODO revisar que funcione
+            if (cheeseSnake != null) {
+                postMoveTwinCheeseSnake(newPos, isFood);
+            } else {
+                twinSnake.postMoveTwinSnake(newPos, isFood); // TODO revisar que funcione
+            }
+        }
+    }
+    
+    protected void postMoveTwinCheeseSnake(Point newPos, boolean isFood) {
+        if (isFood) {
+            
+            boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake;
+            
+            if (isFirstBodyPartSnake) {
+                head.setLocation(body.getLast());
+                
+                body.removeLast();
+                body.addFirst(new Square(newPos, CellType.SNAKE_BODY));
+            } else {
+                head.setLocation(cheeseSnake.emptyBody.getLast());
+                
+                cheeseSnake.emptyBody.removeLast();
+                cheeseSnake.emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
+            }
+            
+            Collections.reverse(body);
+            Collections.reverse(cheeseSnake.emptyBody);
+            
+            if (isFirstBodyPartSnake) {
+                direction.setLocation(head.x - cheeseSnake.emptyBody.getFirst().x, head.y - cheeseSnake.emptyBody.getFirst().y);
+            } else {
+                direction.setLocation(head.x - body.getFirst().x, head.y - body.getFirst().y);
+            }
+            
+            cheeseSnake.isNextBodyPartSnake = !cheeseSnake.isNextBodyPartSnake;
         }
     }
 }

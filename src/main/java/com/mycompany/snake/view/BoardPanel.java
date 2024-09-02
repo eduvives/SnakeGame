@@ -80,13 +80,6 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
     }
     
     public void draw(Graphics g) {
-        for (int i = 0; i < boardWidth/squareSize; i++) {
-            g.drawLine(i * squareSize, 0, i * squareSize, boardHeight);            
-        }
-        
-        for (int i = 0; i < boardHeight/squareSize; i++) {
-            g.drawLine(0, i * squareSize, boardWidth, i * squareSize);
-        }
         
         // Obtener todos los elementos agrupados por color
         for (Color color : squaresColors.keySet()) {
@@ -95,6 +88,16 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
             for (Point point : points) {
                 g.fillRect(point.x * squareSize, point.y * squareSize, squareSize, squareSize); 
             }
+        }
+        
+        g.setColor(new Color(51,51,51));
+        
+        for (int i = 0; i <= boardWidth/squareSize; i++) {
+            g.drawLine(i * squareSize, 0, i * squareSize, boardHeight);            
+        }
+        
+        for (int i = 0; i <= boardHeight/squareSize; i++) {
+            g.drawLine(0, i * squareSize, boardWidth, i * squareSize);
         }
     }
 

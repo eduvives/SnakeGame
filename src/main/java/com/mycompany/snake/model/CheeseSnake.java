@@ -5,6 +5,7 @@
 package com.mycompany.snake.model;
 
 import java.awt.Point;
+import java.util.LinkedList;
 
 /**
  *
@@ -12,25 +13,40 @@ import java.awt.Point;
  */
 public class CheeseSnake extends Snake {
     
+    protected LinkedList<Square> emptyBody;
+    
     private static final int CHEESE_START_LENGTH = 3;
-    private int growCount;
+    protected int growCount;
     protected boolean isNextBodyPartSnake;
     
     public CheeseSnake(Point startPos) {
         super(startPos);
+        emptyBody = new LinkedList<>();
+        
+        growCount = 0;
+        postInitializeBody();
     }
     
     public CheeseSnake(Snake snake) {
         super(snake);
+        emptyBody = new LinkedList<>();
+        
+        growCount = 0;
+        postInitializeBody();
     }
     
     @Override
     public void initializeBody() {
-        
-        growCount = 0;
+    }
+    
+    protected void postInitializeBody() {
         
         for (int i = 1; i <= CHEESE_START_LENGTH - 1; i++) {
-            body.addLast(new Square(head.x - (i * 2), head.y, CellType.SNAKE_BODY));
+            
+            int posX = head.x - (i * 2);
+            
+            emptyBody.addLast(new Square(posX - 1, head.y, CellType.EMPTY));
+            body.addLast(new Square(posX, head.y, CellType.SNAKE_BODY));
         }
         
         isNextBodyPartSnake = true;
@@ -42,18 +58,20 @@ public class CheeseSnake extends Snake {
         if (grow) growCount++;
         
         if (isNextBodyPartSnake) {
-            body.addFirst(new Square(head.x, head.y, CellType.SNAKE_BODY));
+            body.addFirst(new Square(head, CellType.SNAKE_BODY));
 
             if (growCount > 0) {
-                growCount--;                
+                growCount--;
             } else {
                 body.removeLast();
-            }
+            } 
+        } else {
+            emptyBody.addFirst(new Square(head, CellType.EMPTY));
+            emptyBody.removeLast();
         }
         
-        head.setLocation(newPos.x, newPos.y);
+        head.setLocation(newPos);
         
         isNextBodyPartSnake = !isNextBodyPartSnake;
     }
-    
 }
