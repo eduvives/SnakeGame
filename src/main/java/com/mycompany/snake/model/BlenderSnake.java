@@ -70,29 +70,26 @@ public class BlenderSnake extends Snake {
         if (isFood) {
             
             boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake;
+            boolean isLastBodyPartSnake = (!isFirstBodyPartSnake & cheeseSnake.growCount % 2 == 0) || (isFirstBodyPartSnake & cheeseSnake.growCount % 2 == 1);
             
             if (isFirstBodyPartSnake) {
-                head.setLocation(body.getLast());
-                
-                body.removeLast();
-                body.addFirst(new Square(newPos, CellType.SNAKE_BODY));
-            } else {
-                head.setLocation(cheeseSnake.emptyBody.getLast());
-                
-                cheeseSnake.emptyBody.removeLast();
                 cheeseSnake.emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
+            } else {
+                body.addFirst(new Square(newPos, CellType.SNAKE_BODY));
             }
             
             Collections.reverse(body);
             Collections.reverse(cheeseSnake.emptyBody);
             
-            if (isFirstBodyPartSnake) {
+            if (isLastBodyPartSnake) {
+                head.setLocation(body.removeFirst());
                 direction.setLocation(head.x - cheeseSnake.emptyBody.getFirst().x, head.y - cheeseSnake.emptyBody.getFirst().y);
             } else {
+                head.setLocation(cheeseSnake.emptyBody.removeFirst());
                 direction.setLocation(head.x - body.getFirst().x, head.y - body.getFirst().y);
             }
             
-            cheeseSnake.isNextBodyPartSnake = !cheeseSnake.isNextBodyPartSnake;
+            cheeseSnake.isNextBodyPartSnake = isLastBodyPartSnake;
         }
     }
 }
