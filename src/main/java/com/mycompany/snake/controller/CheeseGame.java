@@ -43,7 +43,8 @@ public class CheeseGame extends ClassicGame {
             
             int freeSides = 0;
             for (int[] dir : SIDES_DIRECTIONS) {
-                if (game.availablePositions.contains(new Point(pos.x + dir[0], pos.y + dir[1]))) freeSides++;
+                Point sidePos = new Point(pos.x + dir[0], pos.y + dir[1]);
+                if (game.availablePositions.contains(sidePos) || game.food.contains(sidePos)) freeSides++;
             }
 
             if (freeSides >= 2) {

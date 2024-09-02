@@ -360,8 +360,12 @@ public class GameLogic {
         testList.clear();
         
         /*
+        List<Square> candidates_test = new ArrayList<>();
+        for (Point pos : candidates) {
+            candidates_test.add(new Square(pos, CellType.TEST));
+        }
         game.testList.clear();
-        game.testList.addAll(candidates);
+        game.testList.addAll(candidates_test);
         */
         
         // Test Lines End

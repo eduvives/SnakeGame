@@ -176,6 +176,10 @@ public class ClassicGame {
     // TODO not used
     private Point getRandomAvailablePosition() {
         
+        if (game.availablePositions.isEmpty()) {
+            return null;
+        }
+        
         Random rand = new Random();   
         
         int index = rand.nextInt(game.availablePositions.size());
