@@ -6,8 +6,10 @@ package com.mycompany.snake.controller;
 
 import com.mycompany.snake.model.CellType;
 import com.mycompany.snake.model.Square;
+import com.mycompany.snake.model.StatueSquare;
 import java.awt.Point;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -16,8 +18,10 @@ import java.util.Set;
  */
 public class StatueGame extends ClassicGame {
     
-    private Set<Square> statues = new HashSet<>();
-    
+    private Set<StatueSquare> statues = new HashSet<>();
+    private static final int MIN_FOOD_BEFORE_BREAK = 2;
+    private static final int MAX_FOOD_BEFORE_BREAK = 8;
+
     public StatueGame(GameLogic game) {
         super(game);        
     }
@@ -71,16 +75,58 @@ public class StatueGame extends ClassicGame {
     
     protected void prevEatFoodStatueGame() {
         sculptStatue();
+        updateStatues();
     }
     
     // Métodos Auxiliares
     
     private void sculptStatue() {
         
-        for (Square bodyPart : game.snake.getBody()) {
-            if (statues.add(new Square(bodyPart, CellType.WALL_FILLED))) {
-                game.availablePositions.remove(bodyPart);
+        for (Point bodyPartPos : game.snake.getBody()) {
+            statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED));
+        }
+        
+        /* TODO revisar
+        for (Point bodyPartPos : game.snake.getBody()) {
+            if (statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED))) {
+                game.availablePositions.remove(bodyPartPos);
             }
         }
+        */
+    }
+    
+    private void updateStatues() {
+        
+        Set<Square> snakeBodySet = new HashSet<>(game.snake.getBody());
+        
+        Set<StatueSquare> statuesNotFilled = new HashSet<>(statues);
+        statuesNotFilled.removeAll(snakeBodySet);
+        
+        for (StatueSquare statueSquare : statuesNotFilled) {
+            if (statueSquare.getCellType() == CellType.WALL_FILLED) {
+
+                statueSquare.setCellType(CellType.WALL_STATUE);
+                statueSquare.setFoodBeforeBreak(generateNumFoodBeforeBreak());
+
+            } else if (statueSquare.getCellType() == CellType.WALL_STATUE) {
+
+                int foodBeforeBreak = statueSquare.getFoodBeforeBreak() - 1;
+
+                if (foodBeforeBreak == 1) statueSquare.setCellType(CellType.WALL_CRACKED);
+
+                statueSquare.setFoodBeforeBreak(foodBeforeBreak);
+                
+            } else if (statueSquare.getCellType() == CellType.WALL_CRACKED) {
+                
+                statues.remove(statueSquare);
+                game.availablePositions.add(new Point(statueSquare));
+            }
+        }
+    }
+    
+    private int generateNumFoodBeforeBreak() { // TODO falta buscar una mejor ecuación con mayor probabilidad cuan menor sea el número
+        
+        Random random = new Random();
+        return random.nextInt(MAX_FOOD_BEFORE_BREAK - MIN_FOOD_BEFORE_BREAK + 1) + MIN_FOOD_BEFORE_BREAK;
     }
 }

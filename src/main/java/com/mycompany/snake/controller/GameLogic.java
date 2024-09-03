@@ -50,7 +50,7 @@ public class GameLogic {
     protected int numBoardCols;
     protected boolean isBoardUpdated;
     protected List<Point> availablePositions = new ArrayList<>();
-    protected List<Collection<Square>> specificModeLists = new ArrayList<>();
+    protected List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
     
     protected int score;
     protected int numFood;
@@ -353,9 +353,18 @@ public class GameLogic {
         allSquares.addAll(food);
         
         // Specific Mode Lists (Wall...)
-        for (Collection<Square> modeList : specificModeLists) {
+        for (Collection<? extends Square> modeList : specificModeLists) {
             allSquares.addAll(0,modeList);
         }
+        
+        // Test Lines Start 2
+        
+        List<Square> candidates_test = new ArrayList<>();
+        for (Point pos : availablePositions) {
+            candidates_test.add(new Square(pos, CellType.TEST));
+        }
+        testList.clear();
+        testList.addAll(candidates_test);
         
         // Test Lines Start
         
