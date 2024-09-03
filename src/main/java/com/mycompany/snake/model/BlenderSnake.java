@@ -66,7 +66,7 @@ public class BlenderSnake extends Snake {
         }
     }
     
-    protected void postMoveTwinCheeseSnake(Point newPos, boolean isFood) {
+    private void postMoveTwinCheeseSnake(Point newPos, boolean isFood) {
         if (isFood) {
             
             boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake;

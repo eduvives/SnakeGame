@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public class StatueGame extends ClassicGame {
     
-    private Set<StatueSquare> statues = new HashSet<>();
+    protected Set<StatueSquare> statues = new HashSet<>();
     private static final int MIN_FOOD_BEFORE_BREAK = 2;
     private static final int MAX_FOOD_BEFORE_BREAK = 8;
 
@@ -46,6 +46,7 @@ public class StatueGame extends ClassicGame {
     }
     
     protected void postPrepareNewGameStatueGame() {
+        
         game.specificModeLists.add(statues);
 
         statues.clear();
@@ -54,9 +55,12 @@ public class StatueGame extends ClassicGame {
     @Override
     protected void addSnakeAvailablePositions(){
         
-        super.addSnakeAvailablePositions();
-        
-        postAddSnakeAvailablePositionsStatueGame();
+        for (Point bodyPart : game.snake.getBody()) {
+            if (!statues.contains(bodyPart)) {
+                game.availablePositions.add(new Point(bodyPart));
+            }
+        }
+        game.availablePositions.add(new Point(game.snake.getHead()));
     }
     
     protected void postAddSnakeAvailablePositionsStatueGame() {
@@ -86,7 +90,7 @@ public class StatueGame extends ClassicGame {
             statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED));
         }
         
-        /* TODO revisar
+        /* TODO revisar si este código puede ser útil
         for (Point bodyPartPos : game.snake.getBody()) {
             if (statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED))) {
                 game.availablePositions.remove(bodyPartPos);
@@ -124,7 +128,7 @@ public class StatueGame extends ClassicGame {
         }
     }
     
-    private int generateNumFoodBeforeBreak() { // TODO falta buscar una mejor ecuación con mayor probabilidad cuan menor sea el número
+    private int generateNumFoodBeforeBreak() { // TODO falta buscar una mejor ecuación que cuanto mayor sea el número menor sea la probabilidad de obtenerlo
         
         Random random = new Random();
         return random.nextInt(MAX_FOOD_BEFORE_BREAK - MIN_FOOD_BEFORE_BREAK + 1) + MIN_FOOD_BEFORE_BREAK;

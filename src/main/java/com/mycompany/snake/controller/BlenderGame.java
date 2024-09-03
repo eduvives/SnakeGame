@@ -23,6 +23,7 @@ public class BlenderGame extends ClassicGame {
     private CheeseGame cheeseGame;
     private BoundlessGame boundlessGame;
     private TwinGame twinGame;
+    private StatueGame statueGame;
     
     public BlenderGame(GameLogic game, List<String> modes) {
         super(game);
@@ -37,40 +38,9 @@ public class BlenderGame extends ClassicGame {
                 case "Cheese" -> cheeseGame = new CheeseGame(game);
                 case "Boundless" -> boundlessGame = new BoundlessGame(game);
                 case "Twin" -> twinGame = new TwinGame(game);
+                case "Statue" -> statueGame = new StatueGame(game);
             }
         }
-    }
-    
-    // WallGame
-    
-    @Override
-    protected boolean checkCollision() {
-        
-        if (wallGame != null) {
-            return wallGame.checkCollision();
-        } else {
-            return super.checkCollision();
-        }
-    }
-    
-    @Override
-    protected void prepareNewGame() {
-        
-        super.prepareNewGame();
-        
-        if (wallGame != null) {
-            wallGame.postPrepareNewGameWallGame();
-        }
-    }
-
-    @Override
-    protected void snakeMove(Point currentDirection) { 
-        
-        if (wallGame != null) {
-            wallGame.prevSnakeMoveWallGame(currentDirection);
-        }
-        
-        super.snakeMove(currentDirection);
     }
     
     // CheeseGame
@@ -107,6 +77,18 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
+    // StatueGame
+    
+    @Override
+    protected void addSnakeAvailablePositions(){
+        
+        if (statueGame != null) {
+            statueGame.addSnakeAvailablePositions();
+        } else {
+            super.addSnakeAvailablePositions();
+        }
+    }
+    
     // Combined Modes :
     
     // BlenderGame - CheeseGame - TwinGame
@@ -120,13 +102,17 @@ public class BlenderGame extends ClassicGame {
         return new BlenderSnake(startPos, blenderSnakeModeNames);
     }
     
-    // WallGame - TwinGame
+    // WallGame - TwinGame - StatueGame
     
     @Override
     protected void eatFood(Point newPos) {
         
         if (wallGame != null) {
-            wallGame.prevEatFoodWallGame();
+            wallGame.prevEatFoodWallGame(newPos);
+        }
+        
+        if (statueGame != null) {
+            statueGame.prevEatFoodStatueGame();
         }
         
         super.eatFood(newPos);
@@ -135,5 +121,45 @@ public class BlenderGame extends ClassicGame {
             twinGame.postEatFoodTwinGame();
         }
         
+    }
+    
+    // WallGame - StatueGame
+    
+    @Override
+    protected boolean checkCollision() {
+        if (wallGame != null && statueGame != null){
+            return checkCollisionWallStatueGame();
+        } else if (wallGame != null) {
+                return wallGame.checkCollision();
+        } else if (statueGame != null) {
+            return statueGame.checkCollision();
+        } else {
+            return super.checkCollision();
+        }
+    }
+    
+    private boolean checkCollisionWallStatueGame() {
+        
+        Point snakeHeadPos = game.snake.getHead().getLocation();
+        
+        boolean collision = super.checkCollision();
+        boolean wallCollision = wallGame.walls.contains(snakeHeadPos);
+        boolean statueCollision = statueGame.statues.contains(snakeHeadPos);
+        
+        return collision || wallCollision || statueCollision;
+    }
+    
+    @Override
+    protected void prepareNewGame() {
+        
+        super.prepareNewGame();
+        
+        if (wallGame != null) {
+            wallGame.postPrepareNewGameWallGame();
+        }
+        
+        if (statueGame != null) {
+            statueGame.postPrepareNewGameStatueGame();
+        }
     }
 }

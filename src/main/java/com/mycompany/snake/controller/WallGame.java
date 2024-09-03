@@ -8,6 +8,7 @@ import com.mycompany.snake.model.CellType;
 import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -19,8 +20,8 @@ import java.util.Set;
  */
 public class WallGame extends ClassicGame {
     
-    private List<Square> walls = new ArrayList<>();
-    private List<Point> spawnWalls = new ArrayList<>();
+    protected List<Square> walls = new ArrayList<>();
+    private Set<Point> spawnWalls = new HashSet<>();
     private List<Point> spawnRadius = new ArrayList<>();
     
     public static final int SPAWN_RADIUS_WIDTH = 7;
@@ -49,67 +50,53 @@ public class WallGame extends ClassicGame {
     }
     
     protected void postPrepareNewGameWallGame() {
+        
         game.specificModeLists.add(walls);
         
-        spawnRadius.clear();
-        generateSpawnRadius(game.startPos);
-
         walls.clear();
         spawnWalls.clear();
-    }
-
-    @Override
-    protected void snakeMove(Point currentDirection) {
-        
-        prevSnakeMoveWallGame(currentDirection);
-        
-        super.snakeMove(currentDirection);
-    }
-    
-    protected void prevSnakeMoveWallGame(Point currentDirection) {
-        moveSpawnRadius(currentDirection);
     }
     
     @Override
     protected void eatFood(Point newPos) {
         
-        prevEatFoodWallGame();
+        prevEatFoodWallGame(newPos);
         
         super.eatFood(newPos);
     }
     
-    protected void prevEatFoodWallGame() {
-        if (game.score % 2 == 0) addWall();
+    protected void prevEatFoodWallGame(Point currentPos) {
+        if (game.score % 2 == 0) addWall(currentPos);
     }
     
     // Métodos Auxiliares
     
-    private void generateSpawnRadius(Point startPos) {
+    private List<Point> updateSpawnRadius(Point currentPos) {
+        
+        spawnRadius.clear();
+        
         int size = (SPAWN_RADIUS_WIDTH - 1) / 2;
 
         for (int x = -size; x <= size; x++) {
             int yLimit = size - Math.abs(x);
 
             for (int y = -yLimit; y <= yLimit; y++) {
-                spawnRadius.add(new Point(startPos.x + x, startPos.y + y));
+                spawnRadius.add(new Point(currentPos.x + x, currentPos.y + y));
             }
         }
-    }
-    
-    private void moveSpawnRadius(Point currentDirection) {
         
-        for(Point pos : spawnRadius){
-            pos.setLocation(pos.x + currentDirection.x, pos.y + currentDirection.y);
-        }
+        return spawnRadius;
     }
     
-    private void addWall() {
-        Point wallPos = getRandomSpawnPosition(game.availablePositions, spawnRadius, spawnWalls);
+    private void addWall(Point currentPos) {
+        Point wallPos = getRandomSpawnPosition(game.availablePositions, updateSpawnRadius(currentPos), spawnWalls);
 
         if (wallPos != null) {
 
+            // Create New Wall
             walls.add(new Square(wallPos, CellType.WALL_SIMPLE));
 
+            // Update Spawn Walls List
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
                     spawnWalls.add(new Point(wallPos.x + x, wallPos.y + y));
@@ -118,10 +105,10 @@ public class WallGame extends ClassicGame {
         }
     }
     
-    private Point getRandomSpawnPosition(List<Point> availablePositions, List<Point>... excludedLists) {
+    private Point getRandomSpawnPosition(List<Point> availablePositions, Collection<Point>... excludedLists) {
         // Crear un conjunto para almacenar los puntos presentes en otras listas
         Set<Point> excludedPoints = new HashSet<>();
-        for (List<Point> list : excludedLists) {
+        for (Collection<Point> list : excludedLists) {
             excludedPoints.addAll(list);
         }
 
