@@ -44,12 +44,12 @@ public class BlenderGame extends ClassicGame {
     // WallGame
     
     @Override
-    protected boolean checkCollision(Point pos) {
+    protected boolean checkCollision() {
         
         if (wallGame != null) {
-            return wallGame.checkCollision(pos);
+            return wallGame.checkCollision();
         } else {
-            return super.checkCollision(pos);
+            return super.checkCollision();
         }
     }
     

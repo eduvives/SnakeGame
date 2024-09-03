@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class GameLogic {
     protected int numBoardCols;
     protected boolean isBoardUpdated;
     protected List<Point> availablePositions = new ArrayList<>();
-    protected List<List<Square>> specificModeLists = new ArrayList<>();
+    protected List<Collection<Square>> specificModeLists = new ArrayList<>();
     
     protected int score;
     protected int numFood;
@@ -108,6 +109,8 @@ public class GameLogic {
             gameMode = new BoundlessGame(this);
         } else if (mode.equals("Twin")) {
             gameMode = new TwinGame(this);
+        } else if (mode.equals("Statue")) {
+            gameMode = new StatueGame(this);
         } else if (mode.equals("Blender")) {
             blenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues(); // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
             gameMode = new BlenderGame(this, blenderSelectedModes);
@@ -350,12 +353,13 @@ public class GameLogic {
         allSquares.addAll(food);
         
         // Specific Mode Lists (Wall...)
-        for (List<Square> modeList : specificModeLists) {
-            allSquares.addAll(modeList);
+        for (Collection<Square> modeList : specificModeLists) {
+            allSquares.addAll(0,modeList);
         }
         
         // Test Lines Start
-        allSquares.addAll(testList);
+        
+        allSquares.addAll(0,testList);
         
         testList.clear();
         

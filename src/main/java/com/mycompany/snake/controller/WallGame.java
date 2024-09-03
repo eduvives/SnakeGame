@@ -6,9 +6,7 @@ package com.mycompany.snake.controller;
 
 import com.mycompany.snake.model.CellType;
 import com.mycompany.snake.model.Square;
-import java.awt.Color;
 import java.awt.Point;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,10 +30,12 @@ public class WallGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision(Point pos) {
+    protected boolean checkCollision() {
         
-        boolean collision = super.checkCollision(pos);
-        boolean wallCollision = walls.contains(pos);
+        Point snakeHeadPos = game.snake.getHead().getLocation();
+        
+        boolean collision = super.checkCollision();
+        boolean wallCollision = walls.contains(snakeHeadPos);
         
         return collision || wallCollision;
     }
@@ -108,7 +108,7 @@ public class WallGame extends ClassicGame {
 
         if (wallPos != null) {
 
-            walls.add(new Square(wallPos, CellType.WALL));
+            walls.add(new Square(wallPos, CellType.WALL_SIMPLE));
 
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {

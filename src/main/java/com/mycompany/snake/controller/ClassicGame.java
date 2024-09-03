@@ -24,10 +24,12 @@ public class ClassicGame {
     
     // CHECKS
     
-    protected boolean checkCollision(Point pos) {
+    protected boolean checkCollision() {
         
-        boolean bodyCollision = game.snake.getBody().contains(pos);
-        boolean boundariesCollision = pos.x < 0 || pos.x >= game.numBoardCols || pos.y < 0 || pos.y >= game.numBoardRows;
+        Point snakeHeadPos = game.snake.getHead().getLocation();
+        
+        boolean bodyCollision = game.snake.getBody().contains(snakeHeadPos);
+        boolean boundariesCollision = snakeHeadPos.x < 0 || snakeHeadPos.x >= game.numBoardCols || snakeHeadPos.y < 0 || snakeHeadPos.y >= game.numBoardRows;
         
         return bodyCollision || boundariesCollision;
     }
@@ -108,7 +110,7 @@ public class ClassicGame {
             isFeast = checkFeast();
             increaseScore();
         } else {
-            isCollision = checkCollision(newPos);
+            isCollision = checkCollision();
         }
         
         if (!isCollision) {

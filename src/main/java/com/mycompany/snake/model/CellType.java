@@ -16,7 +16,9 @@ public enum CellType {
     SNAKE_HEAD(new Color(0,128,0)),
     SNAKE_BODY(Color.GREEN),
     FOOD(Color.RED),
-    WALL(Color.GRAY),
+    WALL_SIMPLE(Color.GRAY),
+    WALL_FILLED(Color.DARK_GRAY),
+    WALL_STATUE(Color.DARK_GRAY),   
     WALL_CRACKED(Color.LIGHT_GRAY),
     TEST(Color.CYAN);
 
