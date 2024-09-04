@@ -52,11 +52,12 @@ public class Snake {
     }
     
     public void move(Point newPos, boolean grow) {
-        body.addFirst(new Square(head, CellType.SNAKE_BODY));
-        head.setLocation(newPos);
-
+        
         if(!grow) {
             body.removeLast();
         }
+        
+        body.addFirst(new Square(head, CellType.SNAKE_BODY));
+        head.setLocation(newPos);
     }
 }

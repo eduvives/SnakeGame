@@ -86,11 +86,11 @@ public class ClassicGame {
     
     protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
         
-        game.availablePositions.remove(newPos);
-
         if(!isFood) {
             game.availablePositions.add(game.snake.getBody().getLast().getLocation());
         }
+        
+        game.availablePositions.remove(newPos);
     }
     
     // GAME LOOP
