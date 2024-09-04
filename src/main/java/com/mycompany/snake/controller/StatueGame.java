@@ -55,12 +55,13 @@ public class StatueGame extends ClassicGame {
     @Override
     protected void addSnakeAvailablePositions(){
         
-        for (Point bodyPart : game.snake.getBody()) {
-            if (!statues.contains(bodyPart)) {
-                game.availablePositions.add(new Point(bodyPart));
-            }
+        super.addSnakeAvailablePositions();
+        
+        Point lastBodyPartPos = game.snake.getBody().getLast();
+        
+        if (statues.contains(lastBodyPartPos)) {
+            game.availablePositions.remove(lastBodyPartPos);
         }
-        game.availablePositions.add(new Point(game.snake.getHead()));
     }
     
     @Override

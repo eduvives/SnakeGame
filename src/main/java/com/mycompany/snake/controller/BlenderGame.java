@@ -139,6 +139,11 @@ public class BlenderGame extends ClassicGame {
             
             if (isFirstBodyPartSnake) {
                 emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
+                
+                // Si el método move de la combinación Twin Cheese Snake genera una celda vacía, 
+                // esta debe ser agregada a la lista de posiciones disponibles.
+                game.availablePositions.add(newPos);
+                
             } else {
                 snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
             }
