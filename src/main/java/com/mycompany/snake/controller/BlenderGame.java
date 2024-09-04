@@ -82,21 +82,24 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    // StatueGame
+    // Combined Modes :
+    
+    // BlenderGame - CheeseGame
     
     @Override
-    protected void addSnakeAvailablePositions(){
+    protected void initializeSnake(){
         
-        if (statueGame != null) {
-            statueGame.addSnakeAvailablePositions();
-        } else {
-            super.addSnakeAvailablePositions();
+        super.initializeSnake();
+        
+        if (cheeseGame != null) {
+            postInitializeSnakeBlenderCheeseGame();
         }
     }
     
-    // Combined Modes :
-    
-    // BlenderGame - CheeseGame - TwinGame
+    private void postInitializeSnakeBlenderCheeseGame() {
+        BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+        cheeseGame.cheeseSnake = blenderSnake.getCheeseSnake();
+    }
     
     @Override
     protected Snake createSnakeInstance(Point startPos) {
@@ -110,25 +113,24 @@ public class BlenderGame extends ClassicGame {
     // CheeseGame - TwinGame
     
     @Override
-    protected void snakeMove(Point newPos, boolean isFood) {
+    protected void snakeSimpleMove(Point newPos, boolean isFood) {
         
-        super.snakeMove(newPos, isFood);
+        super.snakeSimpleMove(newPos, isFood);
         
         if (twinGame != null) {
             if (cheeseGame != null) {
-                postSnakeMoveTwinCheeseGame(newPos, isFood);
+                postSnakeSimpleMoveTwinCheeseGame(newPos, isFood);
             } else {
-                twinGame.postSnakeMoveTwinGame(newPos, isFood); // TODO revisar que funcione
+                twinGame.postSnakeSimpleMoveTwinGame(newPos, isFood); // TODO revisar que funcione
             }
         }
     }
     
-    private void postSnakeMoveTwinCheeseGame(Point newPos, boolean isFood) {
+    private void postSnakeSimpleMoveTwinCheeseGame(Point newPos, boolean isFood) {
         
         if (isFood) {
             
-            BlenderSnake blenderSnake = (BlenderSnake) game.snake;
-            CheeseSnake cheeseSnake = blenderSnake.getCheeseSnake();
+            CheeseSnake cheeseSnake = cheeseGame.cheeseSnake;
             
             LinkedList<Square> snakeBody = cheeseSnake.getBody();
             Square snakeHead = cheeseSnake.getHead();
@@ -142,7 +144,7 @@ public class BlenderGame extends ClassicGame {
                 
                 // Si el método move de la combinación Twin Cheese Snake genera una celda vacía, 
                 // esta debe ser agregada a la lista de posiciones disponibles.
-                game.availablePositions.add(newPos);
+                game.availablePositions.add(new Point(newPos));
                 
             } else {
                 snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
@@ -156,6 +158,11 @@ public class BlenderGame extends ClassicGame {
                 cheeseSnake.getDirection().setLocation(snakeHead.x - emptyBody.getFirst().x, snakeHead.y - emptyBody.getFirst().y);
             } else {
                 snakeHead.setLocation(emptyBody.removeFirst());
+                
+                // Si el método move de la combinación Twin Cheese Snake elimina una celda vacía,
+                // esta debe ser también eliminada de la lista de posiciones disponibles.
+                game.availablePositions.remove(snakeHead);
+                
                 cheeseSnake.getDirection().setLocation(snakeHead.x - snakeBody.getFirst().x, snakeHead.y - snakeBody.getFirst().y);
             }
             
@@ -221,6 +228,22 @@ public class BlenderGame extends ClassicGame {
         
         if (statueGame != null) {
             statueGame.postPrepareNewGameStatueGame();
+        }
+    }
+    
+    // CheeseGame - StatueGame
+    
+    @Override
+    protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
+        
+        if (cheeseGame != null) {
+            cheeseGame.updateSnakeAvailablePositions(newPos, isFood);
+        } else {
+            super.updateSnakeAvailablePositions(newPos, isFood);
+        }
+        
+        if (statueGame != null) {
+            statueGame.postUpdateSnakeAvailablePositionsStatueGame();
         }
     }
 }

@@ -17,6 +17,8 @@ import java.util.Random;
  */
 public class CheeseGame extends ClassicGame {
     
+    protected CheeseSnake cheeseSnake;
+    
     private int[][] SIDES_DIRECTIONS = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
     private int numAvailableFooodPositions;
     
@@ -30,8 +32,39 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
+    protected void initializeSnake(){
+        
+        super.initializeSnake();
+        
+        postInitializeSnakeCheeseGame();
+    }
+    
+    protected void postInitializeSnakeCheeseGame() {
+        cheeseSnake = (CheeseSnake) game.snake;
+    }
+    
+    @Override
     protected Snake createSnakeInstance(Point startPos) {
         return new CheeseSnake(startPos);
+    }
+    
+    @Override
+    protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
+        
+        Point lastBodyPartPos = cheeseSnake.getBody().getLast().getLocation();
+        Point headPos = cheeseSnake.getHead().getLocation();
+        int growCount = cheeseSnake.getGrowCount();
+        boolean nextBodyPartSnake = cheeseSnake.isNextBodyPartSnake();
+        
+        if (isFood) growCount += 2;
+        
+        if (nextBodyPartSnake && growCount <= 0) {
+            game.availablePositions.add(lastBodyPartPos);
+        } else if (!nextBodyPartSnake) {
+            game.availablePositions.add(headPos);
+        }
+        
+        game.availablePositions.remove(newPos);
     }
     
     @Override

@@ -26,14 +26,14 @@ public class TwinGame extends ClassicGame {
     }
     
     @Override
-    protected void snakeMove(Point newPos, boolean isFood) {
+    protected void snakeSimpleMove(Point newPos, boolean isFood) {
         
-        super.snakeMove(newPos, isFood);
+        super.snakeSimpleMove(newPos, isFood);
         
-        postSnakeMoveTwinGame(newPos, isFood);
+        postSnakeSimpleMoveTwinGame(newPos, isFood);
     }
     
-    protected void postSnakeMoveTwinGame(Point newPos, boolean isFood) {
+    protected void postSnakeSimpleMoveTwinGame(Point newPos, boolean isFood) {
         
         if (isFood) {
             

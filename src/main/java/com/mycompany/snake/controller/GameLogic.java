@@ -42,6 +42,8 @@ public class GameLogic {
     protected Snake snake;
     private ClassicGame gameMode;
     private List<String> blenderSelectedModes;
+    private Map<Color, List<Point>> viewSquaresColors = new HashMap<>();
+    private List<Square> viewAllSquares = new ArrayList<>();
     
     private int boardWidth;
     private int boardHeight;
@@ -340,21 +342,21 @@ public class GameLogic {
     }
     
     protected void updateView(){
-        Map<Color, List<Point>> squaresColors = new HashMap<>();
-        List<Square> allSquares = new ArrayList<>();
+        viewSquaresColors.clear();
+        viewAllSquares.clear();
         
         // Snake Body
-        allSquares.addAll(snake.getBody());
+        viewAllSquares.addAll(snake.getBody());
         
         // Snake Head
-        allSquares.add(snake.getHead());
+        viewAllSquares.add(snake.getHead());
         
         // Food
-        allSquares.addAll(food);
+        viewAllSquares.addAll(food);
         
         // Specific Mode Lists (Wall...)
         for (Collection<? extends Square> modeList : specificModeLists) {
-            allSquares.addAll(0,modeList);
+            viewAllSquares.addAll(0,modeList);
         }
         
         // Test Lines Start 2
@@ -368,7 +370,7 @@ public class GameLogic {
         
         // Test Lines Start
         
-        allSquares.addAll(0,testList);
+        viewAllSquares.addAll(0,testList);
         
         testList.clear();
         
@@ -383,13 +385,13 @@ public class GameLogic {
         
         // Test Lines End
         
-        for (Square square : allSquares) {
+        for (Square square : viewAllSquares) {
             Color color = square.getColor();
             Point position = square;
 
-            squaresColors.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
+            viewSquaresColors.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
         }
         
-        view.getBoardPanel().setSquaresColors(squaresColors);
+        view.getBoardPanel().setSquaresColors(viewSquaresColors);
     }
 }

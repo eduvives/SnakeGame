@@ -70,25 +70,27 @@ public class ClassicGame {
     
     protected void initializeSnake(){
         game.snake = createSnakeInstance(new Point(game.startPos));
-        removeSnakeAvailablePositions();
+        removeAllSnakeAvailablePositions();
     }
     
     protected Snake createSnakeInstance(Point startPos) {
         return new Snake(startPos);
     }
     
-    protected void removeSnakeAvailablePositions(){
+    protected void removeAllSnakeAvailablePositions(){
         for (Point bodyPart : game.snake.getBody()) {
             game.availablePositions.remove(bodyPart);
         }
         game.availablePositions.remove(game.snake.getHead());
     }
     
-    protected void addSnakeAvailablePositions(){
-        for (Point bodyPart : game.snake.getBody()) {
-            game.availablePositions.add(new Point(bodyPart));
+    protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
+        
+        game.availablePositions.remove(newPos);
+
+        if(!isFood) {
+            game.availablePositions.add(game.snake.getBody().getLast().getLocation());
         }
-        game.availablePositions.add(new Point(game.snake.getHead()));
     }
     
     // GAME LOOP
@@ -101,9 +103,7 @@ public class ClassicGame {
         boolean isFeast = false;
         boolean isCollision = false;
         
-        addSnakeAvailablePositions();
         snakeMove(newPos, isFood);
-        removeSnakeAvailablePositions();
         
         if (isFood) {
             eatFood(newPos);
@@ -124,6 +124,11 @@ public class ClassicGame {
     }
     
     protected void snakeMove(Point newPos, boolean isFood) {
+        updateSnakeAvailablePositions(newPos, isFood);
+        snakeSimpleMove(newPos, isFood);
+    }
+    
+    protected void snakeSimpleMove(Point newPos, boolean isFood) {
         game.snake.move(newPos, isFood);
     }
     
