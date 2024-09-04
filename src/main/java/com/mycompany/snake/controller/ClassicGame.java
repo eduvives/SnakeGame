@@ -93,7 +93,7 @@ public class ClassicGame {
     
     // GAME LOOP
     
-    protected void snakeMove(Point currentDirection) {
+    protected void nextLoop(Point currentDirection) {
         
         Point newPos = getNewPos(currentDirection);
 
@@ -102,7 +102,7 @@ public class ClassicGame {
         boolean isCollision = false;
         
         addSnakeAvailablePositions();
-        game.snake.move(newPos, isFood);
+        snakeMove(newPos, isFood);
         removeSnakeAvailablePositions();
         
         if (isFood) {
@@ -121,6 +121,10 @@ public class ClassicGame {
         if (isCollision || isFeast) {
             game.gameEnd(isFeast);
         }
+    }
+    
+    protected void snakeMove(Point newPos, boolean isFood) {
+        game.snake.move(newPos, isFood);
     }
     
     protected Point getNewPos(Point currentDirection) {

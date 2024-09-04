@@ -328,7 +328,7 @@ public class GameLogic {
             
             Point currentDirection = inputQueue.isEmpty() ? snake.getDirection() : inputQueue.poll();
             
-            gameMode.snakeMove(currentDirection);
+            gameMode.nextLoop(currentDirection);
         };
     }        
         

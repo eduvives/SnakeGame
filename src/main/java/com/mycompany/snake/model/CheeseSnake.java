@@ -13,11 +13,11 @@ import java.util.LinkedList;
  */
 public class CheeseSnake extends Snake {
     
-    protected LinkedList<Square> emptyBody;
+    private LinkedList<Square> emptyBody;
     
     private static final int CHEESE_START_LENGTH = 3;
     protected int growCount;
-    protected boolean isNextBodyPartSnake;
+    protected boolean nextBodyPartSnake;
     
     public CheeseSnake(Point startPos) {
         super(startPos);
@@ -34,7 +34,23 @@ public class CheeseSnake extends Snake {
         growCount = 0;
         postInitializeBody();
     }
-    
+
+    public LinkedList<Square> getEmptyBody() {
+        return emptyBody;
+    }
+
+    public int getGrowCount() {
+        return growCount;
+    }
+
+    public boolean isNextBodyPartSnake() {
+        return nextBodyPartSnake;
+    }
+
+    public void setNextBodyPartSnake(boolean nextBodyPartSnake) {
+        this.nextBodyPartSnake = nextBodyPartSnake;
+    }
+
     @Override
     public void initializeBody() {
     }
@@ -49,7 +65,7 @@ public class CheeseSnake extends Snake {
             body.addLast(new Square(posX, head.y, CellType.SNAKE_BODY));
         }
         
-        isNextBodyPartSnake = true;
+        nextBodyPartSnake = true;
     }
     
     @Override
@@ -57,7 +73,7 @@ public class CheeseSnake extends Snake {
         
         if (grow) growCount += 2;
         
-        if (isNextBodyPartSnake) {
+        if (nextBodyPartSnake) {
             body.addFirst(new Square(head, CellType.SNAKE_BODY));
 
             if (growCount <= 0) {
@@ -77,6 +93,6 @@ public class CheeseSnake extends Snake {
         
         head.setLocation(newPos);
         
-        isNextBodyPartSnake = !isNextBodyPartSnake;
+        nextBodyPartSnake = !nextBodyPartSnake;
     }
 }

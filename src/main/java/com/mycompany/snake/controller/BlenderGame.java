@@ -5,11 +5,16 @@
 package com.mycompany.snake.controller;
 
 import com.mycompany.snake.model.BlenderSnake;
+import com.mycompany.snake.model.CellType;
+import com.mycompany.snake.model.CheeseSnake;
 import com.mycompany.snake.model.SettingsParams;
 import com.mycompany.snake.model.Snake;
+import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -100,6 +105,57 @@ public class BlenderGame extends ClassicGame {
         blenderSnakeModeNames.retainAll(Arrays.asList(SettingsParams.BLENDER_SNAKE_INCLUDED_MODES));
         
         return new BlenderSnake(startPos, blenderSnakeModeNames);
+    }
+    
+    // CheeseGame - TwinGame
+    
+    @Override
+    protected void snakeMove(Point newPos, boolean isFood) {
+        
+        super.snakeMove(newPos, isFood);
+        
+        if (twinGame != null) {
+            if (cheeseGame != null) {
+                postSnakeMoveTwinCheeseGame(newPos, isFood);
+            } else {
+                twinGame.postSnakeMoveTwinGame(newPos, isFood); // TODO revisar que funcione
+            }
+        }
+    }
+    
+    private void postSnakeMoveTwinCheeseGame(Point newPos, boolean isFood) {
+        
+        if (isFood) {
+            
+            BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+            CheeseSnake cheeseSnake = blenderSnake.getCheeseSnake();
+            
+            LinkedList<Square> snakeBody = cheeseSnake.getBody();
+            Square snakeHead = cheeseSnake.getHead();
+            LinkedList<Square> emptyBody = cheeseSnake.getEmptyBody();
+            
+            boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
+            boolean isLastBodyPartSnake = (!isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 1);
+            
+            if (isFirstBodyPartSnake) {
+                emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
+            } else {
+                snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
+            }
+            
+            Collections.reverse(snakeBody);
+            Collections.reverse(emptyBody);
+            
+            if (isLastBodyPartSnake) {
+                snakeHead.setLocation(snakeBody.removeFirst());
+                cheeseSnake.getDirection().setLocation(snakeHead.x - emptyBody.getFirst().x, snakeHead.y - emptyBody.getFirst().y);
+            } else {
+                snakeHead.setLocation(emptyBody.removeFirst());
+                cheeseSnake.getDirection().setLocation(snakeHead.x - snakeBody.getFirst().x, snakeHead.y - snakeBody.getFirst().y);
+            }
+            
+            cheeseSnake.setNextBodyPartSnake(isLastBodyPartSnake);
+        }
     }
     
     // WallGame - TwinGame - StatueGame

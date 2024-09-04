@@ -4,10 +4,12 @@
  */
 package com.mycompany.snake.controller;
 
-import com.mycompany.snake.model.Snake;
-import com.mycompany.snake.model.TwinSnake;
+import com.mycompany.snake.model.CellType;
+import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
+import java.util.LinkedList;
 import javax.swing.Timer;
 
 /**
@@ -24,8 +26,29 @@ public class TwinGame extends ClassicGame {
     }
     
     @Override
-    protected Snake createSnakeInstance(Point startPos) {
-        return new TwinSnake(startPos);
+    protected void snakeMove(Point newPos, boolean isFood) {
+        
+        super.snakeMove(newPos, isFood);
+        
+        postSnakeMoveTwinGame(newPos, isFood);
+    }
+    
+    protected void postSnakeMoveTwinGame(Point newPos, boolean isFood) {
+        
+        if (isFood) {
+            
+            LinkedList<Square> snakeBody = game.snake.getBody();
+            Square snakeHead = game.snake.getHead();
+        
+            snakeHead.setLocation(snakeBody.getLast());
+            
+            snakeBody.removeLast();
+            snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
+            
+            Collections.reverse(snakeBody);
+            
+            game.snake.getDirection().setLocation(snakeHead.x - snakeBody.getFirst().x, snakeHead.y - snakeBody.getFirst().y);
+        }
     }
     
     @Override

@@ -63,12 +63,6 @@ public class StatueGame extends ClassicGame {
         game.availablePositions.add(new Point(game.snake.getHead()));
     }
     
-    protected void postAddSnakeAvailablePositionsStatueGame() {
-        for (Point statuePos : statues) {
-            game.availablePositions.remove(statuePos);
-        }
-    }
-    
     @Override
     protected void eatFood(Point newPos) {
         
