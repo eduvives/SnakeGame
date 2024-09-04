@@ -110,7 +110,7 @@ public class BlenderGame extends ClassicGame {
         return new BlenderSnake(startPos, blenderSnakeModeNames);
     }
     
-    // CheeseGame - TwinGame
+    // CheeseGame - TwinGame - BoundlessGame
     
     @Override
     protected void snakeSimpleMove(Point newPos, boolean isFood) {
@@ -121,7 +121,10 @@ public class BlenderGame extends ClassicGame {
             if (cheeseGame != null) {
                 postSnakeSimpleMoveTwinCheeseGame(newPos, isFood);
             } else {
-                twinGame.postSnakeSimpleMoveTwinGame(newPos, isFood); // TODO revisar que funcione
+                if (isFood) {
+                    twinGame.switchSides(newPos);    // TODO revisar que funcione
+                    resetDirection(game.snake.getHead(), game.snake.getBody().getFirst()); 
+                }
             }
         }
     }
@@ -155,7 +158,7 @@ public class BlenderGame extends ClassicGame {
             
             if (isLastBodyPartSnake) {
                 snakeHead.setLocation(snakeBody.removeFirst());
-                cheeseSnake.getDirection().setLocation(snakeHead.x - emptyBody.getFirst().x, snakeHead.y - emptyBody.getFirst().y);
+                resetDirection(snakeHead, emptyBody.getFirst());
             } else {
                 snakeHead.setLocation(emptyBody.removeFirst());
                 
@@ -163,11 +166,35 @@ public class BlenderGame extends ClassicGame {
                 // esta debe ser también eliminada de la lista de posiciones disponibles.
                 game.availablePositions.remove(snakeHead);
                 
-                cheeseSnake.getDirection().setLocation(snakeHead.x - snakeBody.getFirst().x, snakeHead.y - snakeBody.getFirst().y);
+                resetDirection(snakeHead, snakeBody.getFirst());
             }
             
             cheeseSnake.setNextBodyPartSnake(isLastBodyPartSnake);
         }
+    }
+    
+    private void resetDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
+        int diffX = snakeHead.x - snakeFirstBodyPartPos.x;
+        int diffY = snakeHead.y - snakeFirstBodyPartPos.y;
+        
+        if (boundlessGame != null) {
+            
+            // Ajustar por teletransporte en el eje X
+            if (diffX > 1) {
+                diffX = -1;
+            } else if (diffX < -1) {
+                diffX = 1;
+            }
+
+            // Ajustar por teletransporte en el eje Y
+            if (diffY > 1) {
+                diffY = -1;
+            } else if (diffY < -1) {
+                diffY = 1;
+            }
+        }
+        
+        game.snake.getDirection().setLocation(diffX, diffY);
     }
     
     // WallGame - TwinGame - StatueGame

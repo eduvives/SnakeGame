@@ -30,25 +30,31 @@ public class TwinGame extends ClassicGame {
         
         super.snakeSimpleMove(newPos, isFood);
         
-        postSnakeSimpleMoveTwinGame(newPos, isFood);
+        if (isFood) {
+            postSnakeSimpleMoveTwinGame(newPos, isFood);
+        }
+        
     }
     
     protected void postSnakeSimpleMoveTwinGame(Point newPos, boolean isFood) {
-        
-        if (isFood) {
-            
-            LinkedList<Square> snakeBody = game.snake.getBody();
-            Square snakeHead = game.snake.getHead();
-        
-            snakeHead.setLocation(snakeBody.getLast());
-            
-            snakeBody.removeLast();
-            snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
-            
-            Collections.reverse(snakeBody);
-            
-            game.snake.getDirection().setLocation(snakeHead.x - snakeBody.getFirst().x, snakeHead.y - snakeBody.getFirst().y);
-        }
+        switchSides(newPos);
+        resetDirection(game.snake.getHead(), game.snake.getBody().getFirst());
+    }
+    
+    protected void switchSides(Point newPos) {
+        LinkedList<Square> snakeBody = game.snake.getBody();
+        Point snakeHead = game.snake.getHead();
+
+        snakeHead.setLocation(snakeBody.getLast());
+
+        snakeBody.removeLast();
+        snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
+
+        Collections.reverse(snakeBody);
+    }
+    
+    protected void resetDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
+        game.snake.getDirection().setLocation(snakeHead.x - snakeFirstBodyPartPos.x, snakeHead.y - snakeFirstBodyPartPos.y);
     }
     
     @Override
