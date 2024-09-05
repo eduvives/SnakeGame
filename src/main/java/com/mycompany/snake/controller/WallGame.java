@@ -65,7 +65,7 @@ public class WallGame extends ClassicGame {
     
     protected void prevEatFoodWallGame(Point currentPos) {
         if (game.score % 2 == 0) {
-            spawnRadius = getSpawnRadius(currentPos);
+            spawnRadius = getSpawnRadius();
             addWall();
         }
     }

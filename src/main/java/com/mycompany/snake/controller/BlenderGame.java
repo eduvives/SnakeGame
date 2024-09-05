@@ -129,7 +129,7 @@ public class BlenderGame extends ClassicGame {
                 }
 
                 if (statueGame != null) {
-                    removeStatuesSpawnRadius(game.snake.getHead());
+                    removeStatuesSpawnRadius();
                 }
             }
         }
@@ -200,10 +200,10 @@ public class BlenderGame extends ClassicGame {
         game.snake.getDirection().setLocation(direction.x, direction.y);
     }
     
-    private void removeStatuesSpawnRadius(Point newPos) {
+    private void removeStatuesSpawnRadius() {
         
         Set<Point> spawnRadiusStatues = new HashSet<>(statueGame.statues);
-        spawnRadiusStatues.retainAll(getSpawnRadiusBlenderGame(newPos));
+        spawnRadiusStatues.retainAll(getSpawnRadiusBlenderGame());
 
         for (Point statuePos : spawnRadiusStatues) {
             if (statuePos.equals(game.snake.getHead()) || !game.snake.getBody().contains(statuePos)) {
@@ -222,7 +222,7 @@ public class BlenderGame extends ClassicGame {
         
         if (wallGame != null) {
             if (game.score % 2 == 0) {
-                wallGame.spawnRadius = getSpawnRadiusBlenderGame(newPos);
+                wallGame.spawnRadius = getSpawnRadiusBlenderGame();
                 wallGame.addWall();
             }
         }
@@ -238,16 +238,16 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    private Set<Point> getSpawnRadiusBlenderGame(Point currentPos) {
+    private Set<Point> getSpawnRadiusBlenderGame() {
         
         if (boundlessGame != null) {
-            return getSpawnRadiusBoundlessGame(currentPos);
+            return getSpawnRadiusBoundlessGame();
         } else {
-            return getSpawnRadius(currentPos);
+            return getSpawnRadius();
         }
     }
     
-    private Set<Point> getSpawnRadiusBoundlessGame(Point currentPos) {
+    private Set<Point> getSpawnRadiusBoundlessGame() {
         
         Set<Point> newSpawnRadius = new HashSet<>();
         
@@ -257,8 +257,8 @@ public class BlenderGame extends ClassicGame {
             int yLimit = size - Math.abs(x);
 
             for (int y = -yLimit; y <= yLimit; y++) {
-                int newX = currentPos.x + x;
-                int newY = currentPos.y + y;
+                int newX = game.snake.getHead().x + x;
+                int newY = game.snake.getHead().y + y;
                 
                 if (newX < 0) {
                     newX += game.numBoardCols;

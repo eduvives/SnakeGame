@@ -163,6 +163,7 @@ public class ClassicGame {
                 for (int i = 0; i < randNumFood; i++) {
                     Point foodPos = getRandomFoodPosition();
                     if (foodPos != null) game.food.add(new Square(foodPos, CellType.FOOD));
+                    // TODO else break?
                 }
             }
         } else {
@@ -212,7 +213,7 @@ public class ClassicGame {
     
     public static final int SPAWN_RADIUS_WIDTH = 7;
     
-    protected Set<Point> getSpawnRadius(Point currentPos) {
+    protected Set<Point> getSpawnRadius() {
         
         Set<Point> newSpawnRadius = new HashSet<>();
         
@@ -222,8 +223,8 @@ public class ClassicGame {
             int yLimit = size - Math.abs(x);
 
             for (int y = -yLimit; y <= yLimit; y++) {
-                int newX = currentPos.x + x;
-                int newY = currentPos.y + y;
+                int newX = game.snake.getHead().x + x;
+                int newY = game.snake.getHead().y + y;
                 
                 if (newX >= 0 && newX < game.numBoardCols && newY >= 0 && newY < game.numBoardRows) {
                     newSpawnRadius.add(new Point(newX, newY));
