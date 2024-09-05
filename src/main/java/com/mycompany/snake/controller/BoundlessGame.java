@@ -17,10 +17,10 @@ public class BoundlessGame extends ClassicGame {
     }
     
     @Override
-    protected Point getNewPos(Point currentDirection) {
+    protected Point getNewPos(Point newDirection) {
         
-        int posX = game.snake.getHead().x + currentDirection.x;
-        int posY = game.snake.getHead().y + currentDirection.y;
+        int posX = game.snake.getHead().x + newDirection.x;
+        int posY = game.snake.getHead().y + newDirection.y;
         
         if (posX < 0) {
             posX = game.numBoardCols - 1;

@@ -18,10 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -60,7 +58,8 @@ public class GameLogic {
     
     protected Timer timer;
     protected int timerDelay;
-    protected Queue<Point> inputQueue = new LinkedList<>();
+    protected List<Point> inputQueue = new ArrayList<>();
+    private static final int MAX_INPUT_QUEUE_SIZE = 2;
     protected boolean gameStarted;
     protected boolean gameEnded;
     
@@ -219,56 +218,43 @@ public class GameLogic {
         actionMap.put("moveUp", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (snake.getDirection().y != 1 && inputQueue.size() < 2) {
-                    if (!gameStarted) {
-                        startGame();
-                    }
-                    snake.getDirection().setLocation(0, -1);
-                    inputQueue.add(new Point(snake.getDirection()));
-                }
+                handleDirectionChange(new Point(0, -1));
             }
         });
 
         actionMap.put("moveDown", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (snake.getDirection().y != -1 && inputQueue.size() < 2) {
-                    if (!gameStarted) {
-                        startGame();
-                    }
-                    snake.getDirection().setLocation(0, 1);
-                    inputQueue.add(new Point(snake.getDirection()));
-                }                
+                handleDirectionChange(new Point(0, 1));
             }
         });
 
         actionMap.put("moveLeft", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (snake.getDirection().x != 1 && inputQueue.size() < 2) {
-                    if (!gameStarted) {
-                        startGame();
-                    }
-                    snake.getDirection().setLocation(-1, 0);
-                    inputQueue.add(new Point(snake.getDirection()));
-                }                
+                handleDirectionChange(new Point(-1, 0));
             }
         });
 
         actionMap.put("moveRight", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (snake.getDirection().x != -1 && inputQueue.size() < 2) {
-                    if (!gameStarted) {
-                        startGame();
-                    }
-                    snake.getDirection().setLocation(1, 0);
-                    inputQueue.add(new Point(snake.getDirection()));
+                handleDirectionChange(new Point(1, 0));
+            }
+        });
+        
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "endGame");
+        
+        actionMap.put("endGame", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!gameEnded) {
+                    gameEnd(false);
                 }
             }
         });
         
-        // Test Lines Start        
+        // Test Lines Start
         inputMap.put(KeyStroke.getKeyStroke("SPACE"), "pauseGame");
         
         actionMap.put("pauseGame", new AbstractAction() {
@@ -284,7 +270,34 @@ public class GameLogic {
             }
         });
         // Test Lines End
-    }          
+    }
+    
+    private void handleDirectionChange(Point newDirection) {
+        
+        Point previousDirection;
+        int numInputs = inputQueue.size();
+        
+        if (numInputs == 0) {
+            previousDirection = snake.getDirection();
+        } else {
+            previousDirection = (numInputs < MAX_INPUT_QUEUE_SIZE) ? inputQueue.get(numInputs - 1) : inputQueue.get(numInputs - 2);
+        }
+        
+        // Comprobar que no sea la dirección opuesta
+        if (previousDirection.x != -newDirection.x || previousDirection.y != -newDirection.y) {
+            
+            if (!gameStarted) {
+                startGame();
+            }
+            
+            if (!previousDirection.equals(newDirection)) {
+                if (numInputs >= MAX_INPUT_QUEUE_SIZE) {
+                    inputQueue.remove(numInputs - 1);
+                }
+                inputQueue.add(newDirection);
+            }
+        }
+    }
     
     public void showGameBoard() {
         startPos = new Point(Snake.START_LENGTH + 1, numBoardRows / 2);
@@ -328,16 +341,22 @@ public class GameLogic {
         
         return (ActionEvent e) -> {
             
-            Point currentDirection = inputQueue.isEmpty() ? snake.getDirection() : inputQueue.poll();
+            if (!inputQueue.isEmpty()) {
+                snake.getDirection().setLocation(inputQueue.remove(0));
+            }
             
-            gameMode.nextLoop(currentDirection);
+            gameMode.nextLoop();
         };
     }        
         
     protected void gameEnd(boolean isFeast) {
         System.out.println("Feast: " + isFeast);
         gameEnded = true;
-        timer.stop();
+        
+        if (timer != null) {
+            timer.stop();
+        }
+        
         openMenu();
     }
     

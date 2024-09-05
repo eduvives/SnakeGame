@@ -97,9 +97,9 @@ public class ClassicGame {
     
     // GAME LOOP
     
-    protected void nextLoop(Point currentDirection) {
+    protected void nextLoop() {
         
-        Point newPos = getNewPos(currentDirection);
+        Point newPos = getNewPos(game.snake.getDirection().getLocation());
 
         boolean isFood = checkFood(newPos);
         boolean isFeast = false;
@@ -134,8 +134,8 @@ public class ClassicGame {
         game.snake.move(newPos, isFood);
     }
     
-    protected Point getNewPos(Point currentDirection) {
-        return new Point(game.snake.getHead().x + currentDirection.x, game.snake.getHead().y + currentDirection.y);
+    protected Point getNewPos(Point newDirection) {
+        return new Point(game.snake.getHead().x + newDirection.x, game.snake.getHead().y + newDirection.y);
     }
     
     private void increaseScore() {

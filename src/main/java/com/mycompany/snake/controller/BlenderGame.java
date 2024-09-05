@@ -75,12 +75,12 @@ public class BlenderGame extends ClassicGame {
     // BoundlessGame
     
     @Override
-    protected Point getNewPos(Point currentDirection) {
+    protected Point getNewPos(Point newDirection) {
         
         if (boundlessGame != null) {
-            return boundlessGame.getNewPos(currentDirection);
+            return boundlessGame.getNewPos(newDirection);
         } else {
-            return super.getNewPos(currentDirection);
+            return super.getNewPos(newDirection);
         }
     }
     
