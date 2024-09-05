@@ -31,14 +31,14 @@ public class TwinGame extends ClassicGame {
         super.snakeSimpleMove(newPos, isFood);
         
         if (isFood) {
-            postSnakeSimpleMoveTwinGame(newPos, isFood);
+            postSnakeSimpleMoveTwinGame(newPos);
         }
         
     }
     
-    protected void postSnakeSimpleMoveTwinGame(Point newPos, boolean isFood) {
+    protected void postSnakeSimpleMoveTwinGame(Point newPos) {
         switchSides(newPos);
-        resetDirection(game.snake.getHead(), game.snake.getBody().getFirst());
+        restoreDirection(game.snake.getHead(), game.snake.getBody().getFirst());
     }
     
     protected void switchSides(Point newPos) {
@@ -51,10 +51,6 @@ public class TwinGame extends ClassicGame {
         snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
 
         Collections.reverse(snakeBody);
-    }
-    
-    protected void resetDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
-        game.snake.getDirection().setLocation(snakeHead.x - snakeFirstBodyPartPos.x, snakeHead.y - snakeFirstBodyPartPos.y);
     }
     
     @Override

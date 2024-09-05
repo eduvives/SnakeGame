@@ -22,9 +22,7 @@ public class WallGame extends ClassicGame {
     
     protected List<Square> walls = new ArrayList<>();
     private Set<Point> spawnWalls = new HashSet<>();
-    private List<Point> spawnRadius = new ArrayList<>();
-    
-    public static final int SPAWN_RADIUS_WIDTH = 7;
+    protected Set<Point> spawnRadius;
     
     public WallGame(GameLogic game) {
         super(game);        
@@ -66,30 +64,17 @@ public class WallGame extends ClassicGame {
     }
     
     protected void prevEatFoodWallGame(Point currentPos) {
-        if (game.score % 2 == 0) addWall(currentPos);
+        if (game.score % 2 == 0) {
+            spawnRadius = getSpawnRadius(currentPos);
+            addWall();
+        }
     }
     
     // Métodos Auxiliares
-    
-    private List<Point> updateSpawnRadius(Point currentPos) {
-        
-        spawnRadius.clear();
-        
-        int size = (SPAWN_RADIUS_WIDTH - 1) / 2;
 
-        for (int x = -size; x <= size; x++) {
-            int yLimit = size - Math.abs(x);
-
-            for (int y = -yLimit; y <= yLimit; y++) {
-                spawnRadius.add(new Point(currentPos.x + x, currentPos.y + y));
-            }
-        }
+    protected void addWall() {
         
-        return spawnRadius;
-    }
-    
-    private void addWall(Point currentPos) {
-        Point wallPos = getRandomSpawnPosition(game.availablePositions, updateSpawnRadius(currentPos), spawnWalls);
+        Point wallPos = getRandomSpawnPosition(game.availablePositions, spawnRadius, spawnWalls);
 
         if (wallPos != null) {
 

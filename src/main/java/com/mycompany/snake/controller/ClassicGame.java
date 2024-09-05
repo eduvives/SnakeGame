@@ -8,7 +8,9 @@ import com.mycompany.snake.model.CellType;
 import com.mycompany.snake.model.Snake;
 import com.mycompany.snake.model.Square;
 import java.awt.Point;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  *
@@ -196,5 +198,39 @@ public class ClassicGame {
         int index = rand.nextInt(game.availablePositions.size());
         return game.availablePositions.remove(index);
 
+    }
+    
+    // Métodos Auxiliares Subclases
+    
+    protected void restoreDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
+        game.snake.getDirection().setLocation(getDefaultDirection(snakeHead, snakeFirstBodyPartPos));
+    }
+    
+    protected Point getDefaultDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
+        return new Point(snakeHead.x - snakeFirstBodyPartPos.x, snakeHead.y - snakeFirstBodyPartPos.y);
+    }
+    
+    public static final int SPAWN_RADIUS_WIDTH = 7;
+    
+    protected Set<Point> getSpawnRadius(Point currentPos) {
+        
+        Set<Point> newSpawnRadius = new HashSet<>();
+        
+        int size = (SPAWN_RADIUS_WIDTH - 1) / 2;
+
+        for (int x = -size; x <= size; x++) {
+            int yLimit = size - Math.abs(x);
+
+            for (int y = -yLimit; y <= yLimit; y++) {
+                int newX = currentPos.x + x;
+                int newY = currentPos.y + y;
+                
+                if (newX >= 0 && newX < game.numBoardCols && newY >= 0 && newY < game.numBoardRows) {
+                    newSpawnRadius.add(new Point(newX, newY));
+                }
+            }
+        }
+        
+        return newSpawnRadius;
     }
 }

@@ -14,8 +14,10 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -110,100 +112,119 @@ public class BlenderGame extends ClassicGame {
         return new BlenderSnake(startPos, blenderSnakeModeNames);
     }
     
-    // CheeseGame - TwinGame - BoundlessGame
+    // TwinGame - CheeseGame - BoundlessGame - StatueGame
     
     @Override
     protected void snakeSimpleMove(Point newPos, boolean isFood) {
         
         super.snakeSimpleMove(newPos, isFood);
         
-        if (twinGame != null) {
-            if (cheeseGame != null) {
-                postSnakeSimpleMoveTwinCheeseGame(newPos, isFood);
-            } else {
-                if (isFood) {
-                    twinGame.switchSides(newPos);    // TODO revisar que funcione
-                    resetDirection(game.snake.getHead(), game.snake.getBody().getFirst()); 
+        if (isFood) {
+            if (twinGame != null) {
+                if (cheeseGame != null) {
+                    postSnakeSimpleMoveTwinCheeseGame(newPos);
+                } else {
+                    twinGame.switchSides(newPos); // TODO revisar que funcione
+                    restoreDirectionBlenderGame(game.snake.getHead(), game.snake.getBody().getFirst()); 
+                }
+
+                if (statueGame != null) {
+                    removeStatuesSpawnRadius(game.snake.getHead());
                 }
             }
         }
     }
     
-    private void postSnakeSimpleMoveTwinCheeseGame(Point newPos, boolean isFood) {
-        
-        if (isFood) {
-            
-            CheeseSnake cheeseSnake = cheeseGame.cheeseSnake;
-            
-            LinkedList<Square> snakeBody = cheeseSnake.getBody();
-            Square snakeHead = cheeseSnake.getHead();
-            LinkedList<Square> emptyBody = cheeseSnake.getEmptyBody();
-            
-            boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
-            boolean isLastBodyPartSnake = (!isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 1);
-            
-            if (isFirstBodyPartSnake) {
-                emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
-                
-                // Si el método move de la combinación Twin Cheese Snake genera una celda vacía, 
-                // esta debe ser agregada a la lista de posiciones disponibles.
-                game.availablePositions.add(new Point(newPos));
-                
-            } else {
-                snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
-            }
-            
-            Collections.reverse(snakeBody);
-            Collections.reverse(emptyBody);
-            
-            if (isLastBodyPartSnake) {
-                snakeHead.setLocation(snakeBody.removeFirst());
-                resetDirection(snakeHead, emptyBody.getFirst());
-            } else {
-                snakeHead.setLocation(emptyBody.removeFirst());
-                
-                // Si el método move de la combinación Twin Cheese Snake elimina una celda vacía,
-                // esta debe ser también eliminada de la lista de posiciones disponibles.
-                game.availablePositions.remove(snakeHead);
-                
-                resetDirection(snakeHead, snakeBody.getFirst());
-            }
-            
-            cheeseSnake.setNextBodyPartSnake(isLastBodyPartSnake);
+    private void postSnakeSimpleMoveTwinCheeseGame(Point newPos) {
+
+        CheeseSnake cheeseSnake = cheeseGame.cheeseSnake;
+
+        LinkedList<Square> snakeBody = cheeseSnake.getBody();
+        Square snakeHead = cheeseSnake.getHead();
+        LinkedList<Square> emptyBody = cheeseSnake.getEmptyBody();
+
+        boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
+        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 1);
+
+        if (isFirstBodyPartSnake) {
+            emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
+
+            // Si el método move de la combinación Twin Cheese Snake genera una celda vacía, 
+            // esta debe ser agregada a la lista de posiciones disponibles.
+            game.availablePositions.add(new Point(newPos));
+
+        } else {
+            snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
         }
+
+        Collections.reverse(snakeBody);
+        Collections.reverse(emptyBody);
+
+        if (isLastBodyPartSnake) {
+            snakeHead.setLocation(snakeBody.removeFirst());
+            restoreDirectionBlenderGame(snakeHead, emptyBody.getFirst());
+        } else {
+            snakeHead.setLocation(emptyBody.removeFirst());
+
+            // Si el método move de la combinación Twin Cheese Snake elimina una celda vacía,
+            // esta debe ser también eliminada de la lista de posiciones disponibles.
+            game.availablePositions.remove(snakeHead);
+
+            restoreDirectionBlenderGame(snakeHead, snakeBody.getFirst());
+        }
+
+        cheeseSnake.setNextBodyPartSnake(isLastBodyPartSnake);
     }
     
-    private void resetDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
-        int diffX = snakeHead.x - snakeFirstBodyPartPos.x;
-        int diffY = snakeHead.y - snakeFirstBodyPartPos.y;
+    private void restoreDirectionBlenderGame(Point snakeHead, Point snakeFirstBodyPartPos) {
+        
+        Point direction = getDefaultDirection(snakeHead, snakeFirstBodyPartPos);
         
         if (boundlessGame != null) {
             
             // Ajustar por teletransporte en el eje X
-            if (diffX > 1) {
-                diffX = -1;
-            } else if (diffX < -1) {
-                diffX = 1;
+            if (direction.x > 1) {
+                direction.x = -1;
+            } else if (direction.x < -1) {
+                direction.x = 1;
             }
 
             // Ajustar por teletransporte en el eje Y
-            if (diffY > 1) {
-                diffY = -1;
-            } else if (diffY < -1) {
-                diffY = 1;
+            if (direction.y > 1) {
+                direction.y = -1;
+            } else if (direction.y < -1) {
+                direction.y = 1;
             }
         }
         
-        game.snake.getDirection().setLocation(diffX, diffY);
+        game.snake.getDirection().setLocation(direction.x, direction.y);
     }
     
-    // WallGame - TwinGame - StatueGame
+    private void removeStatuesSpawnRadius(Point newPos) {
+        
+        Set<Point> spawnRadiusStatues = new HashSet<>(statueGame.statues);
+        spawnRadiusStatues.retainAll(getSpawnRadiusBlenderGame(newPos));
+
+        for (Point statuePos : spawnRadiusStatues) {
+            if (statuePos.equals(game.snake.getHead()) || !game.snake.getBody().contains(statuePos)) {
+                statueGame.statues.remove(statuePos);
+                if (!statuePos.equals(game.snake.getHead())) {
+                    game.availablePositions.add(new Point(statuePos));
+                }
+            }
+        }
+    }
+    
+    // WallGame - BoundlessGame - TwinGame - StatueGame
     
     @Override
     protected void eatFood(Point newPos) {
         
         if (wallGame != null) {
-            wallGame.prevEatFoodWallGame(newPos);
+            if (game.score % 2 == 0) {
+                wallGame.spawnRadius = getSpawnRadiusBlenderGame(newPos);
+                wallGame.addWall();
+            }
         }
         
         if (statueGame != null) {
@@ -215,7 +236,47 @@ public class BlenderGame extends ClassicGame {
         if (twinGame != null) {
             twinGame.postEatFoodTwinGame();
         }
+    }
+    
+    private Set<Point> getSpawnRadiusBlenderGame(Point currentPos) {
         
+        if (boundlessGame != null) {
+            return getSpawnRadiusBoundlessGame(currentPos);
+        } else {
+            return getSpawnRadius(currentPos);
+        }
+    }
+    
+    private Set<Point> getSpawnRadiusBoundlessGame(Point currentPos) {
+        
+        Set<Point> newSpawnRadius = new HashSet<>();
+        
+        int size = (SPAWN_RADIUS_WIDTH - 1) / 2;
+
+        for (int x = -size; x <= size; x++) {
+            int yLimit = size - Math.abs(x);
+
+            for (int y = -yLimit; y <= yLimit; y++) {
+                int newX = currentPos.x + x;
+                int newY = currentPos.y + y;
+                
+                if (newX < 0) {
+                    newX += game.numBoardCols;
+                } else if (newX >= game.numBoardCols) {
+                    newX -= game.numBoardCols;
+                }
+
+                if (newY < 0) {
+                    newY += game.numBoardRows;
+                } else if (newY >= game.numBoardRows) {
+                    newY -= game.numBoardRows;
+                }
+
+                newSpawnRadius.add(new Point(newX, newY));
+            }
+        }
+        
+        return newSpawnRadius;
     }
     
     // WallGame - StatueGame
