@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
+import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 
 /**
@@ -142,34 +142,10 @@ public class BlenderPanel extends javax.swing.JDialog {
 
     private void randomBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomBtnActionPerformed
 
-        List<Integer> validIndices = new ArrayList<>();
-        for (int i = 1; i < modeList.getModel().getSize(); i++) {
-            validIndices.add(i);
-        }
-        
-        Random random = new Random();
-        int numIndicesToSelect;
-        double randomChance = random.nextDouble();
-        
-        if (randomChance < 0.55) {
-            numIndicesToSelect = 2;
-        } else if (randomChance < 0.85) {
-            numIndicesToSelect = 3;
-        } else {
-            numIndicesToSelect = 4;
-        }
-        
-        // Asegurarse de no seleccionar más índices de los disponibles
-        numIndicesToSelect = Math.min(numIndicesToSelect, validIndices.size());
-
-        // Barajar la lista de índices
-        Collections.shuffle(validIndices, random);
-
-        // Seleccionar los primeros numIndicesToSelect índices de la lista barajada
-        List<Integer> selectedIndices = validIndices.subList(0, numIndicesToSelect);
+        List<Integer> randomIndices = getModeListRandomIndices();
 
         // Establecer la selección en el JList
-        modeList.setSelectedIndices(selectedIndices.stream().mapToInt(i -> i).toArray());   
+        modeList.setSelectedIndices(randomIndices.stream().mapToInt(i -> i).toArray());   
     }//GEN-LAST:event_randomBtnActionPerformed
 
     private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
@@ -211,9 +187,57 @@ public class BlenderPanel extends javax.swing.JDialog {
         
         initModeList();
     }
+    
+    private List<Integer> getModeListRandomIndices() {
+        
+        List<Integer> validIndices = new ArrayList<>();
+        for (int i = 1; i < modeList.getModel().getSize(); i++) {
+            validIndices.add(i);
+        }
+        
+        Random random = new Random();
+        int numIndicesToSelect;
+        double randomChance = random.nextDouble();
+        
+        if (randomChance < 0.55) {
+            numIndicesToSelect = 2;
+        } else if (randomChance < 0.85) {
+            numIndicesToSelect = 3;
+        } else {
+            numIndicesToSelect = 4;
+        }
+        
+        // Asegurarse de no seleccionar más índices de los disponibles
+        numIndicesToSelect = Math.min(numIndicesToSelect, validIndices.size());
 
-    public List<String> getModeListSelectedValues() {
-        return modeList.getSelectedValuesList();
+        // Barajar la lista de índices
+        Collections.shuffle(validIndices);
+
+        // Seleccionar los primeros numIndicesToSelect índices de la lista barajada
+        return validIndices.subList(0, numIndicesToSelect);
+    }
+
+    public List<String> getModeListSelectedValues() { // TODO dejar este nombre al método?
+        
+        int[] selectedIndices = modeList.getSelectedIndices();
+
+        if (selectedIndices.length == 0 || selectedIndices[0] == 0) {
+            
+            List<Integer> randomIndices = getModeListRandomIndices();
+            
+            ListModel<String> modeListModel =  modeList.getModel();
+
+            List<String> randomValues = new ArrayList<>();
+            
+            for (int index : randomIndices) {
+                randomValues.add(modeListModel.getElementAt(index));
+            }
+            
+            return randomValues;
+            
+        } else {
+            return modeList.getSelectedValuesList();
+        }
     }
     
     public void setWindowClosingListener () {

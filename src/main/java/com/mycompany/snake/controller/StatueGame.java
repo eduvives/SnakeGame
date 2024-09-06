@@ -127,7 +127,7 @@ public class StatueGame extends ClassicGame {
         }
     }
     
-    private int generateNumFoodBeforeBreak() { // TODO falta buscar una mejor ecuación que cuanto mayor sea el número menor sea la probabilidad de obtenerlo
+    private int generateNumFoodBeforeBreak() { // TODO (tal vez así esta bien :) falta buscar una mejor ecuación que cuanto mayor sea el número menor sea la probabilidad de obtenerlo
         
         Random random = new Random();
         return random.nextInt(MAX_FOOD_BEFORE_BREAK - MIN_FOOD_BEFORE_BREAK + 1) + MIN_FOOD_BEFORE_BREAK;
