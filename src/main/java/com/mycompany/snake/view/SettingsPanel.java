@@ -108,11 +108,6 @@ public class SettingsPanel extends javax.swing.JDialog {
         resetBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         resetBtn.setText("Reset");
         resetBtn.setPreferredSize(new java.awt.Dimension(100, 27));
-        resetBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetBtnActionPerformed(evt);
-            }
-        });
 
         playBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         playBtn.setText("Play");
@@ -207,12 +202,6 @@ public class SettingsPanel extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
-        for (JComboBox<String> comboBox : comboBoxes) {
-            comboBox.setSelectedIndex(0); // TODO 0? DEFAULT INDEX MODEL
-        }
-    }//GEN-LAST:event_resetBtnActionPerformed
-
     private void randomBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomBtnActionPerformed
         
         Random random = new Random();
@@ -246,6 +235,10 @@ public class SettingsPanel extends javax.swing.JDialog {
     
     public void setPlayBtnListener(ActionListener listener) {
         playBtn.addActionListener(listener);
+    }
+    
+    public void setResetBtnListener(ActionListener listener) {
+        resetBtn.addActionListener(listener);
     }
     
     public void setBoardCmbModel(String[] names, int selectedIndex) {
@@ -295,6 +288,10 @@ public class SettingsPanel extends javax.swing.JDialog {
     
     public BlenderPanel getBlenderSettings() {
         return blenderSettings;
+    }
+
+    public List<JComboBox<String>> getComboBoxes() {
+        return comboBoxes;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

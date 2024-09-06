@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 
@@ -75,11 +76,6 @@ public class BlenderPanel extends javax.swing.JDialog {
         resetBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         resetBtn.setText("Reset");
         resetBtn.setPreferredSize(new java.awt.Dimension(100, 27));
-        resetBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetBtnActionPerformed(evt);
-            }
-        });
 
         playBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         playBtn.setText("Play");
@@ -148,10 +144,6 @@ public class BlenderPanel extends javax.swing.JDialog {
         modeList.setSelectedIndices(randomIndices.stream().mapToInt(i -> i).toArray());   
     }//GEN-LAST:event_randomBtnActionPerformed
 
-    private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
-        modeList.setSelectedIndex(0); // TODO 0? DEFAULT INDEX MODEL
-    }//GEN-LAST:event_resetBtnActionPerformed
-
     private void modeListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_modeListValueChanged
         
         if (evt.getValueIsAdjusting()) return;
@@ -170,6 +162,10 @@ public class BlenderPanel extends javax.swing.JDialog {
     
     public void setPlayBtnListener(ActionListener listener) {
         playBtn.addActionListener(listener);
+    }
+    
+    public void setResetBtnListener(ActionListener listener) {
+        resetBtn.addActionListener(listener);
     }
     
     public void setModeListModel(List<String> names, int selectedIndex) {
@@ -216,12 +212,17 @@ public class BlenderPanel extends javax.swing.JDialog {
         // Seleccionar los primeros numIndicesToSelect índices de la lista barajada
         return validIndices.subList(0, numIndicesToSelect);
     }
-
-    public List<String> getModeListSelectedValues() { // TODO dejar este nombre al método?
+    
+    public boolean isSelectBlindlyModes() {
         
         int[] selectedIndices = modeList.getSelectedIndices();
+        
+        return selectedIndices.length == 0 || selectedIndices[0] == 0;
+    }
+    
+    public List<String> getModeListSelectedValues() {
 
-        if (selectedIndices.length == 0 || selectedIndices[0] == 0) {
+        if (isSelectBlindlyModes()) {
             
             List<Integer> randomIndices = getModeListRandomIndices();
             
@@ -270,6 +271,10 @@ public class BlenderPanel extends javax.swing.JDialog {
         modeListScroll.repaint();
         this.pack();
 
+    }
+
+    public JList<String> getModeList() {
+        return modeList;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

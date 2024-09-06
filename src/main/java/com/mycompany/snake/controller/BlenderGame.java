@@ -26,6 +26,7 @@ import java.util.Set;
 public class BlenderGame extends ClassicGame {
     
     private List<String> modes;
+    
     private WallGame wallGame;
     private CheeseGame cheeseGame;
     private BoundlessGame boundlessGame;
@@ -34,20 +35,18 @@ public class BlenderGame extends ClassicGame {
     
     public BlenderGame(GameLogic game, List<String> modes) {
         super(game);
-        this.modes = modes;
-        initializeGameModes(modes);
+        
+        wallGame = new WallGame(game);
+        cheeseGame = new CheeseGame(game);
+        boundlessGame = new BoundlessGame(game);
+        twinGame = new TwinGame(game);
+        statueGame = new StatueGame(game);
+        
+        setBlenderModes(modes);
     }
     
-    private void initializeGameModes(List<String> modes) {
-        for (String mode : modes) {
-            switch (mode) {
-                case "Wall" -> wallGame = new WallGame(game);
-                case "Cheese" -> cheeseGame = new CheeseGame(game);
-                case "Boundless" -> boundlessGame = new BoundlessGame(game);
-                case "Twin" -> twinGame = new TwinGame(game);
-                case "Statue" -> statueGame = new StatueGame(game);
-            }
-        }
+    protected void setBlenderModes(List<String> modes) { // TODO reutilizar los modos y no ponerlos a null si ya estan creados? comprobar con contains?
+        this.modes = modes;
     }
     
     // CheeseGame
@@ -55,7 +54,7 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected boolean checkFeast() {
         
-        if (cheeseGame != null) {
+        if (modes.contains("Cheese")) {
             return cheeseGame.checkFeast();
         } else {
             return super.checkFeast();
@@ -65,7 +64,7 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected Point getRandomFoodPosition() {
         
-        if (cheeseGame != null) {
+        if (modes.contains("Cheese")) {
             return cheeseGame.getRandomFoodPosition();
         } else {
             return super.getRandomFoodPosition();
@@ -77,7 +76,7 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected Point getNewPos(Point newDirection) {
         
-        if (boundlessGame != null) {
+        if (modes.contains("Boundless")) {
             return boundlessGame.getNewPos(newDirection);
         } else {
             return super.getNewPos(newDirection);
@@ -93,7 +92,7 @@ public class BlenderGame extends ClassicGame {
         
         super.initializeSnake();
         
-        if (cheeseGame != null) {
+        if (modes.contains("Cheese")) {
             postInitializeSnakeBlenderCheeseGame();
         }
     }
@@ -120,15 +119,15 @@ public class BlenderGame extends ClassicGame {
         super.snakeSimpleMove(newPos, isFood);
         
         if (isFood) {
-            if (twinGame != null) {
-                if (cheeseGame != null) {
+            if (modes.contains("Twin")) {
+                if (modes.contains("Cheese")) {
                     postSnakeSimpleMoveTwinCheeseGame(newPos);
                 } else {
                     twinGame.switchSides(newPos); // TODO revisar que funcione
                     restoreDirectionBlenderGame(game.snake.getHead(), game.snake.getBody().getFirst()); 
                 }
 
-                if (statueGame != null) {
+                if (modes.contains("Statue")) {
                     removeStatuesSpawnRadius();
                 }
             }
@@ -180,7 +179,7 @@ public class BlenderGame extends ClassicGame {
         
         Point direction = getDefaultDirection(snakeHead, snakeFirstBodyPartPos);
         
-        if (boundlessGame != null) {
+        if (modes.contains("Boundless")) {
             
             // Ajustar por teletransporte en el eje X
             if (direction.x > 1) {
@@ -220,27 +219,27 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected void eatFood(Point newPos) {
         
-        if (wallGame != null) {
+        if (modes.contains("Wall")) {
             if (game.score % 2 == 0) {
                 wallGame.spawnRadius = getSpawnRadiusBlenderGame();
                 wallGame.addWall();
             }
         }
         
-        if (statueGame != null) {
+        if (modes.contains("Statue")) {
             statueGame.prevEatFoodStatueGame();
         }
         
         super.eatFood(newPos);
         
-        if (twinGame != null) {
+        if (modes.contains("Twin")) {
             twinGame.postEatFoodTwinGame();
         }
     }
     
     private Set<Point> getSpawnRadiusBlenderGame() {
         
-        if (boundlessGame != null) {
+        if (modes.contains("Boundless")) {
             return getSpawnRadiusBoundlessGame();
         } else {
             return getSpawnRadius();
@@ -283,11 +282,11 @@ public class BlenderGame extends ClassicGame {
     
     @Override
     protected boolean checkCollision() {
-        if (wallGame != null && statueGame != null){
+        if (modes.contains("Wall") && modes.contains("Statue")){
             return checkCollisionWallStatueGame();
-        } else if (wallGame != null) {
+        } else if (modes.contains("Wall")) {
                 return wallGame.checkCollision();
-        } else if (statueGame != null) {
+        } else if (modes.contains("Statue")) {
             return statueGame.checkCollision();
         } else {
             return super.checkCollision();
@@ -310,11 +309,11 @@ public class BlenderGame extends ClassicGame {
         
         super.prepareNewGame();
         
-        if (wallGame != null) {
+        if (modes.contains("Wall")) {
             wallGame.postPrepareNewGameWallGame();
         }
         
-        if (statueGame != null) {
+        if (modes.contains("Statue")) {
             statueGame.postPrepareNewGameStatueGame();
         }
     }
@@ -324,13 +323,13 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
         
-        if (cheeseGame != null) {
+        if (modes.contains("Cheese")) {
             cheeseGame.updateSnakeAvailablePositions(newPos, isFood);
         } else {
             super.updateSnakeAvailablePositions(newPos, isFood);
         }
         
-        if (statueGame != null) {
+        if (modes.contains("Statue")) {
             statueGame.postUpdateSnakeAvailablePositionsStatueGame();
         }
     }

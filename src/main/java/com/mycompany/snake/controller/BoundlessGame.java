@@ -13,7 +13,7 @@ import java.awt.Point;
 public class BoundlessGame extends ClassicGame {
     
     public BoundlessGame(GameLogic game) {
-        super(game);        
+        super(game);
     }
     
     @Override

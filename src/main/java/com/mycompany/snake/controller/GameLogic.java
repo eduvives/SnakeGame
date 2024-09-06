@@ -20,10 +20,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
@@ -39,6 +42,7 @@ public class GameLogic {
     protected Point startPos;
     protected Snake snake;
     private ClassicGame gameMode;
+    private String gameModeName;
     private List<String> blenderSelectedModes;
     private Map<Color, List<Point>> viewSquaresColors = new HashMap<>();
     private List<Square> viewAllSquares = new ArrayList<>();
@@ -52,6 +56,7 @@ public class GameLogic {
     protected List<Point> availablePositions = new ArrayList<>();
     protected List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
     
+    protected String boardName;
     protected int score;
     protected int numFood;
     protected List<Square> food = new ArrayList<>();
@@ -66,17 +71,15 @@ public class GameLogic {
     public GameLogic(SnakeView view) {
         this.view = view;
         setViewParams();
+        setSettingsComboBoxesModels();
+        setBlenderModeListModel();
         setGameParams(
-            SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX][0],
-            SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX][1],
-            SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX][2],
+            SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.SPEED_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.FOOD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.MODE_NAMES[SettingsParams.DEFAULT_SELECTED_INDEX]
         );
         updateBoardParams();
-        setSettingsComboBoxesModels();
-        setBlenderModeListModel();
         setViewListeners();
         configureKeyBindings();
     }        
@@ -85,38 +88,55 @@ public class GameLogic {
         view.getBoardPanel().setBackgroundColor(CellType.EMPTY.getColor());
     }
     
-    private void setGameParams(int boardWidth, int boardHeight, int squareSize, int delay, int numFood, String mode) {
+    private void setGameParams(int[] boardSize, int delay, int numFood, String mode) {
         
-        if (boardWidth != this.boardWidth || boardHeight != this.boardHeight || squareSize != this.squareSize ) {
-            this.boardWidth = boardWidth;
-            this.boardHeight = boardHeight;
-            this.squareSize = squareSize;
+        // Board Size Changed
+        if (boardWidth != boardSize[0] || boardHeight != boardSize[1] || squareSize != boardSize[2] ) {
+            
+            boardWidth = boardSize[0];
+            boardHeight = boardSize[1];
+            squareSize = boardSize[2];
             isBoardUpdated = false;
             
             numBoardCols = boardWidth / squareSize;
             numBoardRows = boardHeight / squareSize;
         }
-        
+
         this.timerDelay = delay;
+
         this.numFood = numFood;
         
-        if (mode.equals("Classic")) {
-            gameMode = new ClassicGame(this);
-        } else if (mode.equals("Wall")) {
-            gameMode = new WallGame(this);
-        } else if (mode.equals("Cheese")) {
-            gameMode = new CheeseGame(this);
-        } else if (mode.equals("Boundless")) {
-            gameMode = new BoundlessGame(this);
-        } else if (mode.equals("Twin")) {
-            gameMode = new TwinGame(this);
-        } else if (mode.equals("Statue")) {
-            gameMode = new StatueGame(this);
-        } else if (mode.equals("Blender")) {
-            blenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues(); // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
-            gameMode = new BlenderGame(this, blenderSelectedModes);
-        } else {
-            gameMode = new ClassicGame(this);
+        boolean selectBlindly = view.getBlenderSettings().isSelectBlindlyModes();
+        
+        if (!selectBlindly || (selectBlindly && mode.equals("Blender"))) {
+            
+            List<String> newBlenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues();
+            
+            // Blender Selected Modes Changed
+            if (!Objects.equals(blenderSelectedModes, newBlenderSelectedModes)) {
+                blenderSelectedModes = newBlenderSelectedModes; // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
+                if (mode.equals("Blender") && gameMode instanceof BlenderGame) {
+                    BlenderGame blenderGame = (BlenderGame) gameMode;
+                    blenderGame.setBlenderModes(blenderSelectedModes); // TODO revisar
+                }
+            }
+        }
+        
+        // Game Mode Changed
+        if (!Objects.equals(gameModeName, mode)) {
+            
+            switch (mode) {
+                case "Classic" -> gameMode = new ClassicGame(this);
+                case "Wall" -> gameMode = new WallGame(this);
+                case "Cheese" -> gameMode = new CheeseGame(this);
+                case "Boundless" -> gameMode = new BoundlessGame(this);
+                case "Twin" -> gameMode = new TwinGame(this);
+                case "Statue" -> gameMode = new StatueGame(this);
+                case "Blender" -> gameMode = new BlenderGame(this, blenderSelectedModes);
+                default -> gameMode = new ClassicGame(this);
+            }
+            
+            gameModeName = mode;
         }
     }
     
@@ -151,51 +171,52 @@ public class GameLogic {
         // Al no abrir y cerrar las ventanas con mucha frecuencia, seguimos usando dispose() y así aprovechamos la animación de creación de ventana.
         
         view.getMenu().setPlayBtnListener(e -> {
-            
-            newGame();
-            view.getMenu().dispose(); // view.getMenu().setVisible(false);
+            playBtnAction(view.getMenu());
         });
         
         view.getSettings().setPlayBtnListener(e -> {
-            
-            updateGameParamsFromView();
-            
-            newGame();
-            view.getSettings().dispose();
+            playBtnAction(view.getSettings());
         });
         
         view.getSettings().setBackBtnListener(e -> {
-            
-            updateGameParamsFromView();
-            
-            view.getSettings().dispose();
-            view.getMenu().setVisible(true);
+            backBtnAction(view.getSettings(), view.getMenu());
         });
         
         view.getBlenderSettings().setPlayBtnListener(e -> {
-            
-            updateGameParamsFromView();
-            
-            newGame();
-            view.getBlenderSettings().dispose();
+            playBtnAction(view.getBlenderSettings());
         });                
         
         view.getBlenderSettings().setBackBtnListener(e -> {
-            
-            updateGameParamsFromView();
-            
-            view.getBlenderSettings().dispose();
-            view.getSettings().setVisible(true);
+            backBtnAction(view.getBlenderSettings(), view.getSettings());
+        });
+        
+        view.getSettings().setResetBtnListener(e -> {
+            for (JComboBox<String> comboBox : view.getSettings().getComboBoxes()) {
+                comboBox.setSelectedIndex(SettingsParams.DEFAULT_SELECTED_INDEX);
+            }
+        });
+        
+        view.getBlenderSettings().setResetBtnListener(e -> {
+            view.getBlenderSettings().getModeList().setSelectedIndex(SettingsParams.DEFAULT_SELECTED_INDEX);
         });
     }
     
+    private void playBtnAction(JDialog fromDialog) {
+        updateGameParamsFromView();
+            
+        newGame();
+        fromDialog.dispose();
+    }
+    
+    private void backBtnAction(JDialog fromDialog, JDialog toDialog) {
+        fromDialog.dispose();
+        toDialog.setVisible(true);
+    }
+    
     private void updateGameParamsFromView() {
-        int[] boardValues = SettingsParams.BOARD_VALUES[view.getSettings().getBoardCmbSelectedIndex()];
 
         setGameParams(
-            boardValues[0],
-            boardValues[1],
-            boardValues[2],
+            SettingsParams.BOARD_VALUES[view.getSettings().getBoardCmbSelectedIndex()],
             SettingsParams.SPEED_VALUES[view.getSettings().getSpeedCmbSelectedIndex()],
             SettingsParams.FOOD_VALUES[view.getSettings().getFoodCmbSelectedIndex()],
             SettingsParams.MODE_NAMES[view.getSettings().getModeCmbSelectedIndex()]
