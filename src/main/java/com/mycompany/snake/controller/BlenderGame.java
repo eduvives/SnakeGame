@@ -32,6 +32,7 @@ public class BlenderGame extends ClassicGame {
     private BoundlessGame boundlessGame;
     private TwinGame twinGame;
     private StatueGame statueGame;
+    private DimensionGame dimensionGame;
     
     public BlenderGame(GameLogic game, List<String> modes) {
         super(game);
@@ -41,6 +42,7 @@ public class BlenderGame extends ClassicGame {
         boundlessGame = new BoundlessGame(game);
         twinGame = new TwinGame(game);
         statueGame = new StatueGame(game);
+        dimensionGame = new DimensionGame(game);
         
         setBlenderModes(modes);
     }
@@ -59,6 +61,16 @@ public class BlenderGame extends ClassicGame {
         } else {
             return super.checkFeast();
         }
+    }
+    
+    @Override
+    protected void placeFood() {
+
+        if (modes.contains("Cheese")) {
+            cheeseGame.prevPlaceFoodCheeseGame();
+        }
+        
+        super.placeFood();
     }
     
     @Override
@@ -218,6 +230,8 @@ public class BlenderGame extends ClassicGame {
     
     @Override
     protected void eatFood(Point newPos) {
+        
+        // TODO PREV DIMENSION
         
         if (modes.contains("Wall")) {
             if (game.score % 2 == 0) {

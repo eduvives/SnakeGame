@@ -54,6 +54,7 @@ public class GameLogic {
     protected int numBoardCols;
     protected boolean isBoardUpdated;
     protected List<Point> availablePositions = new ArrayList<>();
+    protected List<List<Point>> notAvailablePositionElements = new ArrayList<>();
     protected List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
     
     protected String boardName;
@@ -133,6 +134,7 @@ public class GameLogic {
                 case "Twin" -> gameMode = new TwinGame(this);
                 case "Statue" -> gameMode = new StatueGame(this);
                 case "Blender" -> gameMode = new BlenderGame(this, blenderSelectedModes);
+                case "Dimension" -> gameMode = new DimensionGame(this);
                 default -> gameMode = new ClassicGame(this);
             }
             
@@ -407,7 +409,7 @@ public class GameLogic {
         }
         testList.clear();
         testList.addAll(candidates_test);
-        
+
         // Test Lines Start
         
         viewAllSquares.addAll(0,testList);

@@ -9,6 +9,7 @@ import com.mycompany.snake.model.Snake;
 import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class ClassicGame {
         
         Point snakeHeadPos = game.snake.getHead().getLocation();
         
-        boolean bodyCollision = game.snake.getBody().contains(snakeHeadPos);
+        boolean bodyCollision = checkSnakeListCollision(game.snake.getBody(), snakeHeadPos);
         boolean boundariesCollision = snakeHeadPos.x < 0 || snakeHeadPos.x >= game.numBoardCols || snakeHeadPos.y < 0 || snakeHeadPos.y >= game.numBoardRows;
         
         return bodyCollision || boundariesCollision;
@@ -41,8 +42,9 @@ public class ClassicGame {
         // return game.score == (game.numBoardRows * game.numBoardCols) - Snake.START_LENGTH;
     }
     
-    private boolean checkFood(Point newPos) {        
-        return game.food.contains(newPos);
+    // Comprueba si hay alguna colisión entre la posición relacionada con la cabeza de la serpiente y la nueva posición proporcionada
+    protected boolean checkSnakeListCollision(List<Square> list, Point position) {
+        return list.contains(position);
     }
     
     // NEW GAME
@@ -59,6 +61,7 @@ public class ClassicGame {
         game.updateScore();
         
         game.availablePositions.clear();
+        game.notAvailablePositionElements.clear();
         game.specificModeLists.clear();
         game.food.clear();
         game.inputQueue.clear();
@@ -80,19 +83,30 @@ public class ClassicGame {
     }
     
     protected void removeAllSnakeAvailablePositions(){
-        for (Point bodyPart : game.snake.getBody()) {
-            game.availablePositions.remove(bodyPart);
+        for (Point bodyPartPos : game.snake.getBody()) {
+            game.availablePositions.remove(bodyPartPos);
         }
         game.availablePositions.remove(game.snake.getHead());
     }
     
     protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
         
-        if(!isFood) {
-            game.availablePositions.add(game.snake.getBody().getLast().getLocation());
+        Point lastBodyPartPos = game.snake.getBody().getLast().getLocation();
+        
+        if(!isFood && !elementInPosition(lastBodyPartPos)) {
+            game.availablePositions.add(lastBodyPartPos);
         }
         
         game.availablePositions.remove(newPos);
+    }
+    
+    public boolean elementInPosition(Point position) {
+        for (List<Point> elementsPositionList : game.notAvailablePositionElements) {
+            if (elementsPositionList.contains(position)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     // GAME LOOP
@@ -101,7 +115,7 @@ public class ClassicGame {
         
         Point newPos = getNewPos(game.snake.getDirection().getLocation());
 
-        boolean isFood = checkFood(newPos);
+        boolean isFood = checkSnakeListCollision(game.food, newPos);
         boolean isFeast = false;
         boolean isCollision = false;
         
@@ -148,35 +162,51 @@ public class ClassicGame {
         placeFood();
     }
     
-    // OTHERS
+    // PLACE NEW FOOD
     
     protected void placeFood() {
         
-        Random rand = new Random(); 
+        int numFoodToPlace = getNumFoodToPlace();
         
-        int numPlacedFood = game.food.size();
-
-        if (game.numFood == -1) { // Random Food Num
-            if (numPlacedFood == 0) {
-                int randNumFood = rand.nextInt(6) + 1;
-
-                for (int i = 0; i < randNumFood; i++) {
-                    Point foodPos = getRandomFoodPosition();
-                    if (foodPos != null) game.food.add(new Square(foodPos, CellType.FOOD));
-                    // TODO else break?
-                }
-            }
-        } else {
-            for (int i = 0; i < game.numFood - numPlacedFood; i++) {
-                Point foodPos = getRandomFoodPosition();
-                if (foodPos != null) game.food.add(new Square(foodPos, CellType.FOOD));
+        for (int i = 0; i < numFoodToPlace; i++) {
+            
+            Point foodPos = getRandomFoodPosition();
+            
+            if (foodPos != null) {
+                addNewFoodSquare(foodPos);
+            } else {
+                break;
             }
         }
+    }
+    
+    protected int getNumFoodToPlace() {
+        
+        Random rand = new Random();
+        
+        int numPlacedFood = game.food.size();
+        int numTotalFoodToPlace = getNumTotalFoodToPlace();
+        
+        if (game.numFood != -1) {
+            return numTotalFoodToPlace - numPlacedFood;
+        } else if (game.numFood == -1 && numPlacedFood == 0) { // Random Food Num
+            return rand.nextInt(6) + 1; // Rand Num Food To Place
+        } else {
+            return 0;
+        }
+    }
+    
+    protected int getNumTotalFoodToPlace() {
+        return game.numFood;
+    }
+    
+    protected void addNewFoodSquare(Point foodPos) {
+        game.food.add(new Square(foodPos, CellType.FOOD));
     }
 
     protected Point getRandomFoodPosition() {
         
-        if (game.availablePositions.isEmpty()) {
+        if (noFoodPositions()) {
             return null;
         }
         
@@ -185,6 +215,10 @@ public class ClassicGame {
         int index = rand.nextInt(game.availablePositions.size());
         return game.availablePositions.remove(index);
 
+    }
+    
+    protected boolean noFoodPositions() {
+        return game.availablePositions.isEmpty();
     }
     
     // TODO not used

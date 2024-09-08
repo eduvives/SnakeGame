@@ -20,7 +20,7 @@ public class CheeseGame extends ClassicGame {
     protected CheeseSnake cheeseSnake;
     
     private int[][] SIDES_DIRECTIONS = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
-    private int numAvailableFooodPositions;
+    private List<Point> foodPositionCandidates = new ArrayList<>();;
     
     public CheeseGame(GameLogic game) {
         super(game);
@@ -28,7 +28,7 @@ public class CheeseGame extends ClassicGame {
     
     @Override
     protected boolean checkFeast() {
-        return numAvailableFooodPositions == 0 && game.food.isEmpty();
+        return foodPositionCandidates.isEmpty() && game.food.isEmpty();
     }
     
     @Override
@@ -68,32 +68,42 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
-    protected Point getRandomFoodPosition() {
-                
-        List<Point> candidates = new ArrayList<>();
+    protected void placeFood() {
+
+        prevPlaceFoodCheeseGame();
+
+        super.placeFood();
+    }
+    
+    // Update Food Position Candidates
+    protected void prevPlaceFoodCheeseGame() {
+        
+        foodPositionCandidates.clear();
         
         for (Point pos : game.availablePositions) {
             
             int freeSides = 0;
             for (int[] dir : SIDES_DIRECTIONS) {
                 Point sidePos = new Point(pos.x + dir[0], pos.y + dir[1]);
-                if (game.availablePositions.contains(sidePos) || game.food.contains(sidePos)) freeSides++;
+                if (game.availablePositions.contains(sidePos) || game.food.contains(sidePos)) freeSides++; // TODO revisar amb Blender Dimension mode (checkSnakeListCollision)?
             }
 
             if (freeSides >= 2) {
-                candidates.add(pos);
+                foodPositionCandidates.add(pos);
             }
-        }        
+        }
+    }
+    
+    @Override
+    protected Point getRandomFoodPosition() {
         
-        numAvailableFooodPositions = candidates.size();
-        
-        if (candidates.isEmpty()) {
+        if (foodPositionCandidates.isEmpty()) {
             return null;
         }
 
         Random rand = new Random();
         
-        Point candidate = candidates.get(rand.nextInt(candidates.size()));
+        Point candidate = foodPositionCandidates.remove(rand.nextInt(foodPositionCandidates.size()));
         game.availablePositions.remove(candidate);
         
         return candidate;

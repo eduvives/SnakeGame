@@ -21,7 +21,7 @@ public class Snake {
     public static final Point START_DIRECTION = new Point(1, 0);   
     
     public Snake(Point startPos) {
-        head = new Square(startPos, CellType.SNAKE_HEAD);
+        head = createSquare(startPos, CellType.SNAKE_HEAD);
         body = new LinkedList<>();
         direction = new Point(START_DIRECTION);
         initializeBody();
@@ -35,7 +35,7 @@ public class Snake {
     
     protected void initializeBody() {
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            body.addLast(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
+            body.addLast(createSquare(head.x - i, head.y, CellType.SNAKE_BODY));
         }
     }
 
@@ -57,7 +57,15 @@ public class Snake {
             body.removeLast();
         }
         
-        body.addFirst(new Square(head, CellType.SNAKE_BODY));
+        body.addFirst(createSquare(head, CellType.SNAKE_BODY));
         head.setLocation(newPos);
+    }
+    
+    protected Square createSquare(int col, int row, CellType cellType){
+        return new Square(col, row, cellType);
+    }
+    
+    protected Square createSquare(Point pos, CellType cellType) {
+        return new Square(pos, cellType);
     }
 }
