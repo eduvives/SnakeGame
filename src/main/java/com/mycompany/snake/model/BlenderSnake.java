@@ -48,12 +48,12 @@ public class BlenderSnake extends Snake {
     }
     
     @Override
-    public void move(Point newPos, boolean isFood) {
+    public void move(Point newPos, boolean isFoodCollision) {
         
         if (cheeseSnake != null) {
-            cheeseSnake.move(newPos, isFood);
+            cheeseSnake.move(newPos, isFoodCollision);
         } else {
-            super.move(newPos, isFood);
+            super.move(newPos, isFoodCollision);
         }
     }
 }

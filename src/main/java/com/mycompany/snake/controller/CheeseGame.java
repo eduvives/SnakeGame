@@ -49,22 +49,19 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
-    protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
+    protected void updateSnakeAvailablePositions(boolean isFoodCollision, Point previousLastBodyPartPos){
         
-        Point lastBodyPartPos = cheeseSnake.getBody().getLast().getLocation();
-        Point headPos = cheeseSnake.getHead().getLocation();
         int growCount = cheeseSnake.getGrowCount();
-        boolean nextBodyPartSnake = cheeseSnake.isNextBodyPartSnake();
+        int growCountPrev = growCount + (growCount > 0 ? 1 : 0) - (isFoodCollision ? 2 : 0); // ???
+        boolean nextBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
         
-        if (isFood) growCount += 2;
-        
-        if (nextBodyPartSnake && growCount <= 0) {
-            game.availablePositions.add(lastBodyPartPos);
+        if (nextBodyPartSnake && growCountPrev <= 0) {
+            game.availablePositions.add(previousLastBodyPartPos);
         } else if (!nextBodyPartSnake) {
-            game.availablePositions.add(headPos);
+            game.availablePositions.add(cheeseSnake.getEmptyBody().getFirst().getLocation()); // Previous Snake Head Position
         }
         
-        game.availablePositions.remove(newPos);
+        game.availablePositions.remove(cheeseSnake.getHead().getLocation());
     }
     
     @Override

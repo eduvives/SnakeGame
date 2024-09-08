@@ -53,19 +53,11 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected void updateSnakeAvailablePositions(Point newPos, boolean isFood){
-
-        super.updateSnakeAvailablePositions(newPos, isFood);
+    protected boolean positionAvailableAfterSnakeSimpleMove(boolean isFoodCollision, Point previousLastBodyPartPos) {
         
-        postUpdateSnakeAvailablePositionsStatueGame();
-    }
-    
-    protected void postUpdateSnakeAvailablePositionsStatueGame() {
-        Point lastBodyPartPos = game.snake.getBody().getLast().getLocation();
-
-        if (statues.contains(lastBodyPartPos)) {
-            game.availablePositions.remove(lastBodyPartPos);
-        }
+        boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(isFoodCollision, previousLastBodyPartPos);
+        
+        return positionAvailable && !statues.contains(previousLastBodyPartPos);
     }
     
     @Override

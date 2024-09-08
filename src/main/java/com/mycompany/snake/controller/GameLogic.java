@@ -45,7 +45,6 @@ public class GameLogic {
     private String gameModeName;
     private List<String> blenderSelectedModes;
     private Map<Color, List<Point>> viewSquaresColors = new HashMap<>();
-    private List<Square> viewAllSquares = new ArrayList<>();
     
     private int boardWidth;
     private int boardHeight;
@@ -54,7 +53,6 @@ public class GameLogic {
     protected int numBoardCols;
     protected boolean isBoardUpdated;
     protected List<Point> availablePositions = new ArrayList<>();
-    protected List<List<Point>> notAvailablePositionElements = new ArrayList<>();
     protected List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
     
     protected String boardName;
@@ -385,21 +383,6 @@ public class GameLogic {
     
     protected void updateView(){
         viewSquaresColors.clear();
-        viewAllSquares.clear();
-        
-        // Snake Body
-        viewAllSquares.addAll(snake.getBody());
-        
-        // Snake Head
-        viewAllSquares.add(snake.getHead());
-        
-        // Food
-        viewAllSquares.addAll(food);
-        
-        // Specific Mode Lists (Wall...)
-        for (Collection<? extends Square> modeList : specificModeLists) {
-            viewAllSquares.addAll(0,modeList);
-        }
         
         // Test Lines Start 2
         
@@ -412,7 +395,7 @@ public class GameLogic {
 
         // Test Lines Start
         
-        viewAllSquares.addAll(0,testList);
+        addSquareColorListView(testList);
         
         testList.clear();
         
@@ -427,13 +410,33 @@ public class GameLogic {
         
         // Test Lines End
         
-        for (Square square : viewAllSquares) {
-            Color color = square.getColor();
-            Point position = square;
-
-            viewSquaresColors.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
+        // Specific Mode Lists (Wall...)
+        for (Collection<? extends Square> modeList : specificModeLists) {
+            addSquareColorListView(modeList);
         }
         
+        // Food
+        addSquareColorListView(food);
+        
+        // Snake Head
+        addSquareColorView(snake.getHead());
+        
+        // Snake Body
+        addSquareColorListView(snake.getBody());
+        
         view.getBoardPanel().setSquaresColors(viewSquaresColors);
+    }
+    
+    private void addSquareColorListView(Collection<? extends Square> squaresList) {
+        for (Square square : squaresList) {
+            addSquareColorView(square);
+        }
+    }
+    
+    private void addSquareColorView(Square square) {
+        Color color = square.getColor();
+        Point position = square;
+
+        viewSquaresColors.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
     }
 }
