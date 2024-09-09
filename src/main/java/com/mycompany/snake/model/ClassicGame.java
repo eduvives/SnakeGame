@@ -2,11 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.controller;
+package com.mycompany.snake.model;
 
-import com.mycompany.snake.model.CellType;
-import com.mycompany.snake.model.Snake;
-import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.util.HashSet;
 import java.util.List;
@@ -19,9 +16,9 @@ import java.util.Set;
  */
 public class ClassicGame {
 
-    protected final GameLogic game;
+    protected final GameModel game;
     
-    public ClassicGame(GameLogic game) {
+    public ClassicGame(GameModel game) {
         this.game = game;
     }
     
@@ -50,20 +47,16 @@ public class ClassicGame {
     // NEW GAME
     
     protected void prepareNewGame() {
-        if (!game.isBoardUpdated) {
-            game.updateBoardParams();
-            game.startPos = new Point(Snake.START_LENGTH + 1, game.numBoardRows / 2);
-        }
+        
+        game.observer.onNewGame();
         
         game.gameStarted = false;
         game.gameEnded = false;
-        game.score = 0;
-        game.updateScore();
+        game.setScore(0);
         
         game.availablePositions.clear();
         game.specificModeLists.clear();
         game.food.clear();
-        game.inputQueue.clear();
         
         // Inicializar posiciones disponibles
         for (int i = 0; i < game.numBoardRows; i++) {
@@ -73,14 +66,18 @@ public class ClassicGame {
         }
     }
     
-    protected void initializeSnake(){
+    protected void initializeSnake() {
         game.snake = createSnakeInstance();
         game.snake.initializeSnake(new Point(game.startPos));
-        removeAllSnakeAvailablePositions();
     }
     
     protected Snake createSnakeInstance() {
         return new Snake();
+    }
+    
+    protected void initializeGameSnake(){
+        initializeSnake();
+        removeAllSnakeAvailablePositions();
     }
     
     protected void removeAllSnakeAvailablePositions(){
@@ -125,12 +122,11 @@ public class ClassicGame {
         }
         
         if (!isCollision) {
-            game.updateView();
-            game.view.getBoardPanel().repaint();
+            game.observer.onViewChanged();
         }
         
         if (isCollision || isFeast) {
-            game.gameEnd(isFeast);
+            game.observer.onGameEnded(isFeast);
         }
     }
     
@@ -151,8 +147,7 @@ public class ClassicGame {
     }
     
     private void increaseScore() {
-        game.score += 1;
-        game.updateScore();
+        game.setScore(game.score + 1);
     }
     
     protected void eatFood(Point newPos) {

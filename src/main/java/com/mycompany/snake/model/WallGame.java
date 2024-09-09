@@ -2,10 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.controller;
+package com.mycompany.snake.model;
 
-import com.mycompany.snake.model.CellType;
-import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +22,7 @@ public class WallGame extends ClassicGame {
     private Set<Point> spawnWalls = new HashSet<>();
     protected Set<Point> spawnRadius;
     
-    public WallGame(GameLogic game) {
+    public WallGame(GameModel game) {
         super(game);        
     }
     

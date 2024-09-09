@@ -2,10 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.controller;
+package com.mycompany.snake.model;
 
-import com.mycompany.snake.model.CellType;
-import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.Collections;
@@ -20,7 +18,7 @@ public class TwinGame extends ClassicGame {
     
     private Timer switchSidesTimer;
     
-    public TwinGame(GameLogic game) {
+    public TwinGame(GameModel game) {
         super(game);
         setSwitchSidesTimer();
     }

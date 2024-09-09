@@ -5,8 +5,9 @@
 package com.mycompany.snake.controller;
 
 import com.mycompany.snake.model.CellType;
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.ModelObserver;
 import com.mycompany.snake.model.SettingsParams;
-import com.mycompany.snake.model.Snake;
 import com.mycompany.snake.model.Square;
 import com.mycompany.snake.view.SnakeView;
 import java.awt.Color;
@@ -34,60 +35,87 @@ import javax.swing.Timer;
  *
  * @author Eduard
  */
-public class GameLogic {
+public class GameController implements ModelObserver {
     
-    protected List<Square> testList = new ArrayList<>(); // Test Line
+    private List<Square> testList = new ArrayList<>(); // Test Line
     
-    protected SnakeView view;
-    protected Point startPos;
-    protected Snake snake;
-    private ClassicGame gameMode;
-    private String gameModeName;
-    private List<String> blenderSelectedModes;
+    private SnakeView view;
     private Map<Color, List<Point>> viewSquaresColors = new HashMap<>();
     
+    private GameModel model;
+    
+    // View
     private int boardWidth;
     private int boardHeight;
     private int squareSize;
-    protected int numBoardRows;
-    protected int numBoardCols;
-    protected boolean isBoardUpdated;
-    protected List<Point> availablePositions = new ArrayList<>();
-    protected List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
+    private boolean isBoardUpdated;
     
-    protected String boardName;
-    protected int score;
-    protected int numFood;
-    protected List<Square> food = new ArrayList<>();
-    
-    protected Timer timer;
-    protected int timerDelay;
-    protected List<Point> inputQueue = new ArrayList<>();
+    // Game Logic
+    private Timer timer;
+    private int timerDelay;
+    private List<Point> inputQueue = new ArrayList<>();
     private static final int MAX_INPUT_QUEUE_SIZE = 2;
-    protected boolean gameStarted;
-    protected boolean gameEnded;
     
-    public GameLogic(SnakeView view) {
+    public GameController(SnakeView view, GameModel model) {
         this.view = view;
         setViewParams();
         setSettingsComboBoxesModels();
         setBlenderModeListModel();
-        setGameParams(
+        updateGameViewParams(
             SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.SPEED_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.FOOD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.MODE_NAMES[SettingsParams.DEFAULT_SELECTED_INDEX]
         );
-        updateBoardParams();
+        updateViewBoardParams();
         setViewListeners();
         configureKeyBindings();
-    }        
+        
+        this.model = model;
+    }
+    
+    public void registerObserver() {
+        model.setObserver(this);
+    }
+    
+    @Override
+    public void onViewChanged() {
+        refreshBoard();
+    }
+    
+    @Override
+    public void onScoreChanged() {
+        updateScore();
+    }
+    
+    private void refreshBoard() {
+        updateView();
+        view.getBoardPanel().repaint();
+    }
+    
+    @Override
+    public void onGameEnded(boolean isFeast) {
+        endGameLoop(isFeast);
+    }
+    
+    @Override
+    public void onNewGame() {
+
+        if (!isBoardUpdated) {
+            updateViewBoardParams();
+        }
+        clearUserInputs();
+    }
+    
+    private void clearUserInputs() {
+        inputQueue.clear();
+    }
     
     private void setViewParams(){
         view.getBoardPanel().setBackgroundColor(CellType.EMPTY.getColor());
     }
     
-    private void setGameParams(int[] boardSize, int delay, int numFood, String mode) {
+    private void updateGameViewParams(int[] boardSize, int delay, int numFood, String mode) {
         
         // Board Size Changed
         if (boardWidth != boardSize[0] || boardHeight != boardSize[1] || squareSize != boardSize[2] ) {
@@ -97,50 +125,27 @@ public class GameLogic {
             squareSize = boardSize[2];
             isBoardUpdated = false;
             
-            numBoardCols = boardWidth / squareSize;
-            numBoardRows = boardHeight / squareSize;
+            model.updateBoardParams(boardWidth, boardHeight, squareSize);
         }
 
         this.timerDelay = delay;
 
-        this.numFood = numFood;
+        model.updateNumFoodParam(numFood);
         
         boolean selectBlindly = view.getBlenderSettings().isSelectBlindlyModes();
         
         if (!selectBlindly || (selectBlindly && mode.equals("Blender"))) {
-            
             List<String> newBlenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues();
-            
-            // Blender Selected Modes Changed
-            if (!Objects.equals(blenderSelectedModes, newBlenderSelectedModes)) {
-                blenderSelectedModes = newBlenderSelectedModes; // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
-                if (mode.equals("Blender") && gameMode instanceof BlenderGame) {
-                    BlenderGame blenderGame = (BlenderGame) gameMode;
-                    blenderGame.setBlenderModes(blenderSelectedModes); // TODO revisar
-                }
-            }
+            model.updateBlenderSelectedModes(mode, newBlenderSelectedModes);
         }
         
         // Game Mode Changed
-        if (!Objects.equals(gameModeName, mode)) {
-            
-            switch (mode) {
-                case "Classic" -> gameMode = new ClassicGame(this);
-                case "Wall" -> gameMode = new WallGame(this);
-                case "Cheese" -> gameMode = new CheeseGame(this);
-                case "Boundless" -> gameMode = new BoundlessGame(this);
-                case "Twin" -> gameMode = new TwinGame(this);
-                case "Statue" -> gameMode = new StatueGame(this);
-                case "Blender" -> gameMode = new BlenderGame(this, blenderSelectedModes);
-                case "Dimension" -> gameMode = new DimensionGame(this);
-                default -> gameMode = new ClassicGame(this);
-            }
-            
-            gameModeName = mode;
+        if (!Objects.equals(model.getGameModeName(), mode)) {
+            model.updateGameMode(mode);
         }
     }
     
-    protected void updateBoardParams() {
+    private void updateViewBoardParams() {
         view.getBoardPanel().setBoardWidth(boardWidth);
         view.getBoardPanel().setBoardHeight(boardHeight);
         view.getBoardPanel().setSquareSize(squareSize);
@@ -203,8 +208,8 @@ public class GameLogic {
     
     private void playBtnAction(JDialog fromDialog) {
         updateGameParamsFromView();
-            
-        newGame();
+        
+        model.newGame();
         fromDialog.dispose();
     }
     
@@ -215,7 +220,7 @@ public class GameLogic {
     
     private void updateGameParamsFromView() {
 
-        setGameParams(
+        updateGameViewParams(
             SettingsParams.BOARD_VALUES[view.getSettings().getBoardCmbSelectedIndex()],
             SettingsParams.SPEED_VALUES[view.getSettings().getSpeedCmbSelectedIndex()],
             SettingsParams.FOOD_VALUES[view.getSettings().getFoodCmbSelectedIndex()],
@@ -269,8 +274,8 @@ public class GameLogic {
         actionMap.put("endGame", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!gameEnded) {
-                    gameEnd(false);
+                if (!model.isGameEnded()) {
+                    endGameLoop(false);
                 }
             }
         });
@@ -281,7 +286,7 @@ public class GameLogic {
         actionMap.put("pauseGame", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (gameStarted) {
+                if (model.isGameStarted()) {
                     if (timer.isRunning()) {
                         timer.stop();
                     } else {
@@ -299,7 +304,7 @@ public class GameLogic {
         int numInputs = inputQueue.size();
         
         if (numInputs == 0) {
-            previousDirection = snake.getDirection();
+            previousDirection = model.getSnake().getDirection();
         } else {
             previousDirection = (numInputs < MAX_INPUT_QUEUE_SIZE) ? inputQueue.get(numInputs - 1) : inputQueue.get(numInputs - 2);
         }
@@ -307,8 +312,8 @@ public class GameLogic {
         // Comprobar que no sea la dirección opuesta
         if (previousDirection.x != -newDirection.x || previousDirection.y != -newDirection.y) {
             
-            if (!gameStarted) {
-                startGame();
+            if (!model.isGameStarted()) {
+                startGameLoop();
             }
             
             if (!previousDirection.equals(newDirection)) {
@@ -321,42 +326,29 @@ public class GameLogic {
     }
     
     public void showGameBoard() {
-        startPos = new Point(Snake.START_LENGTH + 1, numBoardRows / 2);
-        snake = new Snake();
-        snake.initializeSnake(new Point(startPos));
+        model.initializeSnake();
         
-        updateView();
-        view.getBoardPanel().repaint();
+        refreshBoard();
         
         this.view.setVisible(true);
     }
     
     public void openMenu() {
-        view.getMenu().setScoreLabel(score);
+        view.getMenu().setScoreLabel(model.getScore());
         view.openMenu();
     }
     
-    protected void updateScore() {
-        view.setCurrentScore(score);
-    } 
-    
-    protected void newGame() {
-        
-        gameMode.prepareNewGame();
-        gameMode.initializeSnake();
-
-        gameMode.placeFood();
-        updateView();
-        view.getBoardPanel().repaint();
+    private void updateScore() {
+        view.setCurrentScore(model.getScore());
     }
     
-    private void startGame() {
+    private void startGameLoop() {
         
         ActionListener gameLoopListener = getGameLoopListener();
-        
         timer = new Timer(timerDelay, gameLoopListener);
         timer.start();
-        gameStarted = true;
+        
+        model.startGame();
     }
     
     private ActionListener getGameLoopListener() {
@@ -364,16 +356,16 @@ public class GameLogic {
         return (ActionEvent e) -> {
             
             if (!inputQueue.isEmpty()) {
-                snake.getDirection().setLocation(inputQueue.remove(0));
+                model.getSnake().getDirection().setLocation(inputQueue.remove(0));
             }
             
-            gameMode.nextLoop();
+            model.nextLoop();
         };
-    }        
-        
-    protected void gameEnd(boolean isFeast) {
+    }
+    
+    private void endGameLoop(boolean isFeast) {
         System.out.println("Feast: " + isFeast);
-        gameEnded = true;
+        model.gameEnd();
         
         if (timer != null) {
             timer.stop();
@@ -382,13 +374,13 @@ public class GameLogic {
         openMenu();
     }
     
-    protected void updateView(){
+    private void updateView(){
         viewSquaresColors.clear();
         
         // Test Lines Start 2
         
         List<Square> candidates_test = new ArrayList<>();
-        for (Point pos : availablePositions) {
+        for (Point pos : model.getAvailablePositions()) {
             candidates_test.add(new Square(pos, CellType.TEST));
         }
         testList.clear();
@@ -412,18 +404,18 @@ public class GameLogic {
         // Test Lines End
         
         // Specific Mode Lists (Wall...)
-        for (Collection<? extends Square> modeList : specificModeLists) {
+        for (Collection<? extends Square> modeList : model.getSpecificModeLists()) {
             addSquareColorListView(modeList);
         }
         
         // Food
-        addSquareColorListView(food);
+        addSquareColorListView(model.getFood());
         
         // Snake Head
-        addSquareColorView(snake.getHead());
+        addSquareColorView(model.getSnake().getHead());
         
         // Snake Body
-        addSquareColorListView(snake.getBody());
+        addSquareColorListView(model.getSnake().getBody());
         
         view.getBoardPanel().setSquaresColors(viewSquaresColors);
     }

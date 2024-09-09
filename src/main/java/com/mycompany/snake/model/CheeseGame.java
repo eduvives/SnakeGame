@@ -2,10 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.controller;
+package com.mycompany.snake.model;
 
-import com.mycompany.snake.model.CheeseSnake;
-import com.mycompany.snake.model.Snake;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,7 @@ public class CheeseGame extends ClassicGame {
     private int[][] SIDES_DIRECTIONS = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
     private List<Point> foodPositionCandidates = new ArrayList<>();;
     
-    public CheeseGame(GameLogic game) {
+    public CheeseGame(GameModel game) {
         super(game);
     }
     
@@ -32,9 +30,9 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
-    protected void initializeSnake(){
+    protected void initializeGameSnake(){
         
-        super.initializeSnake();
+        super.initializeGameSnake();
         
         postInitializeSnakeCheeseGame();
     }

@@ -4,7 +4,8 @@
 
 package com.mycompany.snake.main;
 
-import com.mycompany.snake.controller.GameLogic;
+import com.mycompany.snake.controller.GameController;
+import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.view.SnakeView;
 
 /**
@@ -12,11 +13,14 @@ import com.mycompany.snake.view.SnakeView;
  * @author Eduard
  */
 public class SnakeGame {
-
-    private static final SnakeView view = new SnakeView();
-    private static final GameLogic controller = new GameLogic(view);
     
     public static void main(String[] args) {
+        
+        SnakeView view = new SnakeView();
+        GameModel model = new GameModel();
+        GameController controller = new GameController(view, model);
+    
+        controller.registerObserver();
         controller.showGameBoard();
         controller.openMenu();
     }

@@ -2,11 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.controller;
+package com.mycompany.snake.model;
 
-import com.mycompany.snake.model.CellType;
-import com.mycompany.snake.model.Square;
-import com.mycompany.snake.model.StatueSquare;
 import java.awt.Point;
 import java.util.HashSet;
 import java.util.Random;
@@ -22,7 +19,7 @@ public class StatueGame extends ClassicGame {
     private static final int MIN_FOOD_BEFORE_BREAK = 2;
     private static final int MAX_FOOD_BEFORE_BREAK = 8;
 
-    public StatueGame(GameLogic game) {
+    public StatueGame(GameModel game) {
         super(game);        
     }
     

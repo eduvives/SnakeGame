@@ -2,14 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.controller;
+package com.mycompany.snake.model;
 
-import com.mycompany.snake.model.BlenderSnake;
-import com.mycompany.snake.model.CellType;
-import com.mycompany.snake.model.CheeseSnake;
-import com.mycompany.snake.model.SettingsParams;
-import com.mycompany.snake.model.Snake;
-import com.mycompany.snake.model.Square;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +28,7 @@ public class BlenderGame extends ClassicGame {
     private StatueGame statueGame;
     private DimensionGame dimensionGame;
     
-    public BlenderGame(GameLogic game, List<String> modes) {
+    public BlenderGame(GameModel game, List<String> modes) {
         super(game);
         
         wallGame = new WallGame(game);
@@ -129,9 +123,9 @@ public class BlenderGame extends ClassicGame {
     // BlenderGame - CheeseGame - DimensionGame
     
     @Override
-    protected void initializeSnake(){
+    protected void initializeGameSnake(){
         
-        super.initializeSnake();
+        super.initializeGameSnake();
         
         if (modes.contains("Cheese")) postInitializeSnakeBlenderCheeseGame();
         

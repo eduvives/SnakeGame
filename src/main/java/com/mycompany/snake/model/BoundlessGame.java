@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.controller;
+package com.mycompany.snake.model;
 
 import java.awt.Point;
 
@@ -12,7 +12,7 @@ import java.awt.Point;
  */
 public class BoundlessGame extends ClassicGame {
     
-    public BoundlessGame(GameLogic game) {
+    public BoundlessGame(GameModel game) {
         super(game);
     }
     
