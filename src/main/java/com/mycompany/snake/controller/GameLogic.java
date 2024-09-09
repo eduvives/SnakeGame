@@ -322,7 +322,8 @@ public class GameLogic {
     
     public void showGameBoard() {
         startPos = new Point(Snake.START_LENGTH + 1, numBoardRows / 2);
-        snake = new Snake(new Point(startPos));
+        snake = new Snake();
+        snake.initializeSnake(new Point(startPos));
         
         updateView();
         view.getBoardPanel().repaint();

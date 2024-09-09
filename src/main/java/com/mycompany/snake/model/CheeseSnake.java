@@ -19,20 +19,16 @@ public class CheeseSnake extends Snake {
     protected int growCount;
     protected boolean nextBodyPartSnake;
     
-    public CheeseSnake(Point startPos) {
-        super(startPos);
+    public CheeseSnake() {
+        super();
         emptyBody = new LinkedList<>();
-        
         growCount = 0;
-        postInitializeBody();
     }
     
     public CheeseSnake(Snake snake) {
         super(snake);
         emptyBody = new LinkedList<>();
-        
         growCount = 0;
-        postInitializeBody();
     }
 
     public LinkedList<Square> getEmptyBody() {
@@ -52,11 +48,7 @@ public class CheeseSnake extends Snake {
     }
 
     @Override
-    public void initializeBody() {
-    }
-    
-    protected void postInitializeBody() {
-        
+    protected void initializeBody() {
         for (int i = 1; i <= CHEESE_START_LENGTH - 1; i++) {
             
             int posX = head.x - (i * 2);
@@ -69,7 +61,7 @@ public class CheeseSnake extends Snake {
     }
     
     @Override
-    public void move(Point newPos, boolean grow) {
+    protected void move(Point newPos, boolean grow) {
         
         if (grow) growCount += 2;
         

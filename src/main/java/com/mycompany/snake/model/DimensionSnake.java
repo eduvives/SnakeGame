@@ -12,8 +12,12 @@ import java.awt.Point;
  */
 public class DimensionSnake extends Snake {
     
-    public DimensionSnake(Point startPos) {
-        super(startPos);
+    public DimensionSnake() {
+        super();
+    }
+    
+    public DimensionSnake(Snake snake) {
+        super(snake);
     }
     
     @Override

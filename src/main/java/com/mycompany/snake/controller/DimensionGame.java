@@ -48,8 +48,8 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
-    protected Snake createSnakeInstance(Point startPos) {
-        return new DimensionSnake(startPos);
+    protected Snake createSnakeInstance() {
+        return new DimensionSnake();
     }
     
     // Establece si, después de moverse la serpiente, la posición previa de cola (última posición del cuerpo de la serpiente) 
@@ -92,7 +92,7 @@ public class DimensionGame extends ClassicGame {
     }
     
     // Set Other Dimension Food Start Value
-    private void prevPlaceFoodDimensionGame() {
+    protected void prevPlaceFoodDimensionGame() {
         otherDimensionFood = !game.food.isEmpty();
     }
     
@@ -108,7 +108,7 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
-    protected boolean noFoodPositions() {
+    protected boolean noFoodPositions() { // TODO aun no funciona
         System.out.println(otherDimensionFood);
         int numFoodInotherDimension = game.food.size() / 2 + (game.food.size() % 2 != 0 && otherDimensionFood ? 1 : 0);
         System.out.println(numFoodInotherDimension);

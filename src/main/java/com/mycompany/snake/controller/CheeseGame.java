@@ -44,8 +44,8 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
-    protected Snake createSnakeInstance(Point startPos) {
-        return new CheeseSnake(startPos);
+    protected Snake createSnakeInstance() {
+        return new CheeseSnake();
     }
     
     @Override
