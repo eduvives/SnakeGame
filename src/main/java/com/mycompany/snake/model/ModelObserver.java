@@ -9,8 +9,14 @@ package com.mycompany.snake.model;
  * @author Eduard
  */
 public interface ModelObserver {
+    
+    // Global (Classic Game)
     void onViewChanged();
     void onGameEnded(boolean isFeast);
     void onScoreChanged();
     void onNewGame();
+    
+    // Specific (Twin Game)
+    void onNewTwinGame();
+    void onSwitchSides();
 }

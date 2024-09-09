@@ -57,10 +57,14 @@ public class GameController implements ModelObserver {
     private static final int MAX_INPUT_QUEUE_SIZE = 2;
     
     public GameController(SnakeView view, GameModel model) {
+        
         this.view = view;
+        this.model = model;
+        
         setViewParams();
         setSettingsComboBoxesModels();
         setBlenderModeListModel();
+        initializeGameTimer();
         updateGameViewParams(
             SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.SPEED_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
@@ -70,9 +74,9 @@ public class GameController implements ModelObserver {
         updateViewBoardParams();
         setViewListeners();
         configureKeyBindings();
-        
-        this.model = model;
     }
+    
+    // Métodos Model Observer
     
     public void registerObserver() {
         model.setObserver(this);
@@ -111,6 +115,8 @@ public class GameController implements ModelObserver {
         inputQueue.clear();
     }
     
+    // Métodos View
+    
     private void setViewParams(){
         view.getBoardPanel().setBackgroundColor(CellType.EMPTY.getColor());
     }
@@ -128,9 +134,17 @@ public class GameController implements ModelObserver {
             model.updateBoardParams(boardWidth, boardHeight, squareSize);
         }
 
-        this.timerDelay = delay;
-
-        model.updateNumFoodParam(numFood);
+        if (timerDelay != delay) {
+            this.timerDelay = delay;
+            updateGameTimerDelay();
+            if (Objects.equals(model.getGameModeName(), "Twin")) {
+                updateSwitchSidesTimerDelay();
+            }
+        }
+        
+        if (model.getNumFood() != numFood) {
+            model.updateNumFoodParam(numFood);
+        }
         
         boolean selectBlindly = view.getBlenderSettings().isSelectBlindlyModes();
         
@@ -173,8 +187,6 @@ public class GameController implements ModelObserver {
         
     private void setViewListeners() {
         
-        // Al no abrir y cerrar las ventanas con mucha frecuencia, seguimos usando dispose() y así aprovechamos la animación de creación de ventana.
-        
         view.getMenu().setPlayBtnListener(e -> {
             playBtnAction(view.getMenu());
         });
@@ -210,6 +222,7 @@ public class GameController implements ModelObserver {
         updateGameParamsFromView();
         
         model.newGame();
+        // Al no abrir y cerrar las ventanas con mucha frecuencia, seguimos usando dispose() y así aprovechamos la animación de creación de ventana.
         fromDialog.dispose();
     }
     
@@ -325,6 +338,30 @@ public class GameController implements ModelObserver {
         }
     }
     
+    // Métodos Timer
+    
+    private void initializeGameTimer() {
+        ActionListener gameLoopListener = getGameLoopListener();
+        timer = new Timer(timerDelay, gameLoopListener);
+        timer.setInitialDelay(0); // No haya retraso inicial
+    }
+    
+    private ActionListener getGameLoopListener() {
+        
+        return (ActionEvent e) -> {
+            
+            if (!inputQueue.isEmpty()) {
+                model.getSnake().getDirection().setLocation(inputQueue.remove(0));
+            }
+            
+            model.nextLoop();
+        };
+    }
+    
+    private void updateGameTimerDelay() {
+        timer.setDelay(timerDelay);
+    }
+    
     public void showGameBoard() {
         model.initializeSnake();
         
@@ -343,33 +380,15 @@ public class GameController implements ModelObserver {
     }
     
     private void startGameLoop() {
-        
-        ActionListener gameLoopListener = getGameLoopListener();
-        timer = new Timer(timerDelay, gameLoopListener);
         timer.start();
-        
         model.startGame();
-    }
-    
-    private ActionListener getGameLoopListener() {
-        
-        return (ActionEvent e) -> {
-            
-            if (!inputQueue.isEmpty()) {
-                model.getSnake().getDirection().setLocation(inputQueue.remove(0));
-            }
-            
-            model.nextLoop();
-        };
     }
     
     private void endGameLoop(boolean isFeast) {
         System.out.println("Feast: " + isFeast);
         model.gameEnd();
         
-        if (timer != null) {
-            timer.stop();
-        }
+        timer.stop();
         
         openMenu();
     }
@@ -431,5 +450,41 @@ public class GameController implements ModelObserver {
         Point position = square;
 
         viewSquaresColors.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
+    }
+    
+    // Métodos Auxiliares Subclases ClassicGame
+    
+    private Timer switchSidesTimer;
+    
+    @Override
+    public void onNewTwinGame() {
+        initializeSwitchSidesTimer();
+    }
+    
+    @Override
+    public void onSwitchSides() {
+        inputQueue.clear();
+        switchingSidesPause(); // Simular una pausa
+    }
+    
+    private void initializeSwitchSidesTimer() {
+        
+        switchSidesTimer = new Timer((int) Math.round(timerDelay * 1.5), (ActionEvent e) -> {
+            if (!model.isGameEnded()) {
+                timer.start();
+            }
+        });
+
+        // Configurar el Timer para que se ejecute solo una vez
+        switchSidesTimer.setRepeats(false);
+    }
+    
+    private void updateSwitchSidesTimerDelay() {
+        switchSidesTimer.setInitialDelay((int) Math.round(timerDelay * 1.5));
+    }
+    
+    private void switchingSidesPause() {
+        timer.stop();
+        switchSidesTimer.start();
     }
 }

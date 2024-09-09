@@ -47,6 +47,10 @@ public class GameModel {
         observer.onScoreChanged();
     }
 
+    public int getNumFood() {
+        return numFood;
+    }
+    
     public String getGameModeName() {
         return gameModeName;
     }

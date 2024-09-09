@@ -5,10 +5,8 @@
 package com.mycompany.snake.model;
 
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.util.Collections;
 import java.util.LinkedList;
-import javax.swing.Timer;
 
 /**
  *
@@ -16,11 +14,9 @@ import javax.swing.Timer;
  */
 public class TwinGame extends ClassicGame {
     
-    private Timer switchSidesTimer;
-    
     public TwinGame(GameModel game) {
         super(game);
-        setSwitchSidesTimer();
+        this.game.observer.onNewTwinGame();
     }
     
     @Override
@@ -60,25 +56,6 @@ public class TwinGame extends ClassicGame {
     }
     
     protected void postEatFoodTwinGame() {
-        game.inputQueue.clear();
-        switchingSidesPause(); // Simular una pausa
-    }
-    
-    // Métodos Auxiliares
-    
-    private void setSwitchSidesTimer() {
-        switchSidesTimer = new Timer((int) Math.round(game.timerDelay * 1.5), (ActionEvent e) -> {
-            if (!game.gameEnded) {
-                game.timer.start();
-            }
-        });
-        
-        // Configurar el Timer para que se ejecute solo una vez
-        switchSidesTimer.setRepeats(false);
-    }
-    
-    private void switchingSidesPause() {
-        game.timer.stop();
-        switchSidesTimer.start();
+        game.observer.onSwitchSides();
     }
 }
