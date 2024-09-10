@@ -14,7 +14,11 @@ import java.awt.Point;
 public class Square extends Point {
     
     protected CellType cellType;
-
+    
+    public Square() {
+        super();
+    }
+    
     public Square(int col, int row, CellType cellType) {
         super(col, row);
         this.cellType = cellType;

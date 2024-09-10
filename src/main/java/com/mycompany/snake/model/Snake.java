@@ -21,10 +21,11 @@ public class Snake {
     public static final Point START_DIRECTION = new Point(1, 0);   
     
     public Snake() {
+        head = new Square();
         body = new LinkedList<>();
         direction = new Point();
     }
-    
+
     public Snake(Snake snake) {
         head = snake.head;
         body = snake.body;
@@ -37,13 +38,15 @@ public class Snake {
     }
     
     protected void initializeHead(Point startPos) {
-        head = createSquare(startPos, CellType.SNAKE_HEAD);
+        head.setLocation(startPos);
+        head.cellType = CellType.SNAKE_HEAD;
         direction.setLocation(START_DIRECTION);
     }
     
     protected void initializeBody() {
+        
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            body.addLast(createSquare(head.x - i, head.y, CellType.SNAKE_BODY));
+            body.addLast(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
         }
     }
 
@@ -61,19 +64,9 @@ public class Snake {
     
     protected void move(Point newPos, boolean grow) { // TODO deberia ser protected?
         
-        if(!grow) {
-            body.removeLast();
-        }
+        if(!grow) body.removeLast();
         
-        body.addFirst(createSquare(head, CellType.SNAKE_BODY));
+        body.addFirst(new Square(head, CellType.SNAKE_BODY));
         head.setLocation(newPos);
-    }
-    
-    protected Square createSquare(int col, int row, CellType cellType){
-        return new Square(col, row, cellType);
-    }
-    
-    protected Square createSquare(Point pos, CellType cellType) {
-        return new Square(pos, cellType);
     }
 }

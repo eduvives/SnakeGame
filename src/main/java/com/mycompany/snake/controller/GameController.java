@@ -469,7 +469,7 @@ public class GameController implements ModelObserver {
     
     private void initializeSwitchSidesTimer() {
         
-        switchSidesTimer = new Timer((int) Math.round(timerDelay * 1.5), (ActionEvent e) -> {
+        switchSidesTimer = new Timer((int) Math.round(timerDelay * 2.5), (ActionEvent e) -> {
             if (!model.isGameEnded()) {
                 timer.start();
             }
@@ -480,7 +480,7 @@ public class GameController implements ModelObserver {
     }
     
     private void updateSwitchSidesTimerDelay() {
-        switchSidesTimer.setInitialDelay((int) Math.round(timerDelay * 1.5));
+        switchSidesTimer.setInitialDelay((int) Math.round(timerDelay * 2.5));
     }
     
     private void switchingSidesPause() {

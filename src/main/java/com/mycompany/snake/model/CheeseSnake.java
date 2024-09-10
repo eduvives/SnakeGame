@@ -13,9 +13,9 @@ import java.util.LinkedList;
  */
 public class CheeseSnake extends Snake {
     
-    private LinkedList<Square> emptyBody;
+    protected LinkedList<Square> emptyBody;
     
-    private static final int CHEESE_START_LENGTH = 3;
+    protected static final int CHEESE_START_LENGTH = 3;
     protected int growCount;
     protected boolean nextBodyPartSnake;
     
@@ -24,7 +24,7 @@ public class CheeseSnake extends Snake {
         emptyBody = new LinkedList<>();
         growCount = 0;
     }
-    
+
     public CheeseSnake(Snake snake) {
         super(snake);
         emptyBody = new LinkedList<>();
@@ -49,6 +49,7 @@ public class CheeseSnake extends Snake {
 
     @Override
     protected void initializeBody() {
+        
         for (int i = 1; i <= CHEESE_START_LENGTH - 1; i++) {
             
             int posX = head.x - (i * 2);

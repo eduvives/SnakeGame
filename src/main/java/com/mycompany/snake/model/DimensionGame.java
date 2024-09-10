@@ -50,12 +50,12 @@ public class DimensionGame extends ClassicGame {
     // Establece si, después de moverse la serpiente, la posición previa de cola (última posición del cuerpo de la serpiente) 
     // debe ser marcado como posición disponible, comprobando si hay algún elemento en esa posición
     @Override
-    protected boolean positionAvailableAfterSnakeSimpleMove(boolean isFoodCollision, Point previousLastBodyPartPos) {
+    protected boolean positionAvailableAfterSnakeSimpleMove(Point position, Point previousPosition) {
         
-        boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(isFoodCollision, previousLastBodyPartPos);
+        boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
         
-        return positionAvailable && !game.snake.getBody().contains(previousLastBodyPartPos) 
-                && !game.food.contains(previousLastBodyPartPos) && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(previousLastBodyPartPos));
+        return positionAvailable && !game.snake.getBody().contains(previousPosition) 
+                && !game.food.contains(previousPosition) && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(previousPosition));
     }
     
     @Override

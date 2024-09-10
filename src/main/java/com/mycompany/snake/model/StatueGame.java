@@ -50,11 +50,11 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected boolean positionAvailableAfterSnakeSimpleMove(boolean isFoodCollision, Point previousLastBodyPartPos) {
+    protected boolean positionAvailableAfterSnakeSimpleMove(Point position, Point previousPosition) {
         
-        boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(isFoodCollision, previousLastBodyPartPos);
+        boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
         
-        return positionAvailable && !statues.contains(previousLastBodyPartPos);
+        return positionAvailable && !statues.contains(previousPosition);
     }
     
     @Override
