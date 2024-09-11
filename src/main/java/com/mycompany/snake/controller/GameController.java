@@ -410,7 +410,7 @@ public class GameController implements ModelObserver {
         }
         testList.clear();
         testList.addAll(candidates_test);
-
+        
         // Test Lines Start
         
         addSquareColorListView(testList);

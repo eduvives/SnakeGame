@@ -5,8 +5,6 @@
 package com.mycompany.snake.model;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -157,11 +155,7 @@ public class BlenderGame extends ClassicGame {
     
     @Override
     protected Snake createSnakeInstance() {
-        
-        List<String> blenderSnakeModeNames = new ArrayList<>(modes);
-        blenderSnakeModeNames.retainAll(Arrays.asList(SettingsParams.BLENDER_SNAKE_INCLUDED_MODES));
-        
-        return new BlenderSnake(blenderSnakeModeNames);
+        return new BlenderSnake(modes);
     }
     
     // TwinGame - CheeseGame - BoundlessGame - StatueGame - DimensionGame

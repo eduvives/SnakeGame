@@ -47,24 +47,22 @@ public class BlenderSnake extends Snake {
     }
     
     // BlenderSnake - DimensionSnake
-    
-    @Override
+
     protected Square createSnakeBodyPart(int col, int row) {
         
         if (modes.contains("Dimension")) {
-            return dimensionSnake.createSnakeBodyPart(col, row);
+            return new DimensionSquare(col, row, CellType.SNAKE_BODY, false);
         } else {
-            return super.createSnakeBodyPart(col, row);
+            return new Square(col, row, CellType.SNAKE_BODY);
         }   
     }
-    
-    @Override
+
     protected Square createSnakeBodyPart(Point pos) {
         
         if (modes.contains("Dimension")) {
-            return dimensionSnake.createSnakeBodyPart(pos);
+            return new DimensionSquare(pos, CellType.SNAKE_BODY, false);
         } else {
-            return super.createSnakeBodyPart(pos);
+            return new Square(pos, CellType.SNAKE_BODY);
         }   
     }
     
@@ -74,15 +72,13 @@ public class BlenderSnake extends Snake {
     public void initializeBody() {
         
         if (modes.contains("Cheese")) {
-            initializeBodyCheeseDimensionSnake();
-        } else if (modes.contains("Dimension")) {
-            dimensionSnake.initializeBody();
+            initializeBodyCheeseDimension();
         } else {
-            super.initializeBody();
+            initializeBodyBlender();
         }
     }
     
-    private void initializeBodyCheeseDimensionSnake() {
+    private void initializeBodyCheeseDimension() {
         
         for (int i = 1; i <= CheeseSnake.CHEESE_START_LENGTH - 1; i++) {
             
@@ -95,21 +91,25 @@ public class BlenderSnake extends Snake {
         cheeseSnake.nextBodyPartSnake = true;
     }
     
+    private void initializeBodyBlender() {
+        for (int i = 1; i <= START_LENGTH - 1; i++) {
+            body.addLast(createSnakeBodyPart(head.x - i, head.y));
+        }
+    }
+    
     @Override
     public void move(Point newPos, boolean isFoodCollision) {
         
         if (modes.contains("Cheese")) {
-            moveCheeseDimensionSnake(newPos, isFoodCollision);
-        } else if (modes.contains("Dimension")) {
-            dimensionSnake.move(newPos, isFoodCollision);
+            moveCheeseDimension(newPos, isFoodCollision);
         } else {
-            super.move(newPos, isFoodCollision);
+            moveBlender(newPos, isFoodCollision);
         }
         
         if (isFoodCollision) {
             if (modes.contains("Twin")) {
                 if (modes.contains("Cheese")) {
-                    postSnakeSimpleMoveTwinCheeseDimensionGame(newPos);
+                    switchSidesTwinCheeseDimension(newPos);
                 } else {
                     switchSidesBlender(newPos); // TODO revisar que funcione
                     restoreDirectionBlender(head, body.getFirst());
@@ -118,7 +118,7 @@ public class BlenderSnake extends Snake {
         }
     }
     
-    private void moveCheeseDimensionSnake(Point newPos, boolean grow) {
+    private void moveCheeseDimension(Point newPos, boolean grow) {
         
         if (grow) cheeseSnake.growCount += 2;
         
@@ -145,14 +145,21 @@ public class BlenderSnake extends Snake {
         cheeseSnake.nextBodyPartSnake = !cheeseSnake.nextBodyPartSnake;
     }
     
-    private void postSnakeSimpleMoveTwinCheeseDimensionGame(Point newPos) {
+    private void moveBlender(Point newPos, boolean grow) {
+        if(!grow) body.removeLast();
+        
+        body.addFirst(createSnakeBodyPart(head));
+        head.setLocation(newPos);
+    }
+    
+    private void switchSidesTwinCheeseDimension(Point newPos) {
 
         LinkedList<Square> snakeBody = cheeseSnake.getBody();
         Point snakeHead = cheeseSnake.getHead();
         LinkedList<Square> emptyBody = cheeseSnake.getEmptyBody();
 
         boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
-        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 1);
+        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake && cheeseSnake.getGrowCount() % 2 == 1);
 
         if (isFirstBodyPartSnake) {
             emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
@@ -164,37 +171,35 @@ public class BlenderSnake extends Snake {
         } else {
             snakeBody.addFirst(createSnakeBodyPart(newPos));
         }
-
-        Collections.reverse(snakeBody);
-        Collections.reverse(emptyBody);
-
+        
         if (isLastBodyPartSnake) {
-            snakeHead.setLocation(snakeBody.removeFirst());
-            restoreDirectionBlender(snakeHead, emptyBody.getFirst());
+            snakeHead.setLocation(snakeBody.removeLast());
+            restoreDirectionBlender(snakeHead, emptyBody.getLast());
         } else {
-            snakeHead.setLocation(emptyBody.removeFirst());
+            snakeHead.setLocation(emptyBody.removeLast());
 
             // Si el método move de la combinación Twin Cheese Snake elimina una celda vacía,
             // esta debe ser también eliminada de la lista de posiciones disponibles.
             //game.availablePositions.remove(snakeHead);
 
-            restoreDirectionBlender(snakeHead, snakeBody.getFirst());
+            restoreDirectionBlender(snakeHead, snakeBody.getLast());
         }
 
         cheeseSnake.setNextBodyPartSnake(isLastBodyPartSnake);
+
+        Collections.reverse(snakeBody);
+        Collections.reverse(emptyBody);
     }
     
     private void switchSidesBlender(Point newPos) {
         
-        head.setLocation(body.getLast());
-
-        body.removeLast();
+        head.setLocation(body.removeLast());
         body.addFirst(createSnakeBodyPart(newPos));
         
         Collections.reverse(body);
     }
     
-    private void restoreDirectionBlender(Point snakeHead, Point snakeFirstBodyPartPos) { // TODO eliminar y trasladar a Snake?
+    private void restoreDirectionBlender(Point snakeHead, Point snakeFirstBodyPartPos) {
         
         Point defaultDirection = getDefaultDirection(snakeHead, snakeFirstBodyPartPos);
         

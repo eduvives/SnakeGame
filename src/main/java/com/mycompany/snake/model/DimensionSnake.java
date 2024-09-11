@@ -24,7 +24,7 @@ public class DimensionSnake extends Snake {
     protected void initializeBody() {
         
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            body.addLast(createSnakeBodyPart(head.x - i, head.y));
+            body.addLast(new DimensionSquare(head.x - i, head.y, CellType.SNAKE_BODY, false));
         }
     }
     
@@ -33,17 +33,7 @@ public class DimensionSnake extends Snake {
         
         if(!grow) body.removeLast();
         
-        body.addFirst(createSnakeBodyPart(head));
+        body.addFirst(new DimensionSquare(head, CellType.SNAKE_BODY, false));
         head.setLocation(newPos);
-    }
-    
-    @Override
-    protected Square createSnakeBodyPart(int col, int row) {
-        return new DimensionSquare(col, row, CellType.SNAKE_BODY, false);
-    }
-    
-    @Override
-    protected Square createSnakeBodyPart(Point pos) {
-        return new DimensionSquare(pos, CellType.SNAKE_BODY, false);
     }
 }

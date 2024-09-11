@@ -46,7 +46,7 @@ public class Snake {
     protected void initializeBody() {
         
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            body.addLast(createSnakeBodyPart(head.x - i, head.y));
+            body.addLast(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
         }
     }
 
@@ -66,7 +66,7 @@ public class Snake {
         
         if(!grow) body.removeLast();
         
-        body.addFirst(createSnakeBodyPart(head));
+        body.addFirst(new Square(head, CellType.SNAKE_BODY));
         head.setLocation(newPos);
     }
     
@@ -76,13 +76,5 @@ public class Snake {
     
     protected Point getDefaultDirection(Point snakeHead, Point snakeFirstBodyPartPos) { // TODO delete params?
         return new Point(snakeHead.x - snakeFirstBodyPartPos.x, snakeHead.y - snakeFirstBodyPartPos.y);
-    }
-    
-    protected Square createSnakeBodyPart(int col, int row) {
-        return new Square(col, row, CellType.SNAKE_BODY);
-    }
-    
-    protected Square createSnakeBodyPart(Point pos) {
-        return new Square(pos, CellType.SNAKE_BODY);
     }
 }
