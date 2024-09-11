@@ -29,7 +29,7 @@ public class StatueGame extends ClassicGame {
         Point snakeHeadPos = game.snake.getHead().getLocation();
         
         boolean collision = super.checkCollision();
-        boolean statueCollision = statues.contains(snakeHeadPos);
+        boolean statueCollision = checkSnakeListCollision(statues, snakeHeadPos);
         
         return collision || statueCollision;
     }
@@ -60,19 +60,19 @@ public class StatueGame extends ClassicGame {
     @Override
     protected void eatFood(Point newPos) {
         
-        prevEatFoodStatueGame();
+        placeStatue();
         
         super.eatFood(newPos);
     }
     
-    protected void prevEatFoodStatueGame() {
+    protected void placeStatue() {
         sculptStatue();
         updateStatues();
     }
     
     // Métodos Auxiliares
     
-    private void sculptStatue() {
+    protected void sculptStatue() {
         
         for (Point bodyPartPos : game.snake.getBody()) {
             statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED));
@@ -87,7 +87,7 @@ public class StatueGame extends ClassicGame {
         */
     }
     
-    private void updateStatues() {
+    protected void updateStatues() {
         
         Set<Square> snakeBodySet = new HashSet<>(game.snake.getBody());
         

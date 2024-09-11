@@ -52,7 +52,6 @@ public class GameController implements ModelObserver {
     
     // Game Logic
     private Timer timer;
-    private int timerDelay;
     private List<Point> inputQueue = new ArrayList<>();
     private static final int MAX_INPUT_QUEUE_SIZE = 2;
     
@@ -65,6 +64,7 @@ public class GameController implements ModelObserver {
         setSettingsComboBoxesModels();
         setBlenderModeListModel();
         initializeGameTimer();
+        initializeSwitchSidesTimer();
         updateGameViewParams(
             SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.SPEED_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
@@ -123,7 +123,7 @@ public class GameController implements ModelObserver {
     
     private void updateGameViewParams(int[] boardSize, int delay, int numFood, String mode) {
         
-        // Board Size Changed
+        // Update Board Size
         if (boardWidth != boardSize[0] || boardHeight != boardSize[1] || squareSize != boardSize[2] ) {
             
             boardWidth = boardSize[0];
@@ -134,26 +134,33 @@ public class GameController implements ModelObserver {
             model.updateBoardParams(boardWidth, boardHeight, squareSize);
         }
 
-        if (timerDelay != delay) {
-            this.timerDelay = delay;
-            updateGameTimerDelay();
-            if (Objects.equals(model.getGameModeName(), "Twin")) {
-                updateSwitchSidesTimerDelay();
-            }
+        // Update Game Timer Delay
+        if (timer.getDelay() != delay) {
+            updateGameTimerDelay(delay);
         }
         
+        // Update Num Food
         if (model.getNumFood() != numFood) {
             model.updateNumFoodParam(numFood);
         }
         
-        boolean selectBlindly = view.getBlenderSettings().isSelectBlindlyModes();
-        
-        if (!selectBlindly || (selectBlindly && mode.equals("Blender"))) {
+        // Update Blender Selected Modes
+        if (mode.equals("Blender")) {
             List<String> newBlenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues();
             model.updateBlenderSelectedModes(mode, newBlenderSelectedModes);
         }
         
-        // Game Mode Changed
+        // Update Switch Sides Timer Delay (Initial Delay)
+        if (mode.equals("Twin") || (mode.equals("Blender") && model.getBlenderSelectedModes().contains("Twin"))) {
+            
+            int newSwitchSidesDelay = (int) Math.round(delay * 2.5);
+
+            if (switchSidesTimer.getInitialDelay() != newSwitchSidesDelay) {
+                updateSwitchSidesTimerDelay(newSwitchSidesDelay);
+            }
+        }
+        
+        // Update Game Mode
         if (!Objects.equals(model.getGameModeName(), mode)) {
             model.updateGameMode(mode);
         }
@@ -342,8 +349,7 @@ public class GameController implements ModelObserver {
     
     private void initializeGameTimer() {
         ActionListener gameLoopListener = getGameLoopListener();
-        timer = new Timer(timerDelay, gameLoopListener);
-        timer.setInitialDelay(0); // No haya retraso inicial
+        timer = new Timer(0, gameLoopListener); // initialDelay se establece también a zero (No haya retraso inicial)
     }
     
     private ActionListener getGameLoopListener() {
@@ -358,8 +364,8 @@ public class GameController implements ModelObserver {
         };
     }
     
-    private void updateGameTimerDelay() {
-        timer.setDelay(timerDelay);
+    private void updateGameTimerDelay(int newDelay) {
+        timer.setDelay(newDelay);
     }
     
     public void showGameBoard() {
@@ -457,11 +463,6 @@ public class GameController implements ModelObserver {
     private Timer switchSidesTimer;
     
     @Override
-    public void onNewTwinGame() {
-        initializeSwitchSidesTimer();
-    }
-    
-    @Override
     public void onSwitchSides() {
         inputQueue.clear();
         switchingSidesPause(); // Simular una pausa
@@ -469,7 +470,7 @@ public class GameController implements ModelObserver {
     
     private void initializeSwitchSidesTimer() {
         
-        switchSidesTimer = new Timer((int) Math.round(timerDelay * 2.5), (ActionEvent e) -> {
+        switchSidesTimer = new Timer(0, (ActionEvent e) -> {
             if (!model.isGameEnded()) {
                 timer.start();
             }
@@ -479,8 +480,8 @@ public class GameController implements ModelObserver {
         switchSidesTimer.setRepeats(false);
     }
     
-    private void updateSwitchSidesTimerDelay() {
-        switchSidesTimer.setInitialDelay((int) Math.round(timerDelay * 2.5));
+    private void updateSwitchSidesTimerDelay(int newDelay) {
+        switchSidesTimer.setInitialDelay(newDelay);
     }
     
     private void switchingSidesPause() {

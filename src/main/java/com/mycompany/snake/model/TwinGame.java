@@ -5,8 +5,6 @@
 package com.mycompany.snake.model;
 
 import java.awt.Point;
-import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  *
@@ -14,37 +12,27 @@ import java.util.LinkedList;
  */
 public class TwinGame extends ClassicGame {
     
+    protected TwinSnake twinSnake;
+    
     public TwinGame(GameModel game) {
         super(game);
-        this.game.observer.onNewTwinGame();
     }
     
     @Override
-    protected void snakeSimpleMove(Point newPos, boolean isFoodCollision) {
+    protected void initializeGameSnake(){
         
-        super.snakeSimpleMove(newPos, isFoodCollision);
+        super.initializeGameSnake();
         
-        if (isFoodCollision) {
-            postSnakeSimpleMoveTwinGame(newPos);
-        }
-        
+        postInitializeSnakeTwinGame();
     }
     
-    protected void postSnakeSimpleMoveTwinGame(Point newPos) {
-        switchSides(newPos);
-        restoreDirection(game.snake.getHead(), game.snake.getBody().getFirst());
+    protected void postInitializeSnakeTwinGame() {
+        twinSnake = (TwinSnake) game.snake;
     }
     
-    protected void switchSides(Point newPos) {
-        LinkedList<Square> snakeBody = game.snake.getBody();
-        Point snakeHead = game.snake.getHead();
-
-        snakeHead.setLocation(snakeBody.getLast());
-
-        snakeBody.removeLast();
-        snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
-
-        Collections.reverse(snakeBody);
+    @Override
+    protected Snake createSnakeInstance() {
+        return new TwinSnake();
     }
     
     @Override

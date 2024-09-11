@@ -7,9 +7,8 @@ package com.mycompany.snake.model;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,8 +18,6 @@ import java.util.Set;
  */
 public class BlenderGame extends ClassicGame {
     
-    private List<String> modes;
-    
     private WallGame wallGame;
     private CheeseGame cheeseGame;
     private BoundlessGame boundlessGame;
@@ -28,17 +25,17 @@ public class BlenderGame extends ClassicGame {
     private StatueGame statueGame;
     private DimensionGame dimensionGame;
     
-    public BlenderGame(GameModel game, List<String> modes) {
+    private List<String> modes;
+    
+    public BlenderGame(GameModel game) {
         super(game);
         
-        wallGame = new WallGame(game);
-        cheeseGame = new CheeseGame(game);
-        boundlessGame = new BoundlessGame(game);
-        twinGame = new TwinGame(game);
-        statueGame = new StatueGame(game);
-        dimensionGame = new DimensionGame(game);
-        
-        setBlenderModes(modes);
+        wallGame = this.game.wallGame;
+        cheeseGame = this.game.cheeseGame;
+        boundlessGame = this.game.boundlessGame;
+        twinGame = this.game.twinGame;
+        statueGame = this.game.statueGame;
+        dimensionGame = this.game.dimensionGame;
     }
     
     protected void setBlenderModes(List<String> modes) { // TODO reutilizar los modos y no ponerlos a null si ya estan creados? comprobar con contains?
@@ -82,10 +79,21 @@ public class BlenderGame extends ClassicGame {
     // DimensionGame
     
     @Override
-    protected boolean checkSnakeListCollision(List<Square> list, Point position) {
-        
+    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point position) {
+
         if (modes.contains("Dimension")) {
-            return dimensionGame.checkSnakeListCollision(list, position);
+            
+            return list.stream()
+            .filter(square -> square.equals(position))
+            .anyMatch(square -> {
+                if (square instanceof DimensionSquare dimensionSquare) {
+                    return !dimensionSquare.isOtherDimension();
+                } else if (square instanceof StatueDimensionSquare statueSquare) {
+                    return !statueSquare.isOtherDimension();
+                }
+                return false;
+            });
+            
         } else {
             return super.checkSnakeListCollision(list, position);
         }
@@ -128,8 +136,8 @@ public class BlenderGame extends ClassicGame {
         super.initializeGameSnake();
         
         if (modes.contains("Cheese")) postInitializeSnakeBlenderCheeseGame();
-        
         if (modes.contains("Dimension")) postInitializeSnakeBlenderDimensionGame();
+        if (modes.contains("Twin")) postInitializeSnakeBlenderTwinGame();
     }
     
     private void postInitializeSnakeBlenderCheeseGame() {
@@ -140,6 +148,11 @@ public class BlenderGame extends ClassicGame {
     private void postInitializeSnakeBlenderDimensionGame() {
         BlenderSnake blenderSnake = (BlenderSnake) game.snake;
         dimensionGame.dimensionSnake = blenderSnake.getDimensionSnake();
+    }
+    
+    private void postInitializeSnakeBlenderTwinGame() {
+        BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+        twinGame.twinSnake = blenderSnake.getTwinSnake();
     }
     
     @Override
@@ -159,94 +172,16 @@ public class BlenderGame extends ClassicGame {
         super.snakeSimpleMove(newPos, isFoodCollision);
         
         if (isFoodCollision) {
-            if (modes.contains("Twin")) {
-                if (modes.contains("Cheese")) {
-                    postSnakeSimpleMoveTwinCheeseDimensionGame(newPos);
-                } else {
-                    twinGame.switchSides(newPos); // TODO revisar que funcione
-                    restoreDirectionBlenderGame(game.snake.getHead(), game.snake.getBody().getFirst()); 
-                }
-
-                if (modes.contains("Statue")) {
-                    removeStatuesSpawnRadius();
-                }
+            if (modes.contains("Twin") && modes.contains("Statue")) {
+                removeStatuesSpawnRadius();
             }
         }
-    }
-    
-    private void postSnakeSimpleMoveTwinCheeseDimensionGame(Point newPos) {
-
-        CheeseSnake cheeseSnake = cheeseGame.cheeseSnake;
-
-        LinkedList<Square> snakeBody = cheeseSnake.getBody();
-        Point snakeHead = cheeseSnake.getHead();
-        LinkedList<Square> emptyBody = cheeseSnake.getEmptyBody();
-
-        boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
-        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake & cheeseSnake.getGrowCount() % 2 == 1);
-
-        if (isFirstBodyPartSnake) {
-            emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
-
-            // Si el método move de la combinación Twin Cheese Snake genera una celda vacía, 
-            // esta debe ser agregada a la lista de posiciones disponibles.
-            game.availablePositions.add(new Point(newPos));
-
-        } else {
-            if (modes.contains("Dimension")) {
-                snakeBody.addFirst(new DimensionSquare(newPos, CellType.SNAKE_BODY, false));
-            } else {
-                snakeBody.addFirst(new Square(newPos, CellType.SNAKE_BODY));
-            }
-        }
-
-        Collections.reverse(snakeBody);
-        Collections.reverse(emptyBody);
-
-        if (isLastBodyPartSnake) {
-            snakeHead.setLocation(snakeBody.removeFirst());
-            restoreDirectionBlenderGame(snakeHead, emptyBody.getFirst());
-        } else {
-            snakeHead.setLocation(emptyBody.removeFirst());
-
-            // Si el método move de la combinación Twin Cheese Snake elimina una celda vacía,
-            // esta debe ser también eliminada de la lista de posiciones disponibles.
-            game.availablePositions.remove(snakeHead);
-
-            restoreDirectionBlenderGame(snakeHead, snakeBody.getFirst());
-        }
-
-        cheeseSnake.setNextBodyPartSnake(isLastBodyPartSnake);
-    }
-    
-    private void restoreDirectionBlenderGame(Point snakeHead, Point snakeFirstBodyPartPos) {
-        
-        Point direction = getDefaultDirection(snakeHead, snakeFirstBodyPartPos);
-        
-        if (modes.contains("Boundless")) {
-            
-            // Ajustar por teletransporte en el eje X
-            if (direction.x > 1) {
-                direction.x = -1;
-            } else if (direction.x < -1) {
-                direction.x = 1;
-            }
-
-            // Ajustar por teletransporte en el eje Y
-            if (direction.y > 1) {
-                direction.y = -1;
-            } else if (direction.y < -1) {
-                direction.y = 1;
-            }
-        }
-        
-        game.snake.getDirection().setLocation(direction.x, direction.y);
     }
     
     private void removeStatuesSpawnRadius() {
         
         Set<Point> spawnRadiusStatues = new HashSet<>(statueGame.statues);
-        spawnRadiusStatues.retainAll(getSpawnRadiusBlenderGame());
+        spawnRadiusStatues.retainAll(getSpawnRadius());
 
         for (Point statuePos : spawnRadiusStatues) {
             if (statuePos.equals(game.snake.getHead()) || !game.snake.getBody().contains(statuePos)) {
@@ -260,22 +195,42 @@ public class BlenderGame extends ClassicGame {
     
     // WallGame - BoundlessGame - TwinGame - StatueGame - DimensionGame
     
+    protected Square createSimpleWall(Point pos) {
+        
+        if (modes.contains("Dimension")) {
+            return new DimensionSquare(pos, CellType.WALL_SIMPLE, false);
+        } else {
+            return new Square(pos, CellType.WALL_SIMPLE);
+        }
+    }
+    
+    protected StatueSquare createFilledWall(Point pos) {
+
+        if (modes.contains("Dimension")) {
+            return new StatueDimensionSquare(pos, CellType.WALL_FILLED, false);
+        } else {
+            return new StatueSquare(pos, CellType.WALL_FILLED);
+        }
+    }
+    
     @Override
     protected void eatFood(Point newPos) {
         
-        if (modes.contains("Dimension")) {
-            dimensionGame.prevEatFoodDimensionGame(newPos);
+        if (modes.contains("Statue")) {
+            placeStatueBlender();
         }
         
-        if (modes.contains("Wall")) {
-            if (game.score % 2 == 0) {
-                wallGame.spawnRadius = getSpawnRadiusBlenderGame();
-                wallGame.addWall();
+        if (modes.contains("Dimension")) {
+            
+            dimensionGame.toggleGameDimension(newPos);
+            
+            if (!game.specificModeLists.isEmpty()) {
+                toggleDimensionSpecificModeLists();
             }
         }
         
-        if (modes.contains("Statue")) {
-            statueGame.prevEatFoodStatueGame();
+        if (modes.contains("Wall")) {
+            placeWallBlender();
         }
         
         super.eatFood(newPos);
@@ -285,71 +240,95 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    private Set<Point> getSpawnRadiusBlenderGame() {
+    private void placeStatueBlender() {
         
-        if (modes.contains("Boundless")) {
-            return getSpawnRadiusBoundlessGame();
-        } else {
-            return getSpawnRadius();
+        for (Point bodyPartPos : game.snake.getBody()) {
+            statueGame.statues.add(createFilledWall(bodyPartPos));
+        }
+        
+        statueGame.updateStatues();
+    }
+    
+    private void toggleDimensionSpecificModeLists () {
+        
+        for (Collection<? extends Square> modeList : game.specificModeLists) {
+            for (Square square : modeList) {
+                if (square instanceof DimensionSquare dimensionSquare) {
+                    dimensionSquare.toggleDimension();
+                } else if (square instanceof StatueDimensionSquare statueSquare) {
+                    statueSquare.toggleDimension();
+                }
+            }
         }
     }
     
-    private Set<Point> getSpawnRadiusBoundlessGame() {
+    private void placeWallBlender() {
+        if ((!modes.contains("Dimension") && game.score % 2 == 0) || modes.contains("Dimension")) {
+            wallGame.spawnRadius = getSpawnRadius();
+            createWallBlender();
+        }
+    }
+    
+    @Override
+    protected void addSpawnRadiusPoint(int newX, int newY, Set<Point> newSpawnRadius) {
         
-        Set<Point> newSpawnRadius = new HashSet<>();
+        if (modes.contains("Boundless")) {
+            
+            if (newX < 0) {
+                newX += game.numBoardCols;
+            } else if (newX >= game.numBoardCols) {
+                newX -= game.numBoardCols;
+            }
+
+            if (newY < 0) {
+                newY += game.numBoardRows;
+            } else if (newY >= game.numBoardRows) {
+                newY -= game.numBoardRows;
+            }
+
+            newSpawnRadius.add(new Point(newX, newY));
+            
+        } else {
+            super.addSpawnRadiusPoint(newX, newY, newSpawnRadius);
+        }
+    }
+    
+    protected void createWallBlender() {
         
-        int size = (SPAWN_RADIUS_WIDTH - 1) / 2;
+        Point wallPos = wallGame.getRandomSpawnPosition(game.availablePositions, wallGame.spawnRadius, wallGame.spawnWalls);
 
-        for (int x = -size; x <= size; x++) {
-            int yLimit = size - Math.abs(x);
+        if (wallPos != null) {
 
-            for (int y = -yLimit; y <= yLimit; y++) {
-                int newX = game.snake.getHead().x + x;
-                int newY = game.snake.getHead().y + y;
-                
-                if (newX < 0) {
-                    newX += game.numBoardCols;
-                } else if (newX >= game.numBoardCols) {
-                    newX -= game.numBoardCols;
+            // Create New Wall
+            wallGame.walls.add(createSimpleWall(wallPos));
+            
+            // Update Spawn Walls List
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    wallGame.spawnWalls.add(new Point(wallPos.x + x, wallPos.y + y));
                 }
-
-                if (newY < 0) {
-                    newY += game.numBoardRows;
-                } else if (newY >= game.numBoardRows) {
-                    newY -= game.numBoardRows;
-                }
-
-                newSpawnRadius.add(new Point(newX, newY));
             }
         }
-        
-        return newSpawnRadius;
     }
     
     // WallGame - StatueGame
     
     @Override
     protected boolean checkCollision() {
-        if (modes.contains("Wall") && modes.contains("Statue")){
-            return checkCollisionWallStatueGame();
-        } else if (modes.contains("Wall")) {
-            return wallGame.checkCollision();
-        } else if (modes.contains("Statue")) {
-            return statueGame.checkCollision();
-        } else {
-            return super.checkCollision();
-        }
-    }
-    
-    private boolean checkCollisionWallStatueGame() {
+        
+        boolean collision = super.checkCollision();
         
         Point snakeHeadPos = game.snake.getHead().getLocation();
         
-        boolean collision = super.checkCollision();
-        boolean wallCollision = wallGame.walls.contains(snakeHeadPos);
-        boolean statueCollision = statueGame.statues.contains(snakeHeadPos);
+        if (modes.contains("Wall")) {
+            collision = collision || checkSnakeListCollision(wallGame.walls, snakeHeadPos);
+        }
         
-        return collision || wallCollision || statueCollision;
+        if (modes.contains("Statue")) {
+            collision = collision || checkSnakeListCollision(statueGame.statues, snakeHeadPos);
+        }
+        
+        return collision;
     }
     
     @Override
@@ -371,7 +350,11 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected void updateSnakeAvailablePositions(Point previousLastBodyPartPos){
         
-        if (modes.contains("Cheese") && (modes.contains("Statue") || modes.contains("Dimension"))) {
+        if (modes.contains("Twin") && modes.contains("Cheese") && (modes.contains("Statue") || modes.contains("Dimension"))) {
+            
+        } else if (modes.contains("Twin") && modes.contains("Cheese")) {
+            
+        } else if (modes.contains("Cheese") && (modes.contains("Statue") || modes.contains("Dimension"))) {
             updateSnakeAvailablePositionsCheeseStatueDimensionGame(previousLastBodyPartPos);
         } else if (modes.contains("Cheese")) {
             cheeseGame.updateSnakeAvailablePositions(previousLastBodyPartPos);
@@ -408,24 +391,19 @@ public class BlenderGame extends ClassicGame {
     
     @Override
     protected boolean positionAvailableAfterSnakeSimpleMove(Point position, Point previousPosition) {
-        if (modes.contains("Statue") && modes.contains("Dimension")) {
-            return positionAvailableAfterSnakeSimpleMoveStatueDimensionGame(position, previousPosition);
-        } else if (modes.contains("Statue")) {
-            return statueGame.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
-        } else if (modes.contains("Dimension")) {
-            return dimensionGame.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
-        } else {
-            return super.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
-        }
-    }
-    
-    private boolean positionAvailableAfterSnakeSimpleMoveStatueDimensionGame(Point position, Point previousPosition) {
         
         boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
+
+        if (modes.contains("Statue")) {
+            positionAvailable = positionAvailable && !statueGame.statues.contains(previousPosition);
+        }
         
-        return positionAvailable && !statueGame.statues.contains(previousPosition) 
-                && !game.snake.getBody().contains(previousPosition) && !game.food.contains(previousPosition) 
-                && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(previousPosition));
+        if (modes.contains("Dimension")) {
+            positionAvailable = positionAvailable && !game.snake.getBody().contains(previousPosition) && !game.food.contains(previousPosition) 
+            && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(previousPosition));
+        }
+        
+        return positionAvailable;
     }
     
     // CheeseGame - DimensionGame

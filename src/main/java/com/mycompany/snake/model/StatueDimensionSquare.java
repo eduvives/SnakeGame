@@ -11,21 +11,20 @@ import java.awt.Point;
  *
  * @author Eduard
  */
-public class DimensionSquare extends Square {
+public class StatueDimensionSquare extends StatueSquare {
     
     protected boolean otherDimension;
-    protected static final int ALPHA_OTHER_DIMENSION = 128; // 50% de transparencia
     
-    public DimensionSquare(int col, int row, CellType cellType, boolean otherDimension) {
+    public StatueDimensionSquare(int col, int row, CellType cellType, boolean otherDimension) {
         super(col, row, cellType);
         this.otherDimension = otherDimension;
     }
     
-    public DimensionSquare(Point pos, CellType cellType, boolean otherDimension) {
+    public StatueDimensionSquare(Point pos, CellType cellType, boolean otherDimension) {
         super(pos, cellType);
         this.otherDimension = otherDimension;
     }
-
+    
     public boolean isOtherDimension() {
         return otherDimension;
     }
@@ -40,7 +39,7 @@ public class DimensionSquare extends Square {
         Color squareColor = cellType.getColor();
         
         if (otherDimension) {
-            return new Color(squareColor.getRed(), squareColor.getGreen(), squareColor.getBlue(), ALPHA_OTHER_DIMENSION);
+            return new Color(squareColor.getRed(), squareColor.getGreen(), squareColor.getBlue(), DimensionSquare.ALPHA_OTHER_DIMENSION);
         } else {
             return squareColor;
         }

@@ -17,6 +17,5 @@ public interface ModelObserver {
     void onNewGame();
     
     // Specific (Twin Game)
-    void onNewTwinGame();
     void onSwitchSides();
 }

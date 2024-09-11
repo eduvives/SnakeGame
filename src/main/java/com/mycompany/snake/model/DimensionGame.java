@@ -5,7 +5,7 @@
 package com.mycompany.snake.model;
 
 import java.awt.Point;
-import java.util.List;
+import java.util.Collection;
 
 /**
  *
@@ -22,7 +22,7 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkSnakeListCollision(List<Square> list, Point position) {
+    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point position) {
         
         return list.stream()
         .filter(square -> square.equals(position))
@@ -61,12 +61,13 @@ public class DimensionGame extends ClassicGame {
     @Override
     protected void eatFood(Point newPos) {
         
-        prevEatFoodDimensionGame(newPos);
+        toggleGameDimension(newPos);
         
         super.eatFood(newPos);
     }
     
-    protected void prevEatFoodDimensionGame(Point currentPos) {
+    protected void toggleGameDimension(Point currentPos) {
+        
         for (Square bodyPart : game.snake.getBody()) {
             DimensionSquare bodyPartDim = (DimensionSquare) bodyPart;
             bodyPartDim.toggleDimension();

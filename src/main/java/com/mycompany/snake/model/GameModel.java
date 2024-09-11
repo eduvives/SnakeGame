@@ -21,6 +21,16 @@ public class GameModel {
     
     protected Point startPos;
     protected Snake snake;
+    
+    private ClassicGame classicGame;
+    protected WallGame wallGame;
+    protected CheeseGame cheeseGame;
+    protected BoundlessGame boundlessGame;
+    protected TwinGame twinGame;
+    protected StatueGame statueGame;
+    protected DimensionGame dimensionGame;
+    private BlenderGame blenderGame;
+    
     private ClassicGame gameMode;
     private String gameModeName;
     private List<String> blenderSelectedModes;
@@ -36,6 +46,18 @@ public class GameModel {
     
     protected boolean gameStarted;
     protected boolean gameEnded;
+
+    public GameModel() {
+        classicGame = new ClassicGame(this);
+        wallGame = new WallGame(this);
+        cheeseGame = new CheeseGame(this);
+        boundlessGame = new BoundlessGame(this);
+        twinGame = new TwinGame(this);
+        statueGame = new StatueGame(this);
+        dimensionGame = new DimensionGame(this);
+        blenderGame = new BlenderGame(this);
+    }
+    
     
     // Método para asignar el observador
     public void setObserver(ModelObserver observer) {
@@ -82,6 +104,10 @@ public class GameModel {
     public List<Point> getAvailablePositions() { // TODO eliminar getter al terminar test code
         return availablePositions;
     }
+
+    public List<String> getBlenderSelectedModes() {
+        return blenderSelectedModes;
+    }
     
     // Update Game Params
     
@@ -100,25 +126,22 @@ public class GameModel {
         // Blender Selected Modes Changed
         if (!Objects.equals(blenderSelectedModes, newBlenderSelectedModes)) {
             blenderSelectedModes = newBlenderSelectedModes; // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
-            if (mode.equals("Blender") && gameMode instanceof BlenderGame) {
-                BlenderGame blenderGame = (BlenderGame) gameMode;
-                blenderGame.setBlenderModes(blenderSelectedModes); // TODO revisar
-            }
+            blenderGame.setBlenderModes(blenderSelectedModes); // TODO revisar
         }
     }
     
     public void updateGameMode(String mode) {
         
         switch (mode) {
-            case "Classic" -> gameMode = new ClassicGame(this);
-            case "Wall" -> gameMode = new WallGame(this);
-            case "Cheese" -> gameMode = new CheeseGame(this);
-            case "Boundless" -> gameMode = new BoundlessGame(this);
-            case "Twin" -> gameMode = new TwinGame(this);
-            case "Statue" -> gameMode = new StatueGame(this);
-            case "Blender" -> gameMode = new BlenderGame(this, blenderSelectedModes);
-            case "Dimension" -> gameMode = new DimensionGame(this);
-            default -> gameMode = new ClassicGame(this);
+            case "Classic" -> gameMode = classicGame;
+            case "Wall" -> gameMode = wallGame;
+            case "Cheese" -> gameMode = cheeseGame;
+            case "Boundless" -> gameMode = boundlessGame;
+            case "Twin" -> gameMode = twinGame;
+            case "Statue" -> gameMode = statueGame;
+            case "Blender" -> gameMode = blenderGame;
+            case "Dimension" -> gameMode = dimensionGame;
+            default -> gameMode = classicGame;
         }
 
         gameModeName = mode;

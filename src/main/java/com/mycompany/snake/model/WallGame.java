@@ -19,7 +19,7 @@ import java.util.Set;
 public class WallGame extends ClassicGame {
     
     protected List<Square> walls = new ArrayList<>();
-    private Set<Point> spawnWalls = new HashSet<>();
+    protected Set<Point> spawnWalls = new HashSet<>();
     protected Set<Point> spawnRadius;
     
     public WallGame(GameModel game) {
@@ -32,7 +32,7 @@ public class WallGame extends ClassicGame {
         Point snakeHeadPos = game.snake.getHead().getLocation();
         
         boolean collision = super.checkCollision();
-        boolean wallCollision = walls.contains(snakeHeadPos);
+        boolean wallCollision = checkSnakeListCollision(walls, snakeHeadPos);
         
         return collision || wallCollision;
     }
@@ -56,21 +56,21 @@ public class WallGame extends ClassicGame {
     @Override
     protected void eatFood(Point newPos) {
         
-        prevEatFoodWallGame(newPos);
+        placeWall();
         
         super.eatFood(newPos);
     }
     
-    protected void prevEatFoodWallGame(Point currentPos) {
+    protected void placeWall() {
         if (game.score % 2 == 0) {
             spawnRadius = getSpawnRadius();
-            addWall();
+            createWall();
         }
     }
     
     // Métodos Auxiliares
 
-    protected void addWall() {
+    protected void createWall() {
         
         Point wallPos = getRandomSpawnPosition(game.availablePositions, spawnRadius, spawnWalls);
 
@@ -88,7 +88,7 @@ public class WallGame extends ClassicGame {
         }
     }
     
-    private Point getRandomSpawnPosition(List<Point> availablePositions, Collection<Point>... excludedLists) {
+    protected Point getRandomSpawnPosition(List<Point> availablePositions, Collection<Point>... excludedLists) {
         // Crear un conjunto para almacenar los puntos presentes en otras listas
         Set<Point> excludedPoints = new HashSet<>();
         for (Collection<Point> list : excludedLists) {

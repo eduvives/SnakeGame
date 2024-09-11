@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class StatueSquare extends Square {
     
-    private static final Set<CellType> ALLOWED_CELL_TYPES = Set.of(
+    protected static final Set<CellType> ALLOWED_CELL_TYPES = Set.of(
         CellType.WALL_FILLED, 
         CellType.WALL_STATUE, 
         CellType.WALL_CRACKED
@@ -37,7 +37,7 @@ public class StatueSquare extends Square {
         this.foodBeforeBreak = foodBeforeBreak;
     }
     
-    private static CellType validateCellType(CellType cellType) {
+    protected static CellType validateCellType(CellType cellType) {
         if (!ALLOWED_CELL_TYPES.contains(cellType)) {
             throw new IllegalArgumentException("Invalid CellType for StatueSquare: " + cellType);
         }

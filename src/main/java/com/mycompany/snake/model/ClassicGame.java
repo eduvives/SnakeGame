@@ -5,8 +5,8 @@
 package com.mycompany.snake.model;
 
 import java.awt.Point;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public class ClassicGame {
     }
     
     // Comprueba si hay alguna colisión entre la posición relacionada con la cabeza de la serpiente y la nueva posición proporcionada
-    protected boolean checkSnakeListCollision(List<Square> list, Point position) {
+    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point position) {
         return list.contains(position);
     }
     
@@ -229,14 +229,6 @@ public class ClassicGame {
     
     // Métodos Auxiliares Subclases
     
-    protected void restoreDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
-        game.snake.getDirection().setLocation(getDefaultDirection(snakeHead, snakeFirstBodyPartPos));
-    }
-    
-    protected Point getDefaultDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
-        return new Point(snakeHead.x - snakeFirstBodyPartPos.x, snakeHead.y - snakeFirstBodyPartPos.y);
-    }
-    
     public static final int SPAWN_RADIUS_WIDTH = 7;
     
     protected Set<Point> getSpawnRadius() {
@@ -252,12 +244,16 @@ public class ClassicGame {
                 int newX = game.snake.getHead().x + x;
                 int newY = game.snake.getHead().y + y;
                 
-                if (newX >= 0 && newX < game.numBoardCols && newY >= 0 && newY < game.numBoardRows) {
-                    newSpawnRadius.add(new Point(newX, newY));
-                }
+                addSpawnRadiusPoint(newX, newY, newSpawnRadius);
             }
         }
         
         return newSpawnRadius;
+    }
+    
+    protected void addSpawnRadiusPoint(int newX, int newY, Set<Point> newSpawnRadius) {
+        if (newX >= 0 && newX < game.numBoardCols && newY >= 0 && newY < game.numBoardRows) {
+            newSpawnRadius.add(new Point(newX, newY));
+        }
     }
 }
