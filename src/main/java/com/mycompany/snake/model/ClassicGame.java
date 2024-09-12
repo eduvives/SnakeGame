@@ -87,17 +87,17 @@ public class ClassicGame {
         game.availablePositions.remove(game.snake.getHead());
     }
     
-    protected void updateSnakeAvailablePositions(Point previousLastBodyPartPos){
+    protected void updateSnakeAvailablePositions(Point newHeadPos, boolean isFoodCollision){
         
-        game.availablePositions.remove(game.snake.getHead());
-        
-        if(positionAvailableAfterSnakeSimpleMove(game.snake.getBody().getLast(), previousLastBodyPartPos)) {
-            game.availablePositions.add(previousLastBodyPartPos);
+        if(positionAvailableAfterSnakeMove(newHeadPos, isFoodCollision)) {
+            game.availablePositions.add(game.snake.getBody().getLast().getLocation());
         }
+        
+        game.availablePositions.remove(newHeadPos);
     }
     
-    protected boolean positionAvailableAfterSnakeSimpleMove(Point position, Point previousPosition) {
-        return !position.equals(previousPosition) && !game.snake.getHead().equals(previousPosition);
+    protected boolean positionAvailableAfterSnakeMove(Point newHeadPos, boolean isFoodCollision) {
+        return !isFoodCollision && !newHeadPos.equals(game.snake.getBody().getLast());
     }
     
     // GAME LOOP
@@ -131,10 +131,8 @@ public class ClassicGame {
     
     protected void snakeMove(Point newPos, boolean isFoodCollision) {
         
-        Point previousLastBodyPartPos = game.snake.getBody().getLast().getLocation();
-        
+        updateSnakeAvailablePositions(newPos, isFoodCollision);
         snakeSimpleMove(newPos, isFoodCollision);
-        updateSnakeAvailablePositions(previousLastBodyPartPos);
     }
     
     protected void snakeSimpleMove(Point newPos, boolean isFoodCollision) {

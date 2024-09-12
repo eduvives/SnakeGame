@@ -50,12 +50,14 @@ public class DimensionGame extends ClassicGame {
     // Establece si, después de moverse la serpiente, la posición previa de cola (última posición del cuerpo de la serpiente) 
     // debe ser marcado como posición disponible, comprobando si hay algún elemento en esa posición
     @Override
-    protected boolean positionAvailableAfterSnakeSimpleMove(Point position, Point previousPosition) {
+    protected boolean positionAvailableAfterSnakeMove(Point newHeadPos, boolean isFoodCollision) {
         
-        boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
+        boolean positionAvailable = super.positionAvailableAfterSnakeMove(newHeadPos, isFoodCollision);
         
-        return positionAvailable && !game.snake.getBody().contains(previousPosition) 
-                && !game.food.contains(previousPosition) && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(previousPosition));
+        Point lastBodyPartPos = game.snake.getBody().getLast();
+        
+        return positionAvailable && !game.snake.getBody().contains(lastBodyPartPos) 
+                && !game.food.contains(lastBodyPartPos) && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(lastBodyPartPos));
     }
     
     @Override
@@ -105,9 +107,9 @@ public class DimensionGame extends ClassicGame {
     
     @Override
     protected boolean noFoodPositions() { // TODO aun no funciona
-        System.out.println(otherDimensionFood);
+        //System.out.println(otherDimensionFood);
         int numFoodInotherDimension = game.food.size() / 2 + (game.food.size() % 2 != 0 && otherDimensionFood ? 1 : 0);
-        System.out.println(numFoodInotherDimension);
+        //System.out.println(numFoodInotherDimension);
         return game.availablePositions.size() - numFoodInotherDimension <= 0;
     }
 }

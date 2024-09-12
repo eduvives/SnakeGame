@@ -47,17 +47,21 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
-    protected void updateSnakeAvailablePositions(Point previousLastBodyPartPos){ // TODO revisar
+    protected void updateSnakeAvailablePositions(Point newHeadPos, boolean isFoodCollision){ // TODO revisar
         
-        boolean nextBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
+        int growCount = cheeseSnake.growCount;
         
-        if (nextBodyPartSnake && !cheeseSnake.getBody().getLast().equals(previousLastBodyPartPos)) {
-            game.availablePositions.add(previousLastBodyPartPos);
-        } else if (!nextBodyPartSnake) {
-            game.availablePositions.add(cheeseSnake.getEmptyBody().getFirst().getLocation()); // Previous Snake Head Position
+        if (isFoodCollision) growCount += 2;
+        
+        if (cheeseSnake.nextBodyPartSnake && growCount <= 0) {
+            if (!newHeadPos.equals(cheeseSnake.body.getLast())) {
+                game.availablePositions.add(cheeseSnake.body.getLast().getLocation());
+            }
+        } else if (!cheeseSnake.nextBodyPartSnake) {
+            game.availablePositions.add(cheeseSnake.head.getLocation());
         }
         
-        game.availablePositions.remove(cheeseSnake.getHead().getLocation());
+        game.availablePositions.remove(newHeadPos);
     }
     
     @Override
@@ -82,7 +86,7 @@ public class CheeseGame extends ClassicGame {
             }
 
             if (freeSides >= 2) {
-                foodPositionCandidates.add(pos);
+                foodPositionCandidates.add(pos.getLocation());
             }
         }
     }

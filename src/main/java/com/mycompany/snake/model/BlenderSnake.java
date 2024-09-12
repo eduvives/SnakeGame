@@ -158,7 +158,7 @@ public class BlenderSnake extends Snake {
         Point snakeHead = cheeseSnake.getHead();
         LinkedList<Square> emptyBody = cheeseSnake.getEmptyBody();
 
-        boolean isFirstBodyPartSnake = !cheeseSnake.isNextBodyPartSnake();
+        boolean isFirstBodyPartSnake = !cheeseSnake.nextBodyPartSnake;
         boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake && cheeseSnake.getGrowCount() % 2 == 1);
 
         if (isFirstBodyPartSnake) {

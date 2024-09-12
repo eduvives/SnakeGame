@@ -16,8 +16,8 @@ import java.util.Set;
 public class StatueGame extends ClassicGame {
     
     protected Set<StatueSquare> statues = new HashSet<>();
-    private static final int MIN_FOOD_BEFORE_BREAK = 2;
-    private static final int MAX_FOOD_BEFORE_BREAK = 8;
+    private static final int MIN_FOOD_BEFORE_BREAK = 1;
+    private static final int MAX_FOOD_BEFORE_BREAK = 7;
 
     public StatueGame(GameModel game) {
         super(game);        
@@ -50,11 +50,11 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected boolean positionAvailableAfterSnakeSimpleMove(Point position, Point previousPosition) {
+    protected boolean positionAvailableAfterSnakeMove(Point newHeadPos, boolean isFoodCollision) {
         
-        boolean positionAvailable = super.positionAvailableAfterSnakeSimpleMove(position, previousPosition);
+        boolean positionAvailable = super.positionAvailableAfterSnakeMove(newHeadPos, isFoodCollision);
         
-        return positionAvailable && !statues.contains(previousPosition);
+        return positionAvailable && !statues.contains(game.snake.getBody().getLast());
     }
     
     @Override
@@ -66,8 +66,8 @@ public class StatueGame extends ClassicGame {
     }
     
     protected void placeStatue() {
-        sculptStatue();
         updateStatues();
+        sculptStatue();
     }
     
     // Métodos Auxiliares
@@ -116,7 +116,7 @@ public class StatueGame extends ClassicGame {
         }
     }
     
-    private int generateNumFoodBeforeBreak() { // TODO (tal vez así esta bien :) falta buscar una mejor ecuación que cuanto mayor sea el número menor sea la probabilidad de obtenerlo
+    protected int generateNumFoodBeforeBreak() { // TODO (tal vez así esta bien :) falta buscar una mejor ecuación que cuanto mayor sea el número menor sea la probabilidad de obtenerlo
         
         Random random = new Random();
         return random.nextInt(MAX_FOOD_BEFORE_BREAK - MIN_FOOD_BEFORE_BREAK + 1) + MIN_FOOD_BEFORE_BREAK;
