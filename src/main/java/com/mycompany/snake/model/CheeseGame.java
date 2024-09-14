@@ -30,9 +30,9 @@ public class CheeseGame extends ClassicGame {
     }
     
     @Override
-    protected void initializeGameSnake(){
+    protected void initializeSnake(){
         
-        super.initializeGameSnake();
+        super.initializeSnake();
         
         postInitializeSnakeCheeseGame();
     }
@@ -45,32 +45,7 @@ public class CheeseGame extends ClassicGame {
     protected Snake createSnakeInstance() {
         return new CheeseSnake();
     }
-    
-    private void availablePositionsMove(Point newHeadPos, boolean isFoodCollision){ // TODO revisar
-        
-        int growCount = cheeseSnake.growCount;
-        
-        if (isFoodCollision) growCount += 2;
-        
-        if (cheeseSnake.nextBodyPartSnake && growCount <= 0) {
-            if (!newHeadPos.equals(cheeseSnake.body.getLast())) {
-                game.availablePositions.add(cheeseSnake.body.getLast().getLocation());
-            }
-        } else if (!cheeseSnake.nextBodyPartSnake) {
-            game.availablePositions.add(cheeseSnake.head.getLocation());
-        }
-        
-        game.availablePositions.remove(newHeadPos);
-    }
-    
-    @Override
-    protected void snakeMove(Point newPos, boolean isFoodCollision) {
-        
-        availablePositionsMove(newPos, isFoodCollision);
-        game.snake.move(newPos, isFoodCollision);
-        checkAvailablePositionsAfterMove();
-    }
-    
+
     @Override
     protected void placeFood() {
 

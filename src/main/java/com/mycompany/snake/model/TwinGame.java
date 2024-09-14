@@ -13,15 +13,16 @@ import java.awt.Point;
 public class TwinGame extends ClassicGame {
     
     protected TwinSnake twinSnake;
+    protected boolean switchSides;
     
     public TwinGame(GameModel game) {
         super(game);
     }
     
     @Override
-    protected void initializeGameSnake(){
+    protected void initializeSnake(){
         
-        super.initializeGameSnake();
+        super.initializeSnake();
         
         postInitializeSnakeTwinGame();
     }
@@ -40,20 +41,25 @@ public class TwinGame extends ClassicGame {
         
         super.snakeMove(newPos, isFoodCollision);
         
-        if (isFoodCollision) {
+        switchSides = isFoodCollision;
+        
+        if (switchSides) {
             twinSnake.switchSides();
         }
+        
     }
     
     @Override
-    protected void eatFood(Point newPos) {
+    protected void nextLoop() {
         
-        super.eatFood(newPos);
+        super.nextLoop();
         
-        postEatFoodTwinGame();
+        if (switchSides) {
+            switchSidesEffect();
+        }
     }
     
-    protected void postEatFoodTwinGame() {
+    protected void switchSidesEffect() {
         game.observer.onSwitchSides();
     }
 }

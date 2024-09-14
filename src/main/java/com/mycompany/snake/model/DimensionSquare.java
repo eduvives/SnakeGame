@@ -11,7 +11,7 @@ import java.awt.Point;
  *
  * @author Eduard
  */
-public class DimensionSquare extends Square {
+public class DimensionSquare extends Square implements DimensionSquareInterface {
     
     protected boolean otherDimension;
     protected static final int ALPHA_OTHER_DIMENSION = 128; // 50% de transparencia
@@ -26,10 +26,12 @@ public class DimensionSquare extends Square {
         this.otherDimension = otherDimension;
     }
 
+    @Override
     public boolean isOtherDimension() {
         return otherDimension;
     }
 
+    @Override
     public void toggleDimension() {
         otherDimension = !otherDimension;
     }

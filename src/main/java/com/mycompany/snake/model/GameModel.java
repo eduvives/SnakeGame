@@ -152,7 +152,7 @@ public class GameModel {
     public void newGame() {
         
         gameMode.prepareNewGame();
-        gameMode.initializeGameSnake();
+        gameMode.initializeSnake();
 
         gameMode.placeFood();
         observer.onViewChanged();

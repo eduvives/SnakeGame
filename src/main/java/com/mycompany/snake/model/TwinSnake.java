@@ -23,9 +23,11 @@ public class TwinSnake extends Snake {
     
     protected void switchSides() {
         
-        body.addFirst(new Square(head, CellType.SNAKE_BODY));
-        head.setLocation(body.removeLast());
-
+        Point previousHeadPos = head.getLocation();
+        
+        setLocationHead(previousHeadPos, removeLastBody());
+        addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
+        
         Collections.reverse(body);
         
         restoreDirection(head, body.getFirst());

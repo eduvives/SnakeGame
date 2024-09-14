@@ -13,6 +13,8 @@ import java.util.LinkedList;
  */
 public class Snake {
     
+    private SnakeListener listener;
+    
     protected LinkedList<Square> body;
     protected Square head;
     protected Point direction;
@@ -31,6 +33,39 @@ public class Snake {
         body = snake.body;
         direction = snake.direction;
     }
+    
+    // Método para asignar el listener
+    public void setListener(SnakeListener listener) {
+        this.listener = listener;
+    }
+    
+    protected void addLastBody(Square square) {
+        body.addLast(square);
+        listener.onPositionAdded(square);
+    }
+    
+    protected void addFirstBody(Square square) {
+        body.addFirst(square);
+        listener.onPositionAdded(square);
+    }
+    
+    protected Point removeLastBody() {
+        Point lastBodyPos = body.removeLast().getLocation();
+        listener.onPositionRemoved(lastBodyPos);
+        return lastBodyPos;
+    }
+    
+    protected Point removeFirstBody() {
+        Point firstBodyPos = body.removeFirst().getLocation();
+        listener.onPositionRemoved(firstBodyPos);
+        return firstBodyPos;
+    }
+    
+    protected void setLocationHead(Point previousPosition, Point newPosition) {
+        head.setLocation(newPosition);
+        listener.onPositionRemoved(previousPosition);
+        listener.onPositionAdded(newPosition);
+    }
 
     protected void initializeSnake(Point startPos) { // TODO deberia ser protected?
         initializeHead(startPos);
@@ -38,7 +73,10 @@ public class Snake {
     }
     
     protected void initializeHead(Point startPos) {
+        
         head.setLocation(startPos);
+        listener.onPositionAdded(startPos);
+        
         head.cellType = CellType.SNAKE_HEAD;
         direction.setLocation(START_DIRECTION);
     }
@@ -46,7 +84,7 @@ public class Snake {
     protected void initializeBody() {
         
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            body.addLast(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
+            addLastBody(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
         }
     }
 
@@ -64,10 +102,12 @@ public class Snake {
     
     protected void move(Point newPos, boolean grow) { // TODO deberia ser protected?
         
-        if(!grow) body.removeLast();
+        if(!grow) removeLastBody();
         
-        body.addFirst(new Square(head, CellType.SNAKE_BODY));
-        head.setLocation(newPos);
+        Point previousHeadPos = head.getLocation();
+        
+        setLocationHead(previousHeadPos, newPos);
+        addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
     }
     
     protected void restoreDirection(Point snakeHead, Point snakeFirstBodyPartPos) {

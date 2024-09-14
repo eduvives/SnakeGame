@@ -11,7 +11,7 @@ import java.awt.Point;
  *
  * @author Eduard
  */
-public class StatueDimensionSquare extends StatueSquare {
+public class StatueDimensionSquare extends StatueSquare implements DimensionSquareInterface {
     
     protected boolean otherDimension;
     
@@ -25,10 +25,12 @@ public class StatueDimensionSquare extends StatueSquare {
         this.otherDimension = otherDimension;
     }
     
+    @Override
     public boolean isOtherDimension() {
         return otherDimension;
     }
 
+    @Override
     public void toggleDimension() {
         otherDimension = !otherDimension;
     }

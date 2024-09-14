@@ -55,7 +55,7 @@ public class CheeseSnake extends Snake {
             int posX = head.x - (i * 2);
             
             emptyBody.addLast(new Square(posX + 1, head.y, CellType.EMPTY));
-            body.addLast(new Square(posX, head.y, CellType.SNAKE_BODY));
+            addLastBody(new Square(posX, head.y, CellType.SNAKE_BODY));
         }
         
         nextBodyPartSnake = true;
@@ -66,25 +66,27 @@ public class CheeseSnake extends Snake {
         
         if (grow) growCount += 2;
         
+        if (nextBodyPartSnake && growCount <= 0) {
+            removeLastBody();
+        }
+        
+        if (!nextBodyPartSnake && growCount <= 0) {
+            emptyBody.removeLast();
+        }
+        
+        Point previousHeadPos = head.getLocation();
+        
+        setLocationHead(previousHeadPos, newPos);
+        
         if (nextBodyPartSnake) {
-            body.addFirst(new Square(head, CellType.SNAKE_BODY));
-
-            if (growCount <= 0) {
-                body.removeLast();
-            } 
+            addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
         } else {
-            emptyBody.addFirst(new Square(head, CellType.EMPTY));
-            
-            if (growCount <= 0) {
-                emptyBody.removeLast();
-            }
+            emptyBody.addFirst(new Square(previousHeadPos, CellType.EMPTY));
         }
         
         if (growCount > 0) {
             growCount--;
         }
-        
-        head.setLocation(newPos);
         
         nextBodyPartSnake = !nextBodyPartSnake;
     }

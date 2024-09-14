@@ -31,9 +31,9 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
-    protected void initializeGameSnake(){
+    protected void initializeSnake(){
         
-        super.initializeGameSnake();
+        super.initializeSnake();
         
         postInitializeSnakeDimensionGame();
     }

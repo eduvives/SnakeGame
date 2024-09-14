@@ -24,16 +24,18 @@ public class DimensionSnake extends Snake {
     protected void initializeBody() {
         
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            body.addLast(new DimensionSquare(head.x - i, head.y, CellType.SNAKE_BODY, false));
+            addLastBody(new DimensionSquare(head.x - i, head.y, CellType.SNAKE_BODY, false));
         }
     }
     
     @Override
     protected void move(Point newPos, boolean grow) { // TODO deberia ser protected o no?
         
-        if(!grow) body.removeLast();
+        if(!grow) removeLastBody();
         
-        body.addFirst(new DimensionSquare(head, CellType.SNAKE_BODY, false));
-        head.setLocation(newPos);
+        Point previousHeadPos = head.getLocation();
+        
+        setLocationHead(previousHeadPos, newPos);
+        addFirstBody(new DimensionSquare(previousHeadPos, CellType.SNAKE_BODY, false));
     }
 }
