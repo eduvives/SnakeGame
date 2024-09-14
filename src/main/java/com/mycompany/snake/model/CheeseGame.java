@@ -46,8 +46,7 @@ public class CheeseGame extends ClassicGame {
         return new CheeseSnake();
     }
     
-    @Override
-    protected void updateSnakeAvailablePositions(Point newHeadPos, boolean isFoodCollision){ // TODO revisar
+    private void availablePositionsMove(Point newHeadPos, boolean isFoodCollision){ // TODO revisar
         
         int growCount = cheeseSnake.growCount;
         
@@ -62,6 +61,14 @@ public class CheeseGame extends ClassicGame {
         }
         
         game.availablePositions.remove(newHeadPos);
+    }
+    
+    @Override
+    protected void snakeMove(Point newPos, boolean isFoodCollision) {
+        
+        availablePositionsMove(newPos, isFoodCollision);
+        game.snake.move(newPos, isFoodCollision);
+        checkAvailablePositionsAfterMove();
     }
     
     @Override

@@ -37,6 +37,10 @@ public class StatueSquare extends Square {
         this.foodBeforeBreak = foodBeforeBreak;
     }
     
+    public void decreaseFoodBeforeBreak() {
+        foodBeforeBreak -= 1;
+    }
+    
     protected static CellType validateCellType(CellType cellType) {
         if (!ALLOWED_CELL_TYPES.contains(cellType)) {
             throw new IllegalArgumentException("Invalid CellType for StatueSquare: " + cellType);

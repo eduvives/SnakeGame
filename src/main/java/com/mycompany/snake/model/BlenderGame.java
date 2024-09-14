@@ -160,18 +160,6 @@ public class BlenderGame extends ClassicGame {
     
     // TwinGame - CheeseGame - BoundlessGame - StatueGame - DimensionGame
     
-    @Override
-    protected void snakeSimpleMove(Point newPos, boolean isFoodCollision) {
-        
-        super.snakeSimpleMove(newPos, isFoodCollision);
-        
-        if (isFoodCollision) {
-            if (modes.contains("Twin") && modes.contains("Statue")) {
-                removeStatuesSpawnRadius();
-            }
-        }
-    }
-    
     private void removeStatuesSpawnRadius() { // TODO revisar si posicion disponible (dimension)
         
         Set<Point> spawnRadiusStatues = new HashSet<>(statueGame.statues);
@@ -251,23 +239,26 @@ public class BlenderGame extends ClassicGame {
         statuesNotFilled.removeIf(statue -> snakeBodySet.contains(statue) && statue.getCellType() == CellType.WALL_FILLED);
         
         for (StatueSquare statueSquare : statuesNotFilled) {
+            
             if (statueSquare.getCellType() == CellType.WALL_FILLED) {
-
-                statueSquare.setCellType(CellType.WALL_STATUE);
                 statueSquare.setFoodBeforeBreak(statueGame.generateNumFoodBeforeBreak());
-
-            } else if (statueSquare.getCellType() == CellType.WALL_STATUE) {
-
-                int foodBeforeBreak = statueSquare.getFoodBeforeBreak() - 1;
-
-                if (foodBeforeBreak == 1) statueSquare.setCellType(CellType.WALL_CRACKED);
-
-                statueSquare.setFoodBeforeBreak(foodBeforeBreak);
+            }
+            
+            statueSquare.decreaseFoodBeforeBreak();
+            int foodBeforeBreak = statueSquare.getFoodBeforeBreak();
+            
+            if (foodBeforeBreak > 1) {
                 
-            } else if (statueSquare.getCellType() == CellType.WALL_CRACKED) {
+                statueSquare.setCellType(CellType.WALL_STATUE);
+                
+            } else if (foodBeforeBreak == 1) {
+                
+                statueSquare.setCellType(CellType.WALL_CRACKED);
+                
+            } else if (foodBeforeBreak == 0) {
                 
                 statueGame.statues.remove(statueSquare);
-                if (!game.snake.getBody().contains(statueSquare)) {
+                if (!game.snake.getBody().contains(statueSquare)) { // TODO and check available position
                     game.availablePositions.add(new Point(statueSquare));
                 }
             }
@@ -376,15 +367,34 @@ public class BlenderGame extends ClassicGame {
     protected void snakeMove(Point newPos, boolean isFoodCollision) {
         
         if (modes.contains("Cheese")) {
-            updateSnakeAvailablePositionsCheeseStatueDimension(newPos, isFoodCollision);
+            availablePositionsMoveCheeseStatueDimension(newPos, isFoodCollision);
         } else {
-            updateSnakeAvailablePositionsBlenderStatueDimension(newPos, isFoodCollision);
+            availablePositionsMoveBlenderStatueDimension(newPos); // TODO es pot borrar?
         }
         
-        snakeSimpleMove(newPos, isFoodCollision);
+        game.snake.move(newPos, isFoodCollision);
+        
+        if (isFoodCollision && modes.contains("Twin")) {
+            
+            BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+            
+            if (modes.contains("Cheese")) {
+                availablePositionsSwitchSidesCheese();
+                blenderSnake.switchSidesTwinCheeseDimension();
+                
+            } else {
+                blenderSnake.switchSidesBlender(); // TODO revisar que funcione
+            }
+
+            if (modes.contains("Statue")) {
+                removeStatuesSpawnRadius();
+            }
+        }
+        
+        checkAvailablePositionsAfterMove();
     }
-    
-    private void updateSnakeAvailablePositionsCheeseStatueDimension(Point newHeadPos, boolean isFoodCollision) {
+
+    private void availablePositionsMoveCheeseStatueDimension(Point newHeadPos, boolean isFoodCollision) {
 
         CheeseSnake cheeseSnake = cheeseGame.cheeseSnake;
         
@@ -393,83 +403,57 @@ public class BlenderGame extends ClassicGame {
         if (isFoodCollision) growCount += 2;
         
         if (cheeseSnake.nextBodyPartSnake && growCount <= 0) {
-            if (positionAvailableAfterCheeseSnakeMove(cheeseSnake.body.getLast(), newHeadPos)) {
-                game.availablePositions.add(cheeseSnake.body.getLast().getLocation());
-            }
+            positionsToCheckAvailabilityAfterMove.add(cheeseSnake.body.getLast().getLocation());
         } else if (!cheeseSnake.nextBodyPartSnake) {
-            if (positionAvailable(cheeseSnake.head)) {
-                game.availablePositions.add(cheeseSnake.head.getLocation());
-            }
-        }
-        
-        if (growCount > 0) {
-            growCount--;
+            positionsToCheckAvailabilityAfterMove.add(cheeseSnake.head.getLocation());
         }
         
         game.availablePositions.remove(newHeadPos);
-        
-        if (isFoodCollision && modes.contains("Twin")) {
-            updateSwitchSidesAvailablePositionsCheese(newHeadPos, growCount);
-        }
     }
-    
-    private void updateSnakeAvailablePositionsBlenderStatueDimension(Point newHeadPos, boolean isFoodCollision) {
 
-        if(positionAvailableAfterSnakeMove(newHeadPos, isFoodCollision)) {
-            game.availablePositions.add(game.snake.getBody().getLast().getLocation());
-        }
-        
+    private void availablePositionsMoveBlenderStatueDimension(Point newHeadPos) { // TODO es pot borrar?
+
+        positionsToCheckAvailabilityAfterMove.add(game.snake.getBody().getLast().getLocation());
+  
         game.availablePositions.remove(newHeadPos);
     }
     
     @Override
-    protected boolean positionAvailableAfterSnakeMove(Point newHeadPos, boolean isFoodCollision) {
+    protected boolean isSnakePositionAvailable(Point position) {
         
-        return super.positionAvailableAfterSnakeMove(newHeadPos, isFoodCollision) && positionAvailable(game.snake.getBody().getLast());
-    }
-    
-    private boolean positionAvailable(Point position) {
-        
-        boolean positionAvailable = true;
+        boolean positionAvailable = super.isSnakePositionAvailable(position);
         
         if (modes.contains("Statue")) {
-            positionAvailable = positionAvailable && !statueGame.statues.contains(position);
+            positionAvailable &= !statueGame.statues.contains(position);
         }
         
         if (modes.contains("Dimension")) {
-            positionAvailable = positionAvailable && !game.snake.getBody().contains(position) && !game.food.contains(position) 
+            positionAvailable &= !game.food.contains(position) 
             && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(position));
         }
         
         return positionAvailable;
     }
-    
-    private boolean positionAvailableAfterCheeseSnakeMove(Point position, Point newHeadPos) {
         
-        return !newHeadPos.equals(position) && positionAvailable(position);
-    }
-    
-    private void updateSwitchSidesAvailablePositionsCheese(Point headPos, int growCount) {
+    private void availablePositionsSwitchSidesCheese() {
         
         CheeseSnake cheeseSnake = cheeseGame.cheeseSnake;
 
-        boolean isFirstBodyPartSnake = cheeseSnake.nextBodyPartSnake;
-        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && growCount % 2 == 0) || (isFirstBodyPartSnake && growCount % 2 == 1);
-
+        boolean isFirstBodyPartSnake = !cheeseSnake.nextBodyPartSnake;
+        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 0) || (isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 1);
+        
         if (isFirstBodyPartSnake) {
             
             // Si el método move de la combinación Twin Cheese Snake genera una celda vacía, 
             // esta debe ser agregada a la lista de posiciones disponibles.
-            //if (positionAvailableAfterSnakeMove(headPos, previousHeadPos)) {
-                game.availablePositions.add(new Point(headPos));
-            //}
+            positionsToCheckAvailabilityAfterMove.add(cheeseSnake.head.getLocation());
         }
         
         if (!isLastBodyPartSnake) {
 
             // Si el método move de la combinación Twin Cheese Snake elimina una celda vacía,
             // esta debe ser también eliminada de la lista de posiciones disponibles.
-            game.availablePositions.remove(cheeseSnake.emptyBody.getLast().getLocation());
+            game.availablePositions.remove(cheeseSnake.emptyBody.getLast());
         }
     }
     

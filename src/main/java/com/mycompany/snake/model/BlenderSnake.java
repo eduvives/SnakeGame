@@ -105,17 +105,6 @@ public class BlenderSnake extends Snake {
         } else {
             moveBlender(newPos, isFoodCollision);
         }
-        
-        if (isFoodCollision) {
-            if (modes.contains("Twin")) {
-                if (modes.contains("Cheese")) {
-                    switchSidesTwinCheeseDimension(newPos);
-                } else {
-                    switchSidesBlender(newPos); // TODO revisar que funcione
-                    restoreDirectionBlender(head, body.getFirst());
-                }
-            }
-        }
     }
     
     private void moveCheeseDimension(Point newPos, boolean grow) {
@@ -152,24 +141,19 @@ public class BlenderSnake extends Snake {
         head.setLocation(newPos);
     }
     
-    private void switchSidesTwinCheeseDimension(Point newPos) {
+    protected void switchSidesTwinCheeseDimension() {
 
-        LinkedList<Square> snakeBody = cheeseSnake.getBody();
-        Point snakeHead = cheeseSnake.getHead();
-        LinkedList<Square> emptyBody = cheeseSnake.getEmptyBody();
+        LinkedList<Square> snakeBody = cheeseSnake.body;
+        Point snakeHead = cheeseSnake.head;
+        LinkedList<Square> emptyBody = cheeseSnake.emptyBody;
 
         boolean isFirstBodyPartSnake = !cheeseSnake.nextBodyPartSnake;
-        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && cheeseSnake.getGrowCount() % 2 == 0) || (isFirstBodyPartSnake && cheeseSnake.getGrowCount() % 2 == 1);
+        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 0) || (isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 1);
 
         if (isFirstBodyPartSnake) {
-            emptyBody.addFirst(new Square(newPos, CellType.EMPTY));
-
-            // Si el método move de la combinación Twin Cheese Snake genera una celda vacía, 
-            // esta debe ser agregada a la lista de posiciones disponibles.
-            //game.availablePositions.add(new Point(newPos));
-
+            emptyBody.addFirst(new Square(snakeHead, CellType.EMPTY));
         } else {
-            snakeBody.addFirst(createSnakeBodyPart(newPos));
+            snakeBody.addFirst(createSnakeBodyPart(snakeHead));
         }
         
         if (isLastBodyPartSnake) {
@@ -177,11 +161,6 @@ public class BlenderSnake extends Snake {
             restoreDirectionBlender(snakeHead, emptyBody.getLast());
         } else {
             snakeHead.setLocation(emptyBody.removeLast());
-
-            // Si el método move de la combinación Twin Cheese Snake elimina una celda vacía,
-            // esta debe ser también eliminada de la lista de posiciones disponibles.
-            //game.availablePositions.remove(snakeHead);
-
             restoreDirectionBlender(snakeHead, snakeBody.getLast());
         }
 
@@ -191,12 +170,14 @@ public class BlenderSnake extends Snake {
         Collections.reverse(emptyBody);
     }
     
-    private void switchSidesBlender(Point newPos) {
+    protected void switchSidesBlender() {
         
+        body.addFirst(createSnakeBodyPart(head));
         head.setLocation(body.removeLast());
-        body.addFirst(createSnakeBodyPart(newPos));
         
         Collections.reverse(body);
+        
+        restoreDirectionBlender(head, body.getFirst());
     }
     
     private void restoreDirectionBlender(Point snakeHead, Point snakeFirstBodyPartPos) {

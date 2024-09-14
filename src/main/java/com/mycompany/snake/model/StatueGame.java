@@ -16,8 +16,8 @@ import java.util.Set;
 public class StatueGame extends ClassicGame {
     
     protected Set<StatueSquare> statues = new HashSet<>();
-    private static final int MIN_FOOD_BEFORE_BREAK = 1;
-    private static final int MAX_FOOD_BEFORE_BREAK = 7;
+    private static final int MIN_FOOD_BEFORE_BREAK = 2;
+    private static final int MAX_FOOD_BEFORE_BREAK = 8;
 
     public StatueGame(GameModel game) {
         super(game);        
@@ -50,11 +50,9 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected boolean positionAvailableAfterSnakeMove(Point newHeadPos, boolean isFoodCollision) {
+    protected boolean isSnakePositionAvailable(Point position) {
         
-        boolean positionAvailable = super.positionAvailableAfterSnakeMove(newHeadPos, isFoodCollision);
-        
-        return positionAvailable && !statues.contains(game.snake.getBody().getLast());
+        return super.isSnakePositionAvailable(position) && !statues.contains(position);
     }
     
     @Override
@@ -95,20 +93,23 @@ public class StatueGame extends ClassicGame {
         statuesNotFilled.removeAll(snakeBodySet);
         
         for (StatueSquare statueSquare : statuesNotFilled) {
+            
             if (statueSquare.getCellType() == CellType.WALL_FILLED) {
-
-                statueSquare.setCellType(CellType.WALL_STATUE);
                 statueSquare.setFoodBeforeBreak(generateNumFoodBeforeBreak());
-
-            } else if (statueSquare.getCellType() == CellType.WALL_STATUE) {
-
-                int foodBeforeBreak = statueSquare.getFoodBeforeBreak() - 1;
-
-                if (foodBeforeBreak == 1) statueSquare.setCellType(CellType.WALL_CRACKED);
-
-                statueSquare.setFoodBeforeBreak(foodBeforeBreak);
+            }
+            
+            statueSquare.decreaseFoodBeforeBreak();
+            int foodBeforeBreak = statueSquare.getFoodBeforeBreak();
+            
+            if (foodBeforeBreak > 1) {
                 
-            } else if (statueSquare.getCellType() == CellType.WALL_CRACKED) {
+                statueSquare.setCellType(CellType.WALL_STATUE);
+                
+            } else if (foodBeforeBreak == 1) {
+                
+                statueSquare.setCellType(CellType.WALL_CRACKED);
+                
+            } else if (foodBeforeBreak == 0) {
                 
                 statues.remove(statueSquare);
                 game.availablePositions.add(new Point(statueSquare));

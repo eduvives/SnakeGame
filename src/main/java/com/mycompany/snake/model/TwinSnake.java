@@ -21,23 +21,14 @@ public class TwinSnake extends Snake {
         super(snake);
     }
     
-    @Override
-    protected void move(Point newPos, boolean grow) { // TODO deberia ser protected?
+    protected void switchSides() {
         
-        super.move(newPos, grow);
-        
-        if (grow) {
-            switchSides(newPos);
-            restoreDirection(head, body.getFirst());
-        }
-    }
-    
-    protected void switchSides(Point newPos) {
-
+        body.addFirst(new Square(head, CellType.SNAKE_BODY));
         head.setLocation(body.removeLast());
-        body.addFirst(new Square(newPos, CellType.SNAKE_BODY));
 
         Collections.reverse(body);
+        
+        restoreDirection(head, body.getFirst());
     }
     
 }
