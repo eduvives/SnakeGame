@@ -136,7 +136,7 @@ public class BlenderGame extends ClassicGame {
     
     // Combined Modes :
     
-    // BlenderGame - CheeseGame - DimensionGame
+    // BlenderGame - CheeseGame - DimensionGame - TwinGame
     
     @Override
     protected void initializeSnake(){
@@ -168,7 +168,54 @@ public class BlenderGame extends ClassicGame {
         return new BlenderSnake(modes);
     }
     
-    // TwinGame - CheeseGame - BoundlessGame - StatueGame - DimensionGame
+    // StatueGame - DimensionGame
+    
+    @Override
+    protected boolean isSnakePositionAvailable(Point position) {
+        
+        boolean positionAvailable = super.isSnakePositionAvailable(position);
+        
+        if (modes.contains("Statue")) {
+            positionAvailable &= !statueGame.statues.contains(position);
+        }
+        
+        if (modes.contains("Dimension")) {
+            positionAvailable &= !game.food.contains(position) 
+            && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(position));
+        }
+        
+        return positionAvailable;
+    }
+    
+    // TwinGame - CheeseGame - StatueGame - DimensionGame
+    
+    @Override
+    protected void snakeMove(Point newPos, boolean isFoodCollision) {
+        
+        super.snakeMove(newPos, isFoodCollision);
+        
+        if (modes.contains("Twin")) {
+            
+            twinGame.switchSides = isFoodCollision;
+            
+            if (twinGame.switchSides) {
+                
+                BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+
+                if (modes.contains("Cheese")) {
+                    blenderSnake.switchSidesTwinCheeseDimension();
+                } else {
+                    blenderSnake.switchSidesBlender(); // TODO revisar que funcione
+                }
+
+                if (modes.contains("Statue")) {
+                    removeStatuesSpawnRadius();
+                }
+            }
+        }
+    }
+    
+    // TwinGame - StatueGame - BoundlessGame
     
     private void removeStatuesSpawnRadius() { // TODO revisar si posicion disponible (dimension)
         
@@ -185,7 +232,7 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    // WallGame - BoundlessGame - TwinGame - StatueGame - DimensionGame
+    // WallGame - StatueGame - DimensionGame - BoundlessGame
     
     protected Square createSimpleWall(Point pos) {
         
@@ -214,7 +261,7 @@ public class BlenderGame extends ClassicGame {
         
         if (modes.contains("Dimension")) {
             
-            dimensionGame.toggleGameDimension(newPos);
+            dimensionGame.toggleGameDimension();
             toggleDimensionSpecificModeLists();
         }
         
@@ -331,11 +378,9 @@ public class BlenderGame extends ClassicGame {
     // WallGame - StatueGame
     
     @Override
-    protected boolean checkCollision() {
+    protected boolean checkCollision(Point snakeHeadPos) {
         
-        boolean collision = super.checkCollision();
-        
-        Point snakeHeadPos = game.snake.getHead().getLocation();
+        boolean collision = super.checkCollision(snakeHeadPos);
         
         if (modes.contains("Wall")) {
             collision = collision || checkSnakeListCollision(wallGame.walls, snakeHeadPos);
@@ -360,51 +405,6 @@ public class BlenderGame extends ClassicGame {
         if (modes.contains("Statue")) {
             statueGame.postPrepareNewGameStatueGame();
         }
-    }
-    
-    // CheeseGame - StatueGame - DimensionGame
-    
-    @Override
-    protected void snakeMove(Point newPos, boolean isFoodCollision) {
-        
-        super.snakeMove(newPos, isFoodCollision);
-        
-        if (modes.contains("Twin")) {
-            
-            twinGame.switchSides = isFoodCollision;
-            
-            if (twinGame.switchSides) {
-                
-                BlenderSnake blenderSnake = (BlenderSnake) game.snake;
-
-                if (modes.contains("Cheese")) {
-                    blenderSnake.switchSidesTwinCheeseDimension();
-                } else {
-                    blenderSnake.switchSidesBlender(); // TODO revisar que funcione
-                }
-
-                if (modes.contains("Statue")) {
-                    removeStatuesSpawnRadius();
-                }
-            }
-        }
-    }
-    
-    @Override
-    protected boolean isSnakePositionAvailable(Point position) {
-        
-        boolean positionAvailable = super.isSnakePositionAvailable(position);
-        
-        if (modes.contains("Statue")) {
-            positionAvailable &= !statueGame.statues.contains(position);
-        }
-        
-        if (modes.contains("Dimension")) {
-            positionAvailable &= !game.food.contains(position) 
-            && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(position));
-        }
-        
-        return positionAvailable;
     }
     
     // CheeseGame - DimensionGame

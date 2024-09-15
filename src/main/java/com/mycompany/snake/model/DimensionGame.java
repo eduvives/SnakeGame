@@ -58,12 +58,12 @@ public class DimensionGame extends ClassicGame {
     @Override
     protected void eatFood(Point newPos) {
         
-        toggleGameDimension(newPos);
+        toggleGameDimension();
         
         super.eatFood(newPos);
     }
     
-    protected void toggleGameDimension(Point currentPos) {
+    protected void toggleGameDimension() {
         
         for (Square bodyPart : game.snake.getBody()) {
             DimensionSquare bodyPartDim = (DimensionSquare) bodyPart;

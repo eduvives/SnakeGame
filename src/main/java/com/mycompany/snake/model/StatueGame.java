@@ -24,11 +24,9 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision() {
+    protected boolean checkCollision(Point snakeHeadPos) {
         
-        Point snakeHeadPos = game.snake.getHead().getLocation();
-        
-        boolean collision = super.checkCollision();
+        boolean collision = super.checkCollision(snakeHeadPos);
         boolean statueCollision = checkSnakeListCollision(statues, snakeHeadPos);
         
         return collision || statueCollision;

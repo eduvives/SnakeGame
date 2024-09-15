@@ -145,7 +145,7 @@ public class BlenderSnake extends Snake {
         addFirstBody(createSnakeBodyPart(previousHeadPos));
     }
     
-    // TwinSnake
+    // TwinSnake - CheeseSnake - DimensionSnake
     
     protected void switchSidesTwinCheeseDimension() {
 
@@ -173,6 +173,8 @@ public class BlenderSnake extends Snake {
         Collections.reverse(body);
         Collections.reverse(cheeseSnake.emptyBody);
     }
+    
+    // TwinSnake - DimensionSnake
     
     protected void switchSidesBlender() {
         

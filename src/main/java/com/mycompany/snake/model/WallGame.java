@@ -27,11 +27,9 @@ public class WallGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision() {
+    protected boolean checkCollision(Point snakeHeadPos) {
         
-        Point snakeHeadPos = game.snake.getHead().getLocation();
-        
-        boolean collision = super.checkCollision();
+        boolean collision = super.checkCollision(snakeHeadPos);
         boolean wallCollision = checkSnakeListCollision(walls, snakeHeadPos);
         
         return collision || wallCollision;

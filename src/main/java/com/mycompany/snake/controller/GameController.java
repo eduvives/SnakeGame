@@ -29,6 +29,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 /**
@@ -396,7 +397,7 @@ public class GameController implements ModelObserver {
         
         timer.stop();
         
-        openMenu();
+        SwingUtilities.invokeLater(() -> openMenu());
     }
     
     private void updateView(){
