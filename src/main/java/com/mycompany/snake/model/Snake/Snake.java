@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.Snake;
 
+import com.mycompany.snake.model.GameMode.SnakeListener;
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -67,7 +70,7 @@ public class Snake {
         listener.onPositionAdded(newPosition);
     }
 
-    protected void initializeSnake(Point startPos) { // TODO deberia ser protected?
+    public void initializeSnake(Point startPos) {
         initializeHead(startPos);
         initializeBody();
     }
@@ -77,7 +80,7 @@ public class Snake {
         head.setLocation(startPos);
         listener.onPositionAdded(startPos);
         
-        head.cellType = CellType.SNAKE_HEAD;
+        head.setCellType(CellType.SNAKE_HEAD);
         direction.setLocation(START_DIRECTION);
     }
     
@@ -100,7 +103,7 @@ public class Snake {
         return direction;
     }
     
-    protected void move(Point newPos, boolean grow) { // TODO deberia ser protected?
+    public void move(Point newPos, boolean grow) { // TODO deberia ser protected?
         
         if(!grow) removeLastBody();
         

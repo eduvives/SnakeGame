@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +39,7 @@ public class WallGame extends ClassicGame {
     }
     
     @Override
-    protected void prepareNewGame() {
+    public void prepareNewGame() {
         
         super.prepareNewGame();
 
@@ -45,22 +48,22 @@ public class WallGame extends ClassicGame {
     
     protected void postPrepareNewGameWallGame() {
         
-        game.specificModeLists.add(walls);
+        game.getSpecificModeLists().add(walls);
         
         walls.clear();
         spawnWalls.clear();
     }
     
     @Override
-    protected void eatFood(Point newPos) {
+    protected void snakeMove(Point newPos, boolean isFoodCollision) {
         
-        placeWall();
+        super.snakeMove(newPos, isFoodCollision);
         
-        super.eatFood(newPos);
+        if (isFoodCollision) placeWall();
     }
     
     protected void placeWall() {
-        if (game.score % 2 == 0) {
+        if (game.getScore() % 2 == 1) {
             spawnRadius = getSpawnRadius();
             createWall();
         }
@@ -70,7 +73,7 @@ public class WallGame extends ClassicGame {
 
     protected void createWall() {
         
-        Point wallPos = getRandomSpawnPosition(game.availablePositions, spawnRadius, spawnWalls);
+        Point wallPos = getRandomSpawnPosition(game.getAvailablePositions(), spawnRadius, spawnWalls);
 
         if (wallPos != null) {
 

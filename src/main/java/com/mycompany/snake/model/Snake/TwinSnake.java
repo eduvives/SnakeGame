@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.Snake;
 
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collections;
 
@@ -21,7 +23,7 @@ public class TwinSnake extends Snake {
         super(snake);
     }
     
-    protected void switchSides() {
+    public void switchSides() {
         
         Point previousHeadPos = head.getLocation();
         
@@ -32,5 +34,4 @@ public class TwinSnake extends Snake {
         
         restoreDirection(head, body.getFirst());
     }
-    
 }

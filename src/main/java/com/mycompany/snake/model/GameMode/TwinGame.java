@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Snake.TwinSnake;
+import com.mycompany.snake.model.Snake.Snake;
 import java.awt.Point;
 
 /**
@@ -20,7 +23,7 @@ public class TwinGame extends ClassicGame {
     }
     
     @Override
-    protected void initializeSnake(){
+    public void initializeSnake(){
         
         super.initializeSnake();
         
@@ -28,7 +31,7 @@ public class TwinGame extends ClassicGame {
     }
     
     protected void postInitializeSnakeTwinGame() {
-        twinSnake = (TwinSnake) game.snake;
+        twinSnake = (TwinSnake) game.getSnake();
     }
     
     @Override
@@ -43,14 +46,14 @@ public class TwinGame extends ClassicGame {
         
         switchSides = isFoodCollision;
         
-        if (switchSides) {
+        if (isFoodCollision) {
             twinSnake.switchSides();
         }
         
     }
     
     @Override
-    protected void nextLoop() {
+    public void nextLoop() {
         
         super.nextLoop();
         
@@ -60,6 +63,6 @@ public class TwinGame extends ClassicGame {
     }
     
     protected void switchSidesEffect() {
-        game.observer.onSwitchSides();
+        game.getObserver().onSwitchSides();
     }
 }

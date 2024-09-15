@@ -4,6 +4,16 @@
  */
 package com.mycompany.snake.model;
 
+import com.mycompany.snake.model.GameMode.BoundlessGame;
+import com.mycompany.snake.model.GameMode.BlenderGame;
+import com.mycompany.snake.model.GameMode.CheeseGame;
+import com.mycompany.snake.model.GameMode.StatueGame;
+import com.mycompany.snake.model.GameMode.TwinGame;
+import com.mycompany.snake.model.GameMode.WallGame;
+import com.mycompany.snake.model.GameMode.DimensionGame;
+import com.mycompany.snake.model.GameMode.ClassicGame;
+import com.mycompany.snake.model.Snake.Snake;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,35 +27,35 @@ import java.util.Objects;
 public class GameModel {
     
     // Observador que será notificado cuando el modelo cambie
-    protected ModelObserver observer;
+    private ModelObserver observer;
     
-    protected Point startPos;
-    protected Snake snake;
+    private Point startPos;
+    private Snake snake;
     
     private ClassicGame classicGame;
-    protected WallGame wallGame;
-    protected CheeseGame cheeseGame;
-    protected BoundlessGame boundlessGame;
-    protected TwinGame twinGame;
-    protected StatueGame statueGame;
-    protected DimensionGame dimensionGame;
+    private WallGame wallGame;
+    private CheeseGame cheeseGame;
+    private BoundlessGame boundlessGame;
+    private TwinGame twinGame;
+    private StatueGame statueGame;
+    private DimensionGame dimensionGame;
     private BlenderGame blenderGame;
     
     private ClassicGame gameMode;
     private String gameModeName;
     private List<String> blenderSelectedModes;
     
-    protected int numBoardRows;
-    protected int numBoardCols;
-    protected List<Point> availablePositions = new ArrayList<>();
-    protected List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
+    private int numBoardRows;
+    private int numBoardCols;
+    private List<Point> availablePositions = new ArrayList<>();
+    private List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
     
-    protected int score;
-    protected int numFood;
-    protected List<Square> food = new ArrayList<>();
+    private int score;
+    private int numFood;
+    private List<Square> food = new ArrayList<>();
     
-    protected boolean gameStarted;
-    protected boolean gameEnded;
+    private boolean gameStarted;
+    private boolean gameEnded;
 
     public GameModel() {
         classicGame = new ClassicGame(this);
@@ -63,8 +73,12 @@ public class GameModel {
     public void setObserver(ModelObserver observer) {
         this.observer = observer;
     }
+
+    public ModelObserver getObserver() {
+        return observer;
+    }
     
-    protected void setScore(int score) {
+    public void setScore(int score) {
         this.score = score;
         observer.onScoreChanged();
     }
@@ -80,13 +94,25 @@ public class GameModel {
     public int getScore() {
         return score;
     }
-
+    
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
+    }
+    
     public boolean isGameStarted() {
         return gameStarted;
     }
 
+    public void setGameEnded(boolean gameEnded) {
+        this.gameEnded = gameEnded;
+    }
+
     public boolean isGameEnded() {
         return gameEnded;
+    }
+
+    public void setSnake(Snake snake) {
+        this.snake = snake;
     }
 
     public Snake getSnake() {
@@ -101,12 +127,48 @@ public class GameModel {
         return food;
     }
 
-    public List<Point> getAvailablePositions() { // TODO eliminar getter al terminar test code
+    public List<Point> getAvailablePositions() {
         return availablePositions;
     }
 
     public List<String> getBlenderSelectedModes() {
         return blenderSelectedModes;
+    }
+
+    public int getNumBoardRows() {
+        return numBoardRows;
+    }
+
+    public int getNumBoardCols() {
+        return numBoardCols;
+    }
+
+    public Point getStartPos() {
+        return startPos;
+    }
+
+    public WallGame getWallGame() {
+        return wallGame;
+    }
+
+    public CheeseGame getCheeseGame() {
+        return cheeseGame;
+    }
+
+    public BoundlessGame getBoundlessGame() {
+        return boundlessGame;
+    }
+
+    public TwinGame getTwinGame() {
+        return twinGame;
+    }
+
+    public StatueGame getStatueGame() {
+        return statueGame;
+    }
+
+    public DimensionGame getDimensionGame() {
+        return dimensionGame;
     }
     
     // Update Game Params

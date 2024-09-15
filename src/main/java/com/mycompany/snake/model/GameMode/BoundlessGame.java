@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
 import java.awt.Point;
 
 /**
@@ -19,18 +20,18 @@ public class BoundlessGame extends ClassicGame {
     @Override
     protected Point getNewPos(Point newDirection) {
         
-        int posX = game.snake.getHead().x + newDirection.x;
-        int posY = game.snake.getHead().y + newDirection.y;
+        int posX = game.getSnake().getHead().x + newDirection.x;
+        int posY = game.getSnake().getHead().y + newDirection.y;
         
         if (posX < 0) {
-            posX = game.numBoardCols - 1;
-        } else if (posX >= game.numBoardCols) {
+            posX = game.getNumBoardCols() - 1;
+        } else if (posX >= game.getNumBoardCols()) {
             posX = 0;
         }
 
         if (posY < 0) {
-            posY = game.numBoardRows - 1;
-        } else if (posY >= game.numBoardRows) {
+            posY = game.getNumBoardRows() - 1;
+        } else if (posY >= game.getNumBoardRows()) {
             posY = 0;
         }
         

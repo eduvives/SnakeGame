@@ -2,8 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Snake.Snake;
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,15 +30,15 @@ public class ClassicGame implements SnakeListener {
     
     protected boolean checkCollision(Point snakeHeadPos) {
         
-        boolean bodyCollision = checkSnakeListCollision(game.snake.getBody(), snakeHeadPos);
-        boolean boundariesCollision = snakeHeadPos.x < 0 || snakeHeadPos.x >= game.numBoardCols || snakeHeadPos.y < 0 || snakeHeadPos.y >= game.numBoardRows;
+        boolean bodyCollision = checkSnakeListCollision(game.getSnake().getBody(), snakeHeadPos);
+        boolean boundariesCollision = snakeHeadPos.x < 0 || snakeHeadPos.x >= game.getNumBoardCols() || snakeHeadPos.y < 0 || snakeHeadPos.y >= game.getNumBoardRows();
         
         return bodyCollision || boundariesCollision;
     }
     
     protected boolean checkFeast() {
-        return game.availablePositions.isEmpty() && game.food.isEmpty();
-        // return game.score == (game.numBoardRows * game.numBoardCols) - Snake.START_LENGTH;
+        return game.getAvailablePositions().isEmpty() && game.getFood().isEmpty();
+        // return game.getScore() == (game.getNumBoardRows() * game.getNumBoardCols()) - Snake.START_LENGTH;
     }
     
     // Comprueba si hay alguna colisión entre la posición relacionada con la cabeza de la serpiente y la nueva posición proporcionada
@@ -44,22 +48,22 @@ public class ClassicGame implements SnakeListener {
     
     // NEW GAME
     
-    protected void prepareNewGame() {
+    public void prepareNewGame() {
         
-        game.observer.onNewGame();
+        game.getObserver().onNewGame();
         
-        game.gameStarted = false;
-        game.gameEnded = false;
+        game.setGameStarted(false);
+        game.setGameEnded(false);
         game.setScore(0);
         
-        game.availablePositions.clear();
-        game.specificModeLists.clear();
-        game.food.clear();
+        game.getAvailablePositions().clear();
+        game.getSpecificModeLists().clear();
+        game.getFood().clear();
         
         // Inicializar posiciones disponibles
-        for (int i = 0; i < game.numBoardRows; i++) {
-            for (int j = 0; j < game.numBoardCols; j++) {
-                game.availablePositions.add(new Point(j,i));
+        for (int i = 0; i < game.getNumBoardRows(); i++) {
+            for (int j = 0; j < game.getNumBoardCols(); j++) {
+                game.getAvailablePositions().add(new Point(j,i));
             }
         }
     }
@@ -68,81 +72,81 @@ public class ClassicGame implements SnakeListener {
         return new Snake();
     }
     
-    protected void initializeSnake(){
-        game.snake = createSnakeInstance();
+    public void initializeSnake(){
+        game.setSnake(createSnakeInstance());
         addListener();
-        game.snake.initializeSnake(new Point(game.startPos));
+        game.getSnake().initializeSnake(new Point(game.getStartPos()));
     }
     
     protected boolean isSnakePositionAvailable(Point position) {
-        return !game.snake.getBody().contains(position)  && !game.snake.getHead().equals(position);
+        return !game.getSnake().getBody().contains(position)  && !game.getSnake().getHead().equals(position);
     }
     
     // Métodos Snake Listener
     
-    public void addListener() {
-        game.snake.setListener(this);
+    private void addListener() {
+        game.getSnake().setListener(this);
     }
 
     @Override
     public void onPositionRemoved(Point position) {
-        if (isSnakePositionAvailable(position)) game.availablePositions.add(position);
+        if (isSnakePositionAvailable(position)) game.getAvailablePositions().add(position);
     }
 
     @Override
     public void onPositionAdded(Point position) {
-        game.availablePositions.remove(position);
+        game.getAvailablePositions().remove(position);
     }
     
     // GAME LOOP
     
-    protected void nextLoop() {
+    public void nextLoop() {
         
-        Point newPos = getNewPos(game.snake.getDirection());
+        Point newPos = getNewPos(game.getSnake().getDirection());
 
-        boolean isFoodCollision = checkSnakeListCollision(game.food, newPos);
+        boolean isFoodCollision = checkSnakeListCollision(game.getFood(), newPos);
         boolean isFeast = false;
         boolean isCollision = checkCollision(newPos);
         
         if (isCollision) {
-            game.observer.onGameEnded(false);
+            game.getObserver().onGameEnded(false);
         } else {
+            
+            if (isFoodCollision) {
+                game.getFood().remove(newPos);
+                increaseScore();
+            }
+            
             snakeMove(newPos, isFoodCollision);
 
             if (isFoodCollision) {
-                eatFood(newPos);
+                placeFood();
                 isFeast = checkFeast();
-                increaseScore();
             }
 
-            game.observer.onViewChanged();
+            game.getObserver().onViewChanged();
 
             if (isFeast) {
-                game.observer.onGameEnded(true);
+                game.getObserver().onGameEnded(true);
             }
         }
     }
     
     protected void snakeMove(Point newPos, boolean isFoodCollision) {
-        game.snake.move(newPos, isFoodCollision);
+        game.getSnake().move(newPos, isFoodCollision);
     }
     
     protected Point getNewPos(Point newDirection) {
-        return new Point(game.snake.getHead().x + newDirection.x, game.snake.getHead().y + newDirection.y);
+        return new Point(game.getSnake().getHead().x + newDirection.x, game.getSnake().getHead().y + newDirection.y);
     }
     
     private void increaseScore() {
-        game.setScore(game.score + 1);
-    }
-    
-    protected void eatFood(Point newPos) {
-        game.food.remove(newPos);
-        placeFood();
+        game.setScore(game.getScore() + 1);
     }
     
     // PLACE NEW FOOD
     
-    protected void placeFood() {
+    public void placeFood() {
         
         int numFoodToPlace = getNumFoodToPlace();
         
@@ -162,12 +166,12 @@ public class ClassicGame implements SnakeListener {
         
         Random rand = new Random();
         
-        int numPlacedFood = game.food.size();
+        int numPlacedFood = game.getFood().size();
         int numTotalFoodToPlace = getNumTotalFoodToPlace();
         
-        if (game.numFood != -1) {
+        if (game.getNumFood() != -1) {
             return numTotalFoodToPlace - numPlacedFood;
-        } else if (game.numFood == -1 && numPlacedFood == 0) { // Random Food Num
+        } else if (game.getNumFood() == -1 && numPlacedFood == 0) { // Random Food Num
             return rand.nextInt(6) + 1; // Rand Num Food To Place
         } else {
             return 0;
@@ -175,11 +179,11 @@ public class ClassicGame implements SnakeListener {
     }
     
     protected int getNumTotalFoodToPlace() {
-        return game.numFood;
+        return game.getNumFood();
     }
     
     protected void addNewFoodSquare(Point foodPos) {
-        game.food.add(new Square(foodPos, CellType.FOOD));
+        game.getFood().add(new Square(foodPos, CellType.FOOD));
     }
 
     protected Point getRandomFoodPosition() {
@@ -190,26 +194,26 @@ public class ClassicGame implements SnakeListener {
         
         Random rand = new Random();
         
-        int index = rand.nextInt(game.availablePositions.size());
-        return game.availablePositions.remove(index);
+        int index = rand.nextInt(game.getAvailablePositions().size());
+        return game.getAvailablePositions().remove(index);
 
     }
     
     protected boolean noFoodPositions() {
-        return game.availablePositions.isEmpty();
+        return game.getAvailablePositions().isEmpty();
     }
     
     // TODO not used
     private Point getRandomAvailablePosition() {
         
-        if (game.availablePositions.isEmpty()) {
+        if (game.getAvailablePositions().isEmpty()) {
             return null;
         }
         
         Random rand = new Random();   
         
-        int index = rand.nextInt(game.availablePositions.size());
-        return game.availablePositions.remove(index);
+        int index = rand.nextInt(game.getAvailablePositions().size());
+        return game.getAvailablePositions().remove(index);
 
     }
     
@@ -227,8 +231,8 @@ public class ClassicGame implements SnakeListener {
             int yLimit = size - Math.abs(x);
 
             for (int y = -yLimit; y <= yLimit; y++) {
-                int newX = game.snake.getHead().x + x;
-                int newY = game.snake.getHead().y + y;
+                int newX = game.getSnake().getHead().x + x;
+                int newY = game.getSnake().getHead().y + y;
                 
                 addSpawnRadiusPoint(newX, newY, newSpawnRadius);
             }
@@ -238,7 +242,7 @@ public class ClassicGame implements SnakeListener {
     }
     
     protected void addSpawnRadiusPoint(int newX, int newY, Set<Point> newSpawnRadius) {
-        if (newX >= 0 && newX < game.numBoardCols && newY >= 0 && newY < game.numBoardRows) {
+        if (newX >= 0 && newX < game.getNumBoardCols() && newY >= 0 && newY < game.getNumBoardRows()) {
             newSpawnRadius.add(new Point(newX, newY));
         }
     }

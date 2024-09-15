@@ -2,8 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Square.StatueSquare;
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.HashSet;
 import java.util.Random;
@@ -33,7 +37,7 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected void prepareNewGame() {
+    public void prepareNewGame() {
         
         super.prepareNewGame();
 
@@ -42,7 +46,7 @@ public class StatueGame extends ClassicGame {
     
     protected void postPrepareNewGameStatueGame() {
         
-        game.specificModeLists.add(statues);
+        game.getSpecificModeLists().add(statues);
 
         statues.clear();
     }
@@ -54,11 +58,11 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected void eatFood(Point newPos) {
+    protected void snakeMove(Point newPos, boolean isFoodCollision) {
         
-        placeStatue();
+        super.snakeMove(newPos, isFoodCollision);
         
-        super.eatFood(newPos);
+        if (isFoodCollision) placeStatue();
     }
     
     protected void placeStatue() {
@@ -70,7 +74,7 @@ public class StatueGame extends ClassicGame {
     
     protected void sculptStatue() {
         
-        for (Point bodyPartPos : game.snake.getBody()) {
+        for (Point bodyPartPos : game.getSnake().getBody()) {
             statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED));
         }
         
@@ -85,7 +89,7 @@ public class StatueGame extends ClassicGame {
     
     protected void updateStatues() {
         
-        Set<Square> snakeBodySet = new HashSet<>(game.snake.getBody());
+        Set<Square> snakeBodySet = new HashSet<>(game.getSnake().getBody());
         
         Set<StatueSquare> statuesNotFilled = new HashSet<>(statues);
         statuesNotFilled.removeAll(snakeBodySet);
@@ -110,7 +114,7 @@ public class StatueGame extends ClassicGame {
             } else if (foodBeforeBreak == 0) {
                 
                 statues.remove(statueSquare);
-                game.availablePositions.add(new Point(statueSquare));
+                game.getAvailablePositions().add(new Point(statueSquare));
             }
         }
     }

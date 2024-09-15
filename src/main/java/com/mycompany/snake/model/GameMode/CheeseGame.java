@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Snake.CheeseSnake;
+import com.mycompany.snake.model.Snake.Snake;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +29,11 @@ public class CheeseGame extends ClassicGame {
     
     @Override
     protected boolean checkFeast() {
-        return foodPositionCandidates.isEmpty() && game.food.isEmpty();
+        return foodPositionCandidates.isEmpty() && game.getFood().isEmpty();
     }
     
     @Override
-    protected void initializeSnake(){
+    public void initializeSnake(){
         
         super.initializeSnake();
         
@@ -38,7 +41,7 @@ public class CheeseGame extends ClassicGame {
     }
     
     protected void postInitializeSnakeCheeseGame() {
-        cheeseSnake = (CheeseSnake) game.snake;
+        cheeseSnake = (CheeseSnake) game.getSnake();
     }
     
     @Override
@@ -47,7 +50,7 @@ public class CheeseGame extends ClassicGame {
     }
 
     @Override
-    protected void placeFood() {
+    public void placeFood() {
 
         prevPlaceFoodCheeseGame();
 
@@ -59,12 +62,12 @@ public class CheeseGame extends ClassicGame {
         
         foodPositionCandidates.clear();
         
-        for (Point pos : game.availablePositions) {
+        for (Point pos : game.getAvailablePositions()) {
             
             int freeSides = 0;
             for (int[] dir : SIDES_DIRECTIONS) {
                 Point sidePos = new Point(pos.x + dir[0], pos.y + dir[1]);
-                if (game.availablePositions.contains(sidePos) || game.food.contains(sidePos)) freeSides++; // TODO revisar amb Blender Dimension mode (checkSnakeListCollision)?
+                if (game.getAvailablePositions().contains(sidePos) || game.getFood().contains(sidePos)) freeSides++; // TODO revisar amb Blender Dimension mode (checkSnakeListCollision)?
             }
 
             if (freeSides >= 2) {
@@ -83,7 +86,7 @@ public class CheeseGame extends ClassicGame {
         Random rand = new Random();
         
         Point candidate = foodPositionCandidates.remove(rand.nextInt(foodPositionCandidates.size()));
-        game.availablePositions.remove(candidate);
+        game.getAvailablePositions().remove(candidate);
         
         return candidate;
     }

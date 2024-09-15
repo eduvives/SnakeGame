@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.Snake;
 
+import com.mycompany.snake.model.Square.DimensionSquare;
+import com.mycompany.snake.model.Square.CellType;
 import java.awt.Point;
 
 /**
@@ -29,7 +31,7 @@ public class DimensionSnake extends Snake {
     }
     
     @Override
-    protected void move(Point newPos, boolean grow) { // TODO deberia ser protected o no?
+    public void move(Point newPos, boolean grow) { // TODO deberia ser protected o no?
         
         if(!grow) removeLastBody();
         

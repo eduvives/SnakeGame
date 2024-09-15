@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.Snake;
 
+import com.mycompany.snake.model.Square.DimensionSquare;
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +32,7 @@ public class BlenderSnake extends Snake {
         setBlenderSnakeModes(modes);
     }
     
-    protected void setBlenderSnakeModes(List<String> modes) {
+    private void setBlenderSnakeModes(List<String> modes) {
         this.modes = modes;
     }
 
@@ -47,7 +50,7 @@ public class BlenderSnake extends Snake {
     
     // BlenderSnake - DimensionSnake
 
-    protected Square createSnakeBodyPart(int col, int row) {
+    private Square createSnakeBodyPart(int col, int row) {
         
         if (modes.contains("Dimension")) {
             return new DimensionSquare(col, row, CellType.SNAKE_BODY, false);
@@ -56,7 +59,7 @@ public class BlenderSnake extends Snake {
         }   
     }
 
-    protected Square createSnakeBodyPart(Point pos) {
+    private Square createSnakeBodyPart(Point pos) {
         
         if (modes.contains("Dimension")) {
             return new DimensionSquare(pos, CellType.SNAKE_BODY, false);
@@ -68,7 +71,7 @@ public class BlenderSnake extends Snake {
     // CheeseSnake - DimensionSnake
     
     @Override
-    public void initializeBody() {
+    protected void initializeBody() {
         
         if (modes.contains("Cheese")) {
             initializeBodyCheeseDimension();
@@ -147,7 +150,7 @@ public class BlenderSnake extends Snake {
     
     // TwinSnake - CheeseSnake - DimensionSnake
     
-    protected void switchSidesTwinCheeseDimension() {
+    public void switchSidesTwinCheeseDimension() {
 
         boolean isFirstBodyPartSnake = !cheeseSnake.nextBodyPartSnake;
         boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 0) || (isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 1);
@@ -176,7 +179,7 @@ public class BlenderSnake extends Snake {
     
     // TwinSnake - DimensionSnake
     
-    protected void switchSidesBlender() {
+    public void switchSidesBlender() {
         
         Point previousHeadPos = head.getLocation();
         

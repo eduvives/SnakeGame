@@ -2,8 +2,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Snake.BlenderSnake;
+import com.mycompany.snake.model.Snake.Snake;
+import com.mycompany.snake.model.Square.DimensionSquare;
+import com.mycompany.snake.model.Square.StatueSquare;
+import com.mycompany.snake.model.Square.DimensionSquareInterface;
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.StatueDimensionSquare;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,15 +37,15 @@ public class BlenderGame extends ClassicGame {
     public BlenderGame(GameModel game) {
         super(game);
         
-        wallGame = this.game.wallGame;
-        cheeseGame = this.game.cheeseGame;
-        boundlessGame = this.game.boundlessGame;
-        twinGame = this.game.twinGame;
-        statueGame = this.game.statueGame;
-        dimensionGame = this.game.dimensionGame;
+        wallGame = this.game.getWallGame();
+        cheeseGame = this.game.getCheeseGame();
+        boundlessGame = this.game.getBoundlessGame();
+        twinGame = this.game.getTwinGame();
+        statueGame = this.game.getStatueGame();
+        dimensionGame = this.game.getDimensionGame();
     }
     
-    protected void setBlenderModes(List<String> modes) { // TODO reutilizar los modos y no ponerlos a null si ya estan creados? comprobar con contains?
+    public void setBlenderModes(List<String> modes) { // TODO reutilizar los modos y no ponerlos a null si ya estan creados? comprobar con contains?
         this.modes = modes;
     }
     
@@ -77,7 +86,7 @@ public class BlenderGame extends ClassicGame {
     // TwinGame
     
     @Override
-    protected void nextLoop() {
+    public void nextLoop() {
         
         super.nextLoop();
         
@@ -139,7 +148,7 @@ public class BlenderGame extends ClassicGame {
     // BlenderGame - CheeseGame - DimensionGame - TwinGame
     
     @Override
-    protected void initializeSnake(){
+    public void initializeSnake(){
         
         super.initializeSnake();
         
@@ -149,17 +158,17 @@ public class BlenderGame extends ClassicGame {
     }
     
     private void postInitializeSnakeBlenderCheeseGame() {
-        BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+        BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
         cheeseGame.cheeseSnake = blenderSnake.getCheeseSnake();
     }
     
     private void postInitializeSnakeBlenderDimensionGame() {
-        BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+        BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
         dimensionGame.dimensionSnake = blenderSnake.getDimensionSnake();
     }
     
     private void postInitializeSnakeBlenderTwinGame() {
-        BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+        BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
         twinGame.twinSnake = blenderSnake.getTwinSnake();
     }
     
@@ -180,14 +189,14 @@ public class BlenderGame extends ClassicGame {
         }
         
         if (modes.contains("Dimension")) {
-            positionAvailable &= !game.food.contains(position) 
-            && !game.specificModeLists.stream().anyMatch(modeList -> modeList.contains(position));
+            positionAvailable &= !game.getFood().contains(position) 
+            && !game.getSpecificModeLists().stream().anyMatch(modeList -> modeList.contains(position));
         }
         
         return positionAvailable;
     }
     
-    // TwinGame - CheeseGame - StatueGame - DimensionGame
+    // TwinGame - CheeseGame - StatueGame - WallGame - DimensionGame - BoundlessGame
     
     @Override
     protected void snakeMove(Point newPos, boolean isFoodCollision) {
@@ -198,9 +207,9 @@ public class BlenderGame extends ClassicGame {
             
             twinGame.switchSides = isFoodCollision;
             
-            if (twinGame.switchSides) {
+            if (isFoodCollision) {
                 
-                BlenderSnake blenderSnake = (BlenderSnake) game.snake;
+                BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
 
                 if (modes.contains("Cheese")) {
                     blenderSnake.switchSidesTwinCheeseDimension();
@@ -213,6 +222,22 @@ public class BlenderGame extends ClassicGame {
                 }
             }
         }
+        
+        if (isFoodCollision) {
+            if (modes.contains("Statue")) {
+                placeStatueBlender();
+            }
+
+            if (modes.contains("Dimension")) {
+
+                dimensionGame.toggleGameDimension();
+                toggleDimensionSpecificModeLists();
+            }
+
+            if (modes.contains("Wall")) {
+                placeWallBlender();
+            }
+        }
     }
     
     // TwinGame - StatueGame - BoundlessGame
@@ -223,10 +248,10 @@ public class BlenderGame extends ClassicGame {
         spawnRadiusStatues.retainAll(getSpawnRadius());
 
         for (Point statuePos : spawnRadiusStatues) {
-            if (statuePos.equals(game.snake.getHead()) || !game.snake.getBody().contains(statuePos)) {
+            if (statuePos.equals(game.getSnake().getHead()) || !game.getSnake().getBody().contains(statuePos)) {
                 statueGame.statues.remove(statuePos);
-                if (!statuePos.equals(game.snake.getHead())) {
-                    game.availablePositions.add(new Point(statuePos));
+                if (!statuePos.equals(game.getSnake().getHead())) {
+                    game.getAvailablePositions().add(new Point(statuePos));
                 }
             }
         }
@@ -234,7 +259,7 @@ public class BlenderGame extends ClassicGame {
     
     // WallGame - StatueGame - DimensionGame - BoundlessGame
     
-    protected Square createSimpleWall(Point pos) {
+    private Square createSimpleWall(Point pos) {
         
         if (modes.contains("Dimension")) {
             return new DimensionSquare(pos, CellType.WALL_SIMPLE, false);
@@ -243,7 +268,7 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    protected StatueSquare createFilledWall(Point pos) {
+    private StatueSquare createFilledWall(Point pos) {
 
         if (modes.contains("Dimension")) {
             return new StatueDimensionSquare(pos, CellType.WALL_FILLED, false);
@@ -252,38 +277,18 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    @Override
-    protected void eatFood(Point newPos) {
-        
-        if (modes.contains("Statue")) {
-            placeStatueBlender();
-        }
-        
-        if (modes.contains("Dimension")) {
-            
-            dimensionGame.toggleGameDimension();
-            toggleDimensionSpecificModeLists();
-        }
-        
-        if (modes.contains("Wall")) {
-            placeWallBlender();
-        }
-        
-        super.eatFood(newPos);
-    }
-    
     private void placeStatueBlender() {
         
         updateStatuesBlender();
         
-        for (Point bodyPartPos : game.snake.getBody()) {
+        for (Point bodyPartPos : game.getSnake().getBody()) {
             statueGame.statues.add(createFilledWall(bodyPartPos));
         }
     }
     
     private void updateStatuesBlender() {
         
-        Set<Square> snakeBodySet = new HashSet<>(game.snake.getBody());
+        Set<Square> snakeBodySet = new HashSet<>(game.getSnake().getBody());
         
         Set<StatueSquare> statuesNotFilled = new HashSet<>(statueGame.statues);
         statuesNotFilled.removeIf(statue -> snakeBodySet.contains(statue) && statue.getCellType() == CellType.WALL_FILLED);
@@ -308,8 +313,8 @@ public class BlenderGame extends ClassicGame {
             } else if (foodBeforeBreak == 0) {
                 
                 statueGame.statues.remove(statueSquare);
-                if (!game.snake.getBody().contains(statueSquare)) { // TODO and check available position
-                    game.availablePositions.add(new Point(statueSquare));
+                if (!game.getSnake().getBody().contains(statueSquare)) { // TODO and check available position
+                    game.getAvailablePositions().add(new Point(statueSquare));
                 }
             }
         }
@@ -317,7 +322,7 @@ public class BlenderGame extends ClassicGame {
     
     private void toggleDimensionSpecificModeLists () {
         
-        for (Collection<? extends Square> modeList : game.specificModeLists) {
+        for (Collection<? extends Square> modeList : game.getSpecificModeLists()) {
             for (Square square : modeList) {
                 if (square instanceof DimensionSquareInterface dimensionSquare) {
                     dimensionSquare.toggleDimension();
@@ -327,7 +332,7 @@ public class BlenderGame extends ClassicGame {
     }
     
     private void placeWallBlender() {
-        if ((!modes.contains("Dimension") && game.score % 2 == 0) || modes.contains("Dimension")) {
+        if ((modes.contains("Dimension") || game.getScore() % 2 == 1)) {
             wallGame.spawnRadius = getSpawnRadius();
             createWallBlender();
         }
@@ -339,15 +344,15 @@ public class BlenderGame extends ClassicGame {
         if (modes.contains("Boundless")) {
             
             if (newX < 0) {
-                newX += game.numBoardCols;
-            } else if (newX >= game.numBoardCols) {
-                newX -= game.numBoardCols;
+                newX += game.getNumBoardCols();
+            } else if (newX >= game.getNumBoardCols()) {
+                newX -= game.getNumBoardCols();
             }
 
             if (newY < 0) {
-                newY += game.numBoardRows;
-            } else if (newY >= game.numBoardRows) {
-                newY -= game.numBoardRows;
+                newY += game.getNumBoardRows();
+            } else if (newY >= game.getNumBoardRows()) {
+                newY -= game.getNumBoardRows();
             }
 
             newSpawnRadius.add(new Point(newX, newY));
@@ -357,9 +362,9 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    protected void createWallBlender() {
+    private void createWallBlender() {
         
-        Point wallPos = wallGame.getRandomSpawnPosition(game.availablePositions, wallGame.spawnRadius, wallGame.spawnWalls);
+        Point wallPos = wallGame.getRandomSpawnPosition(game.getAvailablePositions(), wallGame.spawnRadius, wallGame.spawnWalls);
 
         if (wallPos != null) {
 
@@ -394,7 +399,7 @@ public class BlenderGame extends ClassicGame {
     }
     
     @Override
-    protected void prepareNewGame() {
+    public void prepareNewGame() {
         
         super.prepareNewGame();
         
@@ -410,7 +415,7 @@ public class BlenderGame extends ClassicGame {
     // CheeseGame - DimensionGame
     
     @Override
-    protected void placeFood() {
+    public void placeFood() {
         
         if (modes.contains("Dimension")) {
             dimensionGame.prevPlaceFoodDimensionGame();

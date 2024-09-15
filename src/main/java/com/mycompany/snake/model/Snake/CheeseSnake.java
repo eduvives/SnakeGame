@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.Snake;
 
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -62,7 +64,7 @@ public class CheeseSnake extends Snake {
     }
     
     @Override
-    protected void move(Point newPos, boolean grow) {
+    public void move(Point newPos, boolean grow) {
         
         if (grow) growCount += 2;
         

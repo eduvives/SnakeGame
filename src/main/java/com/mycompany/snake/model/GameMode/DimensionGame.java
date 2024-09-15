@@ -2,8 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.snake.model;
+package com.mycompany.snake.model.GameMode;
 
+import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Snake.DimensionSnake;
+import com.mycompany.snake.model.Snake.Snake;
+import com.mycompany.snake.model.Square.DimensionSquare;
+import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collection;
 
@@ -31,7 +37,7 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
-    protected void initializeSnake(){
+    public void initializeSnake(){
         
         super.initializeSnake();
         
@@ -39,7 +45,7 @@ public class DimensionGame extends ClassicGame {
     }
     
     protected void postInitializeSnakeDimensionGame() {
-        dimensionSnake = (DimensionSnake) game.snake;
+        dimensionSnake = (DimensionSnake) game.getSnake();
     }
     
     @Override
@@ -52,32 +58,32 @@ public class DimensionGame extends ClassicGame {
     @Override
     protected boolean isSnakePositionAvailable(Point position) {
         
-        return super.isSnakePositionAvailable(position) && !game.food.contains(position);
+        return super.isSnakePositionAvailable(position) && !game.getFood().contains(position);
      }
     
     @Override
-    protected void eatFood(Point newPos) {
+    protected void snakeMove(Point newPos, boolean isFoodCollision) {
         
-        toggleGameDimension();
+        super.snakeMove(newPos, isFoodCollision);
         
-        super.eatFood(newPos);
+        if (isFoodCollision) toggleGameDimension();
     }
     
     protected void toggleGameDimension() {
         
-        for (Square bodyPart : game.snake.getBody()) {
+        for (Square bodyPart : game.getSnake().getBody()) {
             DimensionSquare bodyPartDim = (DimensionSquare) bodyPart;
             bodyPartDim.toggleDimension();
         }
         
-        for (Square food : game.food) {
+        for (Square food : game.getFood()) {
             DimensionSquare foodDim = (DimensionSquare) food;
             foodDim.toggleDimension();
         }
     }
     
     @Override
-    protected void placeFood() {
+    public void placeFood() {
 
         prevPlaceFoodDimensionGame();
 
@@ -86,25 +92,25 @@ public class DimensionGame extends ClassicGame {
     
     // Set Other Dimension Food Start Value
     protected void prevPlaceFoodDimensionGame() {
-        otherDimensionFood = !game.food.isEmpty();
+        otherDimensionFood = !game.getFood().isEmpty();
     }
     
     @Override
     protected int getNumTotalFoodToPlace() {
-        return game.numFood * 2;
+        return game.getNumFood() * 2;
     }
     
     @Override
     protected void addNewFoodSquare(Point foodPos) {
-        game.food.add(new DimensionSquare(foodPos, CellType.FOOD, otherDimensionFood));
+        game.getFood().add(new DimensionSquare(foodPos, CellType.FOOD, otherDimensionFood));
         otherDimensionFood = !otherDimensionFood;
     }
     
     @Override
     protected boolean noFoodPositions() { // TODO aun no funciona
         //System.out.println(otherDimensionFood);
-        int numFoodInotherDimension = game.food.size() / 2 + (game.food.size() % 2 != 0 && otherDimensionFood ? 1 : 0);
+        int numFoodInotherDimension = game.getFood().size() / 2 + (game.getFood().size() % 2 != 0 && otherDimensionFood ? 1 : 0);
         //System.out.println(numFoodInotherDimension);
-        return game.availablePositions.size() - numFoodInotherDimension <= 0;
+        return game.getAvailablePositions().size() - numFoodInotherDimension <= 0;
     }
 }
