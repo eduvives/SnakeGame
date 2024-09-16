@@ -46,7 +46,7 @@ public class BlenderGame extends ClassicGame {
         dimensionGame = this.game.getDimensionGame();
     }
     
-    public void setBlenderModes(List<String> modes) { // TODO reutilizar los modos y no ponerlos a null si ya estan creados? comprobar con contains?
+    public void setBlenderModes(List<String> modes) {
         this.modes = modes;
     }
     
@@ -458,6 +458,6 @@ public class BlenderGame extends ClassicGame {
                 .count();
 
         // Restamos la cantidad de coincidencias al total de availablePositions
-        return (numFoodPositionCandidates - (int) numFoodInsideSnakeBody) == 0;
+        return (numFoodPositionCandidates - (int) numFoodInsideSnakeBody) <= 0;
     }
 }

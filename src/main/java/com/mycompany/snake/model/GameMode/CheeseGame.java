@@ -71,7 +71,7 @@ public class CheeseGame extends ClassicGame {
             int freeSides = 0;
             for (int[] dir : SIDES_DIRECTIONS) {
                 Point sidePos = new Point(pos.x + dir[0], pos.y + dir[1]);
-                if (game.getAvailablePositions().contains(sidePos) || game.getFood().contains(sidePos)) freeSides++; // TODO revisar amb Blender Dimension mode (checkSnakeListCollision)?
+                if (game.getAvailablePositions().contains(sidePos) || game.getFood().contains(sidePos)) freeSides++;
             }
 
             if (freeSides >= 2) {

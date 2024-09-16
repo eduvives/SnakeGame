@@ -103,7 +103,7 @@ public class Snake {
         return direction;
     }
     
-    public void move(Point newPos, boolean grow) { // TODO deberia ser protected?
+    public void move(Point newPos, boolean grow) {
         
         if(!grow) removeLastBody();
         
