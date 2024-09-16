@@ -107,10 +107,17 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
-    protected boolean noFoodPositions() { // TODO aun no funciona
-        //System.out.println(otherDimensionFood);
-        int numFoodInotherDimension = game.getFood().size() / 2 + (game.getFood().size() % 2 != 0 && otherDimensionFood ? 1 : 0);
-        //System.out.println(numFoodInotherDimension);
-        return game.getAvailablePositions().size() - numFoodInotherDimension <= 0;
+    protected boolean noFoodPositions() {
+        
+        // Cantidad total de posiciones disponibles
+        int numAvailablePositions = game.getAvailablePositions().size();
+
+        // Filtramos las posiciones de "food" que coincidan con alguna posición de "body"
+        long numFoodInsideSnakeBody = game.getFood().stream()
+                .filter(f -> game.getSnake().getBody().stream().anyMatch(b -> b.equals(f)))
+                .count();
+        
+        // Restamos la cantidad de coincidencias al total de availablePositions
+        return (numAvailablePositions - (int) numFoodInsideSnakeBody) <= 0;
     }
 }

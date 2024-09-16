@@ -106,29 +106,30 @@ public class ClassicGame implements SnakeListener {
 
         boolean isFoodCollision = checkSnakeListCollision(game.getFood(), newPos);
         boolean isFeast = false;
-        boolean isCollision = checkCollision(newPos);
+        boolean isCollision = false;
+        
+        if (isFoodCollision) {
+            game.getFood().remove(newPos);
+            increaseScore();
+        }
+
+        snakeMove(newPos, isFoodCollision);
+
+        if (isFoodCollision) {
+            placeFood();
+            isFeast = checkFeast();
+        } else {
+            isCollision = checkCollision(newPos);
+        }
         
         if (isCollision) {
             game.getObserver().onGameEnded(false);
         } else {
-            
-            if (isFoodCollision) {
-                game.getFood().remove(newPos);
-                increaseScore();
-            }
-            
-            snakeMove(newPos, isFoodCollision);
-
-            if (isFoodCollision) {
-                placeFood();
-                isFeast = checkFeast();
-            }
-
             game.getObserver().onViewChanged();
-
-            if (isFeast) {
-                game.getObserver().onGameEnded(true);
-            }
+        }
+        
+        if (isFeast) {
+            game.getObserver().onGameEnded(true);
         }
     }
     

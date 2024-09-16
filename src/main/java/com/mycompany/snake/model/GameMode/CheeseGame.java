@@ -26,6 +26,10 @@ public class CheeseGame extends ClassicGame {
     public CheeseGame(GameModel game) {
         super(game);
     }
+
+    public List<Point> getFoodPositionCandidates() {
+        return foodPositionCandidates;
+    }
     
     @Override
     protected boolean checkFeast() {
@@ -79,7 +83,7 @@ public class CheeseGame extends ClassicGame {
     @Override
     protected Point getRandomFoodPosition() {
         
-        if (foodPositionCandidates.isEmpty()) {
+        if (noFoodPositions()) {
             return null;
         }
 
@@ -89,5 +93,10 @@ public class CheeseGame extends ClassicGame {
         game.getAvailablePositions().remove(candidate);
         
         return candidate;
+    }
+    
+    @Override
+    protected boolean noFoodPositions() {
+        return foodPositionCandidates.isEmpty();
     }
 }

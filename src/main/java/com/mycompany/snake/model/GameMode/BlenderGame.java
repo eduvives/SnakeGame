@@ -17,6 +17,7 @@ import java.awt.Point;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -58,16 +59,6 @@ public class BlenderGame extends ClassicGame {
             return cheeseGame.checkFeast();
         } else {
             return super.checkFeast();
-        }
-    }
-    
-    @Override
-    protected Point getRandomFoodPosition() {
-        
-        if (modes.contains("Cheese")) {
-            return cheeseGame.getRandomFoodPosition();
-        } else {
-            return super.getRandomFoodPosition();
         }
     }
     
@@ -131,15 +122,6 @@ public class BlenderGame extends ClassicGame {
             dimensionGame.addNewFoodSquare(foodPos);
         } else {
             super.addNewFoodSquare(foodPos);
-        }
-    }
-    
-    @Override
-    protected boolean noFoodPositions() {
-        if (modes.contains("Dimension")) {
-            return dimensionGame.noFoodPositions();
-        } else {
-            return super.noFoodPositions();
         }
     }
     
@@ -250,7 +232,7 @@ public class BlenderGame extends ClassicGame {
         for (Point statuePos : spawnRadiusStatues) {
             if (statuePos.equals(game.getSnake().getHead()) || !game.getSnake().getBody().contains(statuePos)) {
                 statueGame.statues.remove(statuePos);
-                if (!statuePos.equals(game.getSnake().getHead())) {
+                if (!statuePos.equals(game.getSnake().getHead())) { // TODO if (isSnakePositionAvailable(statuePos))
                     game.getAvailablePositions().add(new Point(statuePos));
                 }
             }
@@ -313,7 +295,7 @@ public class BlenderGame extends ClassicGame {
             } else if (foodBeforeBreak == 0) {
                 
                 statueGame.statues.remove(statueSquare);
-                if (!game.getSnake().getBody().contains(statueSquare)) { // TODO and check available position
+                if (!game.getSnake().getBody().contains(statueSquare)) { // TODO and check available position -> if (isSnakePositionAvailable(statueSquare))
                     game.getAvailablePositions().add(new Point(statueSquare));
                 }
             }
@@ -425,5 +407,56 @@ public class BlenderGame extends ClassicGame {
         }
         
         super.placeFood();
+    }
+    
+    @Override
+    protected Point getRandomFoodPosition() {
+        
+        if (modes.contains("Cheese")) {
+            return getRandomFoodPositionCheeseDimension();
+        } else {
+            return super.getRandomFoodPosition();
+        }
+    }
+    
+    private Point getRandomFoodPositionCheeseDimension() {
+        
+        if (noFoodPositions()) {
+            return null;
+        }
+
+        Random rand = new Random();
+        
+        Point candidate = cheeseGame.getFoodPositionCandidates().remove(rand.nextInt(cheeseGame.getFoodPositionCandidates().size()));
+        game.getAvailablePositions().remove(candidate);
+        
+        return candidate;
+    }
+    
+    @Override
+    protected boolean noFoodPositions() {
+        
+        if (modes.contains("Cheese") && modes.contains("Dimension")) {
+            return noFoodPositionsCheeseDimension();
+        } else if (modes.contains("Cheese")) {
+            return cheeseGame.noFoodPositions();
+        } else if (modes.contains("Dimension")) {
+            return dimensionGame.noFoodPositions();
+        } else {
+            return super.noFoodPositions();
+        }
+    }
+    
+    private boolean noFoodPositionsCheeseDimension() {
+        // Cantidad total de posiciones disponibles
+        int numFoodPositionCandidates = cheeseGame.getFoodPositionCandidates().size();
+
+        // Filtramos las posiciones de "food" que coincidan con alguna posición de "body"
+        long numFoodInsideSnakeBody = game.getFood().stream()
+                .filter(f -> game.getSnake().getBody().stream().anyMatch(b -> b.equals(f)))
+                .count();
+
+        // Restamos la cantidad de coincidencias al total de availablePositions
+        return (numFoodPositionCandidates - (int) numFoodInsideSnakeBody) == 0;
     }
 }
