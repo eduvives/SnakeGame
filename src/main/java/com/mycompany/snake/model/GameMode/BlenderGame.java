@@ -162,19 +162,20 @@ public class BlenderGame extends ClassicGame {
     // StatueGame - DimensionGame
     
     @Override
-    protected boolean isSnakePositionAvailable(Point position) {
+    protected boolean isPositionAvailable(Point position) {
         
-        boolean positionAvailable = super.isSnakePositionAvailable(position);
+        boolean positionAvailable = super.isPositionAvailable(position);
         
-        if (modes.contains("Statue")) {
-            positionAvailable &= !statueGame.statues.contains(position);
-        }
-        
+        // No hace falta comprobar si el modo Statue está activo cuando el modo Dimenson este activo, 
+        // ya que las comprobaciones del modo Dimensión incluyen las del modo Statue. 
+        // Al revisar los specificModeLists se accederá a la lista de statues.
         if (modes.contains("Dimension")) {
             positionAvailable &= !game.getFood().contains(position) 
             && !game.getSpecificModeLists().stream().anyMatch(modeList -> modeList.contains(position));
+        } else if (modes.contains("Statue")) {
+            positionAvailable &= !statueGame.statues.contains(position);
         }
-        
+
         return positionAvailable;
     }
     
@@ -222,9 +223,9 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    // TwinGame - StatueGame - BoundlessGame
+    // TwinGame - StatueGame - DimensionGame - BoundlessGame
     
-    private void removeStatuesSpawnRadius() { // TODO revisar si posicion disponible (dimension)
+    private void removeStatuesSpawnRadius() {
         
         Set<Point> spawnRadiusStatues = new HashSet<>(statueGame.statues);
         spawnRadiusStatues.retainAll(getSpawnRadius());
@@ -232,7 +233,7 @@ public class BlenderGame extends ClassicGame {
         for (Point statuePos : spawnRadiusStatues) {
             if (statuePos.equals(game.getSnake().getHead()) || !game.getSnake().getBody().contains(statuePos)) {
                 statueGame.statues.remove(statuePos);
-                if (!statuePos.equals(game.getSnake().getHead())) { // TODO if (isSnakePositionAvailable(statuePos))
+                if (isPositionAvailable(statuePos)) {
                     game.getAvailablePositions().add(new Point(statuePos));
                 }
             }
@@ -295,7 +296,7 @@ public class BlenderGame extends ClassicGame {
             } else if (foodBeforeBreak == 0) {
                 
                 statueGame.statues.remove(statueSquare);
-                if (!game.getSnake().getBody().contains(statueSquare)) { // TODO and check available position -> if (isSnakePositionAvailable(statueSquare))
+                if (isPositionAvailable(statueSquare)) {
                     game.getAvailablePositions().add(new Point(statueSquare));
                 }
             }

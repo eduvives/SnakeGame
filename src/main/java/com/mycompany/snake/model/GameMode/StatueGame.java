@@ -52,9 +52,9 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected boolean isSnakePositionAvailable(Point position) {
+    protected boolean isPositionAvailable(Point position) {
         
-        return super.isSnakePositionAvailable(position) && !statues.contains(position);
+        return super.isPositionAvailable(position) && !statues.contains(position);
     }
     
     @Override

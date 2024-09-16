@@ -78,7 +78,7 @@ public class ClassicGame implements SnakeListener {
         game.getSnake().initializeSnake(new Point(game.getStartPos()));
     }
     
-    protected boolean isSnakePositionAvailable(Point position) {
+    protected boolean isPositionAvailable(Point position) {
         return !game.getSnake().getBody().contains(position)  && !game.getSnake().getHead().equals(position);
     }
     
@@ -90,7 +90,7 @@ public class ClassicGame implements SnakeListener {
 
     @Override
     public void onPositionRemoved(Point position) {
-        if (isSnakePositionAvailable(position)) game.getAvailablePositions().add(position);
+        if (isPositionAvailable(position)) game.getAvailablePositions().add(position);
     }
 
     @Override
