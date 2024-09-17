@@ -32,6 +32,7 @@ public class BlenderGame extends ClassicGame {
     private TwinGame twinGame;
     private StatueGame statueGame;
     private DimensionGame dimensionGame;
+    private PeacefulGame peacefulGame;
     
     private List<String> modes;
     
@@ -44,6 +45,7 @@ public class BlenderGame extends ClassicGame {
         twinGame = this.game.getTwinGame();
         statueGame = this.game.getStatueGame();
         dimensionGame = this.game.getDimensionGame();
+        peacefulGame = this.game.getPeacefulGame();
     }
     
     public void setBlenderModes(List<String> modes) {
@@ -55,7 +57,11 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected boolean checkFeast() {
         
-        if (modes.contains("Cheese")) {
+        if (modes.contains("Peaceful") && modes.contains("Cheese")) {
+            return ((game.getSnake().getBody().size() + 1 >= game.getNumBoardRows() * game.getNumBoardCols() / 2) && game.getFood().isEmpty()) || cheeseGame.checkFeast();
+        } else if (modes.contains("Peaceful")) {
+            return peacefulGame.checkFeast() || super.checkFeast();
+        } else if (modes.contains("Cheese")) {
             return cheeseGame.checkFeast();
         } else {
             return super.checkFeast();
@@ -67,7 +73,7 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected Point getNewPos(Point newDirection) {
         
-        if (modes.contains("Boundless")) {
+        if (modes.contains("Boundless") || modes.contains("Peaceful")) {
             return boundlessGame.getNewPos(newDirection);
         } else {
             return super.getNewPos(newDirection);
@@ -368,6 +374,10 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected boolean checkCollision(Point snakeHeadPos) {
         
+        if (modes.contains("Peaceful")) {
+            return peacefulGame.checkCollision(snakeHeadPos);
+        }
+        
         boolean collision = super.checkCollision(snakeHeadPos);
         
         if (modes.contains("Wall")) {
@@ -437,7 +447,11 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected boolean noFoodPositions() {
         
-        if (modes.contains("Cheese") && modes.contains("Dimension")) {
+        if (modes.contains("Peaceful") && modes.contains("Cheese")) {
+            return (game.getSnake().getBody().size() + 1 + game.getFood().size() >= game.getNumBoardRows() * game.getNumBoardCols() / 2) || noFoodPositionsCheeseDimension();
+        } else if (modes.contains("Peaceful")) {
+            return peacefulGame.noFoodPositions() || super.noFoodPositions();
+        } else if (modes.contains("Cheese") && modes.contains("Dimension")) {
             return noFoodPositionsCheeseDimension();
         } else if (modes.contains("Cheese")) {
             return cheeseGame.noFoodPositions();

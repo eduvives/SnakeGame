@@ -46,6 +46,9 @@ public class SnakeView extends javax.swing.JFrame {
         topMenu = new javax.swing.JPanel();
         currentScorePic = new javax.swing.JPanel();
         currentScore = new javax.swing.JLabel();
+        highScorePanel = new javax.swing.JPanel();
+        highScorePic = new javax.swing.JPanel();
+        highScore = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(666, 687));
@@ -59,12 +62,13 @@ public class SnakeView extends javax.swing.JFrame {
         );
         boardPanelLayout.setVerticalGroup(
             boardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 185, Short.MAX_VALUE)
+            .addGap(0, 175, Short.MAX_VALUE)
         );
 
         topMenu.setBackground(java.awt.Color.darkGray);
 
         currentScorePic.setBackground(java.awt.Color.red);
+        currentScorePic.setPreferredSize(new java.awt.Dimension(28, 28));
 
         javax.swing.GroupLayout currentScorePicLayout = new javax.swing.GroupLayout(currentScorePic);
         currentScorePic.setLayout(currentScorePicLayout);
@@ -81,6 +85,45 @@ public class SnakeView extends javax.swing.JFrame {
         currentScore.setForeground(new java.awt.Color(255, 255, 255));
         currentScore.setText("0");
 
+        highScorePanel.setBackground(java.awt.Color.darkGray);
+
+        highScorePic.setBackground(java.awt.Color.orange);
+        highScorePic.setPreferredSize(new java.awt.Dimension(28, 28));
+
+        javax.swing.GroupLayout highScorePicLayout = new javax.swing.GroupLayout(highScorePic);
+        highScorePic.setLayout(highScorePicLayout);
+        highScorePicLayout.setHorizontalGroup(
+            highScorePicLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 28, Short.MAX_VALUE)
+        );
+        highScorePicLayout.setVerticalGroup(
+            highScorePicLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        highScore.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        highScore.setForeground(new java.awt.Color(255, 255, 255));
+        highScore.setText("0");
+
+        javax.swing.GroupLayout highScorePanelLayout = new javax.swing.GroupLayout(highScorePanel);
+        highScorePanel.setLayout(highScorePanelLayout);
+        highScorePanelLayout.setHorizontalGroup(
+            highScorePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(highScorePanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(highScorePic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(highScore, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        highScorePanelLayout.setVerticalGroup(
+            highScorePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(highScorePic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(highScorePanelLayout.createSequentialGroup()
+                .addComponent(highScore, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout topMenuLayout = new javax.swing.GroupLayout(topMenu);
         topMenu.setLayout(topMenuLayout);
         topMenuLayout.setHorizontalGroup(
@@ -89,16 +132,20 @@ public class SnakeView extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addComponent(currentScorePic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(currentScore)
+                .addComponent(currentScore, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(highScorePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         topMenuLayout.setVerticalGroup(
             topMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(topMenuLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(topMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(currentScorePic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(currentScore, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(topMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(highScorePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(topMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(currentScorePic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(currentScore, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(20, 20, 20))
         );
 
@@ -107,18 +154,18 @@ public class SnakeView extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(25, Short.MAX_VALUE)
+                .addContainerGap(133, Short.MAX_VALUE)
                 .addComponent(boardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(133, Short.MAX_VALUE))
             .addComponent(topMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(topMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
                 .addComponent(boardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(140, Short.MAX_VALUE))
         );
 
         pack();
@@ -131,6 +178,10 @@ public class SnakeView extends javax.swing.JFrame {
     
     public void setCurrentScore(int newScore) {
         currentScore.setText(String.valueOf(newScore));
+    }
+    
+    public void setHighScore(int newScore) {
+        highScore.setText(String.valueOf(newScore));
     }
     
     public void openMenu() {
@@ -153,6 +204,9 @@ public class SnakeView extends javax.swing.JFrame {
     private javax.swing.JPanel boardPanel;
     private javax.swing.JLabel currentScore;
     private javax.swing.JPanel currentScorePic;
+    private javax.swing.JLabel highScore;
+    private javax.swing.JPanel highScorePanel;
+    private javax.swing.JPanel highScorePic;
     private javax.swing.JPanel topMenu;
     // End of variables declaration//GEN-END:variables
 }

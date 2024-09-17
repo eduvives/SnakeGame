@@ -12,6 +12,7 @@ import com.mycompany.snake.model.GameMode.TwinGame;
 import com.mycompany.snake.model.GameMode.WallGame;
 import com.mycompany.snake.model.GameMode.DimensionGame;
 import com.mycompany.snake.model.GameMode.ClassicGame;
+import com.mycompany.snake.model.GameMode.PeacefulGame;
 import com.mycompany.snake.model.Snake.Snake;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
@@ -39,6 +40,7 @@ public class GameModel {
     private TwinGame twinGame;
     private StatueGame statueGame;
     private DimensionGame dimensionGame;
+    private PeacefulGame peacefulGame;
     private BlenderGame blenderGame;
     
     private ClassicGame gameMode;
@@ -65,6 +67,7 @@ public class GameModel {
         twinGame = new TwinGame(this);
         statueGame = new StatueGame(this);
         dimensionGame = new DimensionGame(this);
+        peacefulGame = new PeacefulGame(this);
         blenderGame = new BlenderGame(this);
     }
     
@@ -171,6 +174,10 @@ public class GameModel {
         return dimensionGame;
     }
     
+    public PeacefulGame getPeacefulGame() {
+        return peacefulGame;
+    }
+    
     // Update Game Params
     
     public void updateBoardParams(int boardWidth, int boardHeight, int squareSize) {
@@ -201,8 +208,9 @@ public class GameModel {
             case "Boundless" -> gameMode = boundlessGame;
             case "Twin" -> gameMode = twinGame;
             case "Statue" -> gameMode = statueGame;
-            case "Blender" -> gameMode = blenderGame;
             case "Dimension" -> gameMode = dimensionGame;
+            case "Peaceful" -> gameMode = peacefulGame;
+            case "Blender" -> gameMode = blenderGame;
             default -> gameMode = classicGame;
         }
 

@@ -405,12 +405,14 @@ public class GameController implements ModelObserver {
         
         // Test Lines Start 2
         
+        /*
         List<Square> candidates_test = new ArrayList<>();
         for (Point pos : model.getAvailablePositions()) {
             candidates_test.add(new Square(pos, CellType.TEST));
         }
         testList.clear();
         testList.addAll(candidates_test);
+        */
         
         // Test Lines Start
         

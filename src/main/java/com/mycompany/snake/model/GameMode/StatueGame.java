@@ -21,7 +21,7 @@ public class StatueGame extends ClassicGame {
     
     protected Set<StatueSquare> statues = new HashSet<>();
     private static final int MIN_FOOD_BEFORE_BREAK = 2;
-    private static final int MAX_FOOD_BEFORE_BREAK = 8;
+    private static final int MAX_FOOD_BEFORE_BREAK = 6;
 
     public StatueGame(GameModel game) {
         super(game);        
