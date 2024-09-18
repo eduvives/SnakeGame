@@ -106,7 +106,8 @@ public class GameModel {
     }
     
     public void initializeCurrentGameHighScore() {
-        setCurrentGameHighScore(getCachedHighScore(boardName, speedName, foodName, modeName));
+        this.currentGameHighScore = getCachedHighScore(boardName, speedName, foodName, modeName);
+        observer.onHighScoreInitialized();
     }
     
     private void setCurrentGameHighScore(int score) {

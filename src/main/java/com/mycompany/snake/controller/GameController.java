@@ -99,6 +99,11 @@ public class GameController implements ModelObserver {
     }
     
     @Override
+    public void onHighScoreInitialized() {
+        initializeHighScoreView();
+    }
+    
+    @Override
     public void onHighScoreChanged() {
         updateHighScoreView();
     }
@@ -415,10 +420,19 @@ public class GameController implements ModelObserver {
         view.setCurrentScore(model.getScore());
     }
     
-    private void updateHighScoreView() {
-        view.setCurrentHighScore(model.getCurrentGameHighScore());
+    private void initializeHighScoreView() {
+        
+        view.getHighScorePanel().setVisible(model.getCurrentGameHighScore() > 0);
+        
+        updateHighScoreView();
     }
     
+    private void updateHighScoreView() {
+        if (view.getHighScorePanel().isVisible()) {
+            view.setCurrentHighScore(model.getCurrentGameHighScore());
+        }
+    }
+        
     private void startGameLoop() {
         timer.start();
         model.startGame();

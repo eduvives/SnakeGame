@@ -14,6 +14,7 @@ public interface ModelObserver {
     void onViewChanged();
     void onGameEnded(boolean isFeast);
     void onScoreChanged();
+    void onHighScoreInitialized();
     void onHighScoreChanged();
     void onNewGame();
     

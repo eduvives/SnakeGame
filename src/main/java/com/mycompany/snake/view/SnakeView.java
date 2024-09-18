@@ -5,6 +5,7 @@
 package com.mycompany.snake.view;
 
 import java.awt.Color;
+import javax.swing.JPanel;
 
 /**
  *
@@ -29,6 +30,7 @@ public class SnakeView extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
         castedBoardPanel.requestFocus();
+        highScorePanel.setVisible(false);
         
         menu = new MenuPanel(this);
     }
@@ -174,6 +176,10 @@ public class SnakeView extends javax.swing.JFrame {
     
     public BoardPanel getBoardPanel() {
         return castedBoardPanel;
+    }
+
+    public JPanel getHighScorePanel() {
+        return highScorePanel;
     }
     
     public void setCurrentScore(int newScore) {
