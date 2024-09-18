@@ -51,10 +51,11 @@ public class ClassicGame implements SnakeListener {
     public void prepareNewGame() {
         
         game.getObserver().onNewGame();
-        
-        game.setGameStarted(false);
+
         game.setGameEnded(false);
         game.setScore(0);
+        game.initializeCurrentGameHighScore();
+        game.setNewHighScore(false);
         
         game.getAvailablePositions().clear();
         game.getSpecificModeLists().clear();

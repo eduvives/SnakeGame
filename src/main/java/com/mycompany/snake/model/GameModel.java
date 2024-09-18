@@ -19,7 +19,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 /**
  *
@@ -33,6 +32,8 @@ public class GameModel {
     private Point startPos;
     private Snake snake;
     
+    private HighScoreManager highScoreManager;
+    
     private ClassicGame classicGame;
     private WallGame wallGame;
     private CheeseGame cheeseGame;
@@ -43,8 +44,12 @@ public class GameModel {
     private PeacefulGame peacefulGame;
     private BlenderGame blenderGame;
     
+    private String boardName;
+    private String speedName;
+    private String foodName;
+    private String modeName;
+    
     private ClassicGame gameMode;
-    private String gameModeName;
     private List<String> blenderSelectedModes;
     
     private int numBoardRows;
@@ -53,6 +58,8 @@ public class GameModel {
     private List<Collection<? extends Square>> specificModeLists = new ArrayList<>();
     
     private int score;
+    private int currentGameHighScore;
+    private boolean newHighScore;
     private int numFood;
     private List<Square> food = new ArrayList<>();
     
@@ -60,6 +67,9 @@ public class GameModel {
     private boolean gameEnded;
 
     public GameModel() {
+        
+        highScoreManager = new HighScoreManager(this);
+        
         classicGame = new ClassicGame(this);
         wallGame = new WallGame(this);
         cheeseGame = new CheeseGame(this);
@@ -71,7 +81,6 @@ public class GameModel {
         blenderGame = new BlenderGame(this);
     }
     
-    
     // Método para asignar el observador
     public void setObserver(ModelObserver observer) {
         this.observer = observer;
@@ -82,20 +91,63 @@ public class GameModel {
     }
     
     public void setScore(int score) {
+        
         this.score = score;
+        
+        if (score > currentGameHighScore) {
+            newHighScore = true;
+            setCurrentGameHighScore(score);
+        }
         observer.onScoreChanged();
+    }
+    
+    public int getCachedHighScore (String board, String speed, String food, String mode) {
+        return highScoreManager.getCachedHighScore(board, speed, food, mode);
+    }
+    
+    public void initializeCurrentGameHighScore() {
+        setCurrentGameHighScore(getCachedHighScore(boardName, speedName, foodName, modeName));
+    }
+    
+    private void setCurrentGameHighScore(int score) {
+        this.currentGameHighScore = score;
+        observer.onHighScoreChanged();
+    }
+
+    public void setNewHighScore(boolean newHighScore) {
+        this.newHighScore = newHighScore;
+    }
+
+    protected boolean isNewHighScore() {
+        return newHighScore;
+    }
+
+    public String getBoardName() {
+        return boardName;
+    }
+
+    public String getSpeedName() {
+        return speedName;
+    }
+
+    public String getFoodName() {
+        return foodName;
+    }
+    
+    public String getModeName() {
+        return modeName;
     }
 
     public int getNumFood() {
         return numFood;
     }
     
-    public String getGameModeName() {
-        return gameModeName;
-    }
-
     public int getScore() {
         return score;
+    }
+    
+    public int getCurrentGameHighScore() {
+        return currentGameHighScore;
     }
     
     public void setGameStarted(boolean gameStarted) {
@@ -180,28 +232,33 @@ public class GameModel {
     
     // Update Game Params
     
-    public void updateBoardParams(int boardWidth, int boardHeight, int squareSize) {
-        numBoardCols = boardWidth / squareSize;
-        numBoardRows = boardHeight / squareSize;
+    public void updateBoardParams(String boardName, int numBoardCols, int numBoardRows) {
+        
+        this.boardName = boardName;
+        this.numBoardCols = numBoardCols;
+        this.numBoardRows = numBoardRows;
 
         startPos = new Point(Snake.START_LENGTH + 1, numBoardRows / 2);
     }
     
-    public void updateNumFoodParam(int numFood) {
-        this.numFood = numFood;
+    public void updateSpeedParam(String speedName) {
+        this.speedName = speedName;
     }
     
-    public void updateBlenderSelectedModes(String mode, List<String> newBlenderSelectedModes) {
+    public void updateFoodParam(String foodName) {
+        this.foodName = foodName;
+        this.numFood = SettingsParams.FOODS.get(foodName);
+    }
+    
+    public void updateBlenderSelectedModes(List<String> newBlenderSelectedModes) {
         // Blender Selected Modes Changed
-        if (!Objects.equals(blenderSelectedModes, newBlenderSelectedModes)) {
-            blenderSelectedModes = newBlenderSelectedModes; // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
-            blenderGame.setBlenderModes(blenderSelectedModes); // TODO revisar
-        }
+        blenderSelectedModes = newBlenderSelectedModes; // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
+        blenderGame.setBlenderModes(blenderSelectedModes); // TODO revisar
     }
     
-    public void updateGameMode(String mode) {
+    public void updateGameMode(String modeName) {
         
-        switch (mode) {
+        switch (modeName) {
             case "Classic" -> gameMode = classicGame;
             case "Wall" -> gameMode = wallGame;
             case "Cheese" -> gameMode = cheeseGame;
@@ -214,7 +271,7 @@ public class GameModel {
             default -> gameMode = classicGame;
         }
 
-        gameModeName = mode;
+        this.modeName = modeName;
     }
     
     // Game Logic
@@ -233,6 +290,12 @@ public class GameModel {
     }
     
     public void gameEnd() {
+        
+        if (newHighScore) {
+            highScoreManager.updateCachedHighScore();
+        }
+        
+        gameStarted = false;
         gameEnded = true;
     }
     

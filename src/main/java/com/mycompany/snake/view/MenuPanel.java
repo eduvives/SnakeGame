@@ -173,6 +173,10 @@ public class MenuPanel extends javax.swing.JDialog {
         scoreLabel.setText(String.valueOf(score));
     }
     
+    public void setHighScoreLabel(int score) {
+        highScoreLabel.setText(String.valueOf(score));
+    }
+    
     public void setWindowClosingListener () {
         this.addWindowListener(new WindowAdapter() {
             @Override

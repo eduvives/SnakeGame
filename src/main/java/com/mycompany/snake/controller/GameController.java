@@ -67,9 +67,9 @@ public class GameController implements ModelObserver {
         initializeGameTimer();
         initializeSwitchSidesTimer();
         updateGameViewParams(
-            SettingsParams.BOARD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
-            SettingsParams.SPEED_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
-            SettingsParams.FOOD_VALUES[SettingsParams.DEFAULT_SELECTED_INDEX],
+            SettingsParams.getBoardNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
+            SettingsParams.getSpeedNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
+            SettingsParams.getFoodNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
             SettingsParams.MODE_NAMES[SettingsParams.DEFAULT_SELECTED_INDEX]
         );
         updateViewBoardParams();
@@ -88,14 +88,19 @@ public class GameController implements ModelObserver {
         refreshBoard();
     }
     
-    @Override
-    public void onScoreChanged() {
-        updateScore();
-    }
-    
     private void refreshBoard() {
         updateView();
         view.getBoardPanel().repaint();
+    }
+    
+    @Override
+    public void onScoreChanged() {
+        updateScoreView();
+    }
+    
+    @Override
+    public void onHighScoreChanged() {
+        updateHighScoreView();
     }
     
     @Override
@@ -122,48 +127,57 @@ public class GameController implements ModelObserver {
         view.getBoardPanel().setBackgroundColor(CellType.EMPTY.getColor());
     }
     
-    private void updateGameViewParams(int[] boardSize, int delay, int numFood, String mode) {
+    private void updateGameViewParams(String board, String speed, String food, String mode) {
         
         // Update Board Size
-        if (boardWidth != boardSize[0] || boardHeight != boardSize[1] || squareSize != boardSize[2] ) {
+        if (!Objects.equals(model.getBoardName(), board)) {
+            
+            int [] boardSize = SettingsParams.BOARDS.get(board);
             
             boardWidth = boardSize[0];
             boardHeight = boardSize[1];
             squareSize = boardSize[2];
             isBoardUpdated = false;
             
-            model.updateBoardParams(boardWidth, boardHeight, squareSize);
-        }
-
-        // Update Game Timer Delay
-        if (timer.getDelay() != delay) {
-            updateGameTimerDelay(delay);
+            int numBoardCols = boardWidth / squareSize;
+            int numBoardRows = boardHeight / squareSize;
+        
+            model.updateBoardParams(board, numBoardCols, numBoardRows);
         }
         
         // Update Num Food
-        if (model.getNumFood() != numFood) {
-            model.updateNumFoodParam(numFood);
+        if (!Objects.equals(model.getFoodName(), food)) {
+            model.updateFoodParam(food);
         }
         
         // Update Blender Selected Modes
-        if (mode.equals("Blender")) {
-            List<String> newBlenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues();
-            model.updateBlenderSelectedModes(mode, newBlenderSelectedModes);
-        }
+        checkBlenderSelectedModes(mode);
         
-        // Update Switch Sides Timer Delay (Initial Delay)
-        if (mode.equals("Twin") || (mode.equals("Blender") && model.getBlenderSelectedModes().contains("Twin"))) {
+        // Update Game Timer Delay
+        if (!Objects.equals(model.getSpeedName(), speed)) {
             
-            int newSwitchSidesDelay = (int) Math.round(delay * 2.5);
-
-            if (switchSidesTimer.getInitialDelay() != newSwitchSidesDelay) {
+            updateGameTimerDelay(SettingsParams.SPEEDS.get(speed));
+            model.updateSpeedParam(speed);
+            
+            // Update Switch Sides Timer Delay (Initial Delay)
+            if (mode.equals("Twin") || (mode.equals("Blender") && model.getBlenderSelectedModes().contains("Twin"))) {
+                int newSwitchSidesDelay = (int) Math.round(SettingsParams.SPEEDS.get(speed) * 2.5);
                 updateSwitchSidesTimerDelay(newSwitchSidesDelay);
             }
         }
         
         // Update Game Mode
-        if (!Objects.equals(model.getGameModeName(), mode)) {
+        if (!Objects.equals(model.getModeName(), mode)) {
             model.updateGameMode(mode);
+        }
+    }
+    
+    private void checkBlenderSelectedModes(String selectedMode) {
+        if (selectedMode.equals("Blender")) {
+            List<String> newBlenderSelectedModes = view.getBlenderSettings().getModeListSelectedValues();
+            if (!Objects.equals(model.getBlenderSelectedModes(), newBlenderSelectedModes)) {
+                model.updateBlenderSelectedModes(newBlenderSelectedModes);
+            }
         }
     }
     
@@ -181,9 +195,9 @@ public class GameController implements ModelObserver {
     }
     
     private void setSettingsComboBoxesModels() {
-        view.getSettings().setBoardCmbModel(SettingsParams.BOARD_NAMES, SettingsParams.DEFAULT_SELECTED_INDEX);
-        view.getSettings().setSpeedCmbModel(SettingsParams.SPEED_NAMES, SettingsParams.DEFAULT_SELECTED_INDEX);
-        view.getSettings().setFoodCmbModel(SettingsParams.FOOD_NAMES, SettingsParams.DEFAULT_SELECTED_INDEX);
+        view.getSettings().setBoardCmbModel(SettingsParams.getBoardNames(), SettingsParams.DEFAULT_SELECTED_INDEX);
+        view.getSettings().setSpeedCmbModel(SettingsParams.getSpeedNames(), SettingsParams.DEFAULT_SELECTED_INDEX);
+        view.getSettings().setFoodCmbModel(SettingsParams.getFoodNames(), SettingsParams.DEFAULT_SELECTED_INDEX);
         view.getSettings().setModeCmbModel(SettingsParams.MODE_NAMES, SettingsParams.DEFAULT_SELECTED_INDEX);
     }
     
@@ -204,6 +218,18 @@ public class GameController implements ModelObserver {
         });
         
         view.getSettings().setBackBtnListener(e -> {
+            
+            String modeName = view.getSettings().getModeCmbSelectedItem();
+            
+            checkBlenderSelectedModes(modeName);
+                
+            view.getMenu().setHighScoreLabel(model.getCachedHighScore(
+                view.getSettings().getBoardCmbSelectedItem(),
+                view.getSettings().getSpeedCmbSelectedItem(),
+                view.getSettings().getFoodCmbSelectedItem(),
+                modeName)
+            );
+            
             backBtnAction(view.getSettings(), view.getMenu());
         });
         
@@ -242,10 +268,10 @@ public class GameController implements ModelObserver {
     private void updateGameParamsFromView() {
 
         updateGameViewParams(
-            SettingsParams.BOARD_VALUES[view.getSettings().getBoardCmbSelectedIndex()],
-            SettingsParams.SPEED_VALUES[view.getSettings().getSpeedCmbSelectedIndex()],
-            SettingsParams.FOOD_VALUES[view.getSettings().getFoodCmbSelectedIndex()],
-            SettingsParams.MODE_NAMES[view.getSettings().getModeCmbSelectedIndex()]
+            view.getSettings().getBoardCmbSelectedItem(),
+            view.getSettings().getSpeedCmbSelectedItem(),
+            view.getSettings().getFoodCmbSelectedItem(),
+            view.getSettings().getModeCmbSelectedItem()
         );
     }
     
@@ -369,7 +395,9 @@ public class GameController implements ModelObserver {
         timer.setDelay(newDelay);
     }
     
-    public void showGameBoard() {
+    public void showGamePreview() {
+        
+        model.initializeCurrentGameHighScore();
         model.initializeSnake();
         
         refreshBoard();
@@ -379,11 +407,16 @@ public class GameController implements ModelObserver {
     
     public void openMenu() {
         view.getMenu().setScoreLabel(model.getScore());
+        view.getMenu().setHighScoreLabel(model.getCurrentGameHighScore());
         view.openMenu();
     }
     
-    private void updateScore() {
+    private void updateScoreView() {
         view.setCurrentScore(model.getScore());
+    }
+    
+    private void updateHighScoreView() {
+        view.setCurrentHighScore(model.getCurrentGameHighScore());
     }
     
     private void startGameLoop() {
@@ -392,10 +425,11 @@ public class GameController implements ModelObserver {
     }
     
     private void endGameLoop(boolean isFeast) {
+        
         System.out.println("Feast: " + isFeast);
-        model.gameEnd();
         
         timer.stop();
+        model.gameEnd();
         
         SwingUtilities.invokeLater(() -> openMenu());
     }

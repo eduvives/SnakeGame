@@ -21,7 +21,7 @@ public class SnakeGame {
         GameController controller = new GameController(view, model);
     
         controller.registerObserver();
-        controller.showGameBoard();
+        controller.showGamePreview();
         controller.openMenu();
     }
 }

@@ -261,20 +261,20 @@ public class SettingsPanel extends javax.swing.JDialog {
         modeCmb.setSelectedIndex(selectedIndex);
     }
     
-    public int getBoardCmbSelectedIndex() {
-        return boardCmb.getSelectedIndex();
+    public String getBoardCmbSelectedItem() {
+        return (String) boardCmb.getSelectedItem();
     }
     
-    public int getSpeedCmbSelectedIndex() {
-        return speedCmb.getSelectedIndex();
+    public String getSpeedCmbSelectedItem() {
+        return (String) speedCmb.getSelectedItem();
     }
     
-    public int getFoodCmbSelectedIndex() {
-        return foodCmb.getSelectedIndex();
+    public String getFoodCmbSelectedItem() {
+        return (String) foodCmb.getSelectedItem();
     }
     
-    public int getModeCmbSelectedIndex() {
-        return modeCmb.getSelectedIndex();
+    public String getModeCmbSelectedItem() {
+        return (String) modeCmb.getSelectedItem();
     }
     
     public void setWindowClosingListener () {
