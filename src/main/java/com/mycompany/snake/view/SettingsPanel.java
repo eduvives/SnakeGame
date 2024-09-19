@@ -26,7 +26,7 @@ public class SettingsPanel extends javax.swing.JDialog {
      * Creates new form SettingsPanel
      */
     public SettingsPanel(MenuPanel menuPanel) {
-        super(menuPanel, "Game Settings", true);
+        super(menuPanel, "Game Settings");
         initComponents();
         
         comboBoxes = Arrays.asList(boardCmb, speedCmb, foodCmb, modeCmb);

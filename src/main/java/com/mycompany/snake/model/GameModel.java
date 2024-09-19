@@ -14,7 +14,9 @@ import com.mycompany.snake.model.GameMode.DimensionGame;
 import com.mycompany.snake.model.GameMode.ClassicGame;
 import com.mycompany.snake.model.GameMode.PeacefulGame;
 import com.mycompany.snake.model.Snake.Snake;
+import com.mycompany.snake.model.Square.ColorPaletteManager;
 import com.mycompany.snake.model.Square.Square;
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +35,7 @@ public class GameModel {
     private Snake snake;
     
     private HighScoreManager highScoreManager;
+    private ColorPaletteManager colorPaletteManager;
     
     private ClassicGame classicGame;
     private WallGame wallGame;
@@ -63,12 +66,13 @@ public class GameModel {
     private int numFood;
     private List<Square> food = new ArrayList<>();
     
+    private boolean gameActive;
     private boolean gameStarted;
-    private boolean gameEnded;
 
     public GameModel() {
         
         highScoreManager = new HighScoreManager(this);
+        colorPaletteManager = new ColorPaletteManager();
         
         classicGame = new ClassicGame(this);
         wallGame = new WallGame(this);
@@ -151,20 +155,16 @@ public class GameModel {
         return currentGameHighScore;
     }
     
-    public void setGameStarted(boolean gameStarted) {
-        this.gameStarted = gameStarted;
-    }
-    
     public boolean isGameStarted() {
         return gameStarted;
     }
 
-    public void setGameEnded(boolean gameEnded) {
-        this.gameEnded = gameEnded;
+    public void setGameActive(boolean gameActive) {
+        this.gameActive = gameActive;
     }
 
-    public boolean isGameEnded() {
-        return gameEnded;
+    public boolean isGameActive() {
+        return gameActive;
     }
 
     public void setSnake(Snake snake) {
@@ -283,6 +283,7 @@ public class GameModel {
         gameMode.initializeSnake();
 
         gameMode.placeFood();
+        observer.onNewGame();
         observer.onViewChanged();
     }
     
@@ -297,7 +298,7 @@ public class GameModel {
         }
         
         gameStarted = false;
-        gameEnded = true;
+        gameActive = false;
     }
     
     public void nextLoop() {
@@ -306,5 +307,17 @@ public class GameModel {
     
     public void initializeSnake() {
         gameMode.initializeSnake();
+    }
+    
+    public void boardColorChanged(Color newColor) {
+        colorPaletteManager.boardColorChanged(newColor);
+    }
+    
+    public void foodColorChanged(Color newColor) {
+        colorPaletteManager.foodColorChanged(newColor);
+    }
+    
+    public void snakeColorChanged(Color newColor) {
+        colorPaletteManager.snakeColorChanged(newColor);
     }
 }

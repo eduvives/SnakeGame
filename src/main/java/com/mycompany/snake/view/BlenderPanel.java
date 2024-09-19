@@ -29,7 +29,7 @@ public class BlenderPanel extends javax.swing.JDialog {
      * Creates new form BlenderPanel
      */
     public BlenderPanel(SettingsPanel menuPanel) {
-        super(menuPanel, "Blender Settings", true);
+        super(menuPanel, "Blender Settings");
         initComponents();
         
         pack();

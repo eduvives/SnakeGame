@@ -11,4 +11,31 @@
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>com.mycompany.snake.main.SnakeGame</exec.mainClass>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <configuration>
+                  <descriptorRefs>
+                      <descriptorRef>jar-with-dependencies</descriptorRef>
+                  </descriptorRefs>
+                  <archive>
+                      <manifest>
+                        <mainClass>com.mycompany.snake.main.SnakeGame</mainClass>
+                      </manifest>
+                  </archive>
+              </configuration>
+              <executions>
+                  <execution>
+                      <id>make-assembly</id>
+                      <phase>package</phase>
+                      <goals>
+                        <goal>single</goal>
+                      </goals>
+                  </execution>
+              </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

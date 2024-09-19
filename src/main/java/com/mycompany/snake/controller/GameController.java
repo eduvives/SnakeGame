@@ -4,10 +4,10 @@
  */
 package com.mycompany.snake.controller;
 
-import com.mycompany.snake.model.Square.CellType;
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.ModelObserver;
 import com.mycompany.snake.model.SettingsParams;
+import com.mycompany.snake.model.Square.ColorPaletteManager;
 import com.mycompany.snake.model.Square.Square;
 import com.mycompany.snake.view.SnakeView;
 import java.awt.Color;
@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +41,7 @@ public class GameController implements ModelObserver {
     private List<Square> testList = new ArrayList<>(); // Test Line
     
     private SnakeView view;
-    private Map<Color, List<Point>> viewSquaresColors = new HashMap<>();
+    private Map<Color, List<Point>> viewSquaresColors = new LinkedHashMap<>();
     
     private GameModel model;
     
@@ -61,18 +61,14 @@ public class GameController implements ModelObserver {
         this.view = view;
         this.model = model;
         
-        setViewParams();
         setSettingsComboBoxesModels();
         setBlenderModeListModel();
         initializeGameTimer();
         initializeSwitchSidesTimer();
-        updateGameViewParams(
-            SettingsParams.getBoardNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
-            SettingsParams.getSpeedNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
-            SettingsParams.getFoodNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
-            SettingsParams.MODE_NAMES[SettingsParams.DEFAULT_SELECTED_INDEX]
-        );
+        initializeGameParams();
         updateViewBoardParams();
+        initializeGamePaletteColor();
+        
         setViewListeners();
         configureKeyBindings();
     }
@@ -91,6 +87,20 @@ public class GameController implements ModelObserver {
     private void refreshBoard() {
         updateView();
         view.getBoardPanel().repaint();
+    }
+    
+    @Override
+    public void onNewGame() {
+
+        if (!isBoardUpdated) {
+            updateViewBoardParams();
+        }
+        clearUserInputs();
+        toggleKeyBindings(true);
+    }
+    
+    private void clearUserInputs() {
+        inputQueue.clear();
     }
     
     @Override
@@ -113,26 +123,18 @@ public class GameController implements ModelObserver {
         endGameLoop(isFeast);
     }
     
-    @Override
-    public void onNewGame() {
-
-        if (!isBoardUpdated) {
-            updateViewBoardParams();
-        }
-        clearUserInputs();
-    }
-    
-    private void clearUserInputs() {
-        inputQueue.clear();
-    }
-    
     // Métodos View
     
-    private void setViewParams(){
-        view.getBoardPanel().setBackgroundColor(CellType.EMPTY.getColor());
+    private void initializeGameParams() {
+        updateGameParams(
+            SettingsParams.getBoardNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
+            SettingsParams.getSpeedNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
+            SettingsParams.getFoodNames()[SettingsParams.DEFAULT_SELECTED_INDEX],
+            SettingsParams.MODE_NAMES[SettingsParams.DEFAULT_SELECTED_INDEX]
+        );
     }
     
-    private void updateGameViewParams(String board, String speed, String food, String mode) {
+    private void updateGameParams(String board, String speed, String food, String mode) {
         
         // Update Board Size
         if (!Objects.equals(model.getBoardName(), board)) {
@@ -199,6 +201,12 @@ public class GameController implements ModelObserver {
         isBoardUpdated = true;
     }
     
+    private void initializeGamePaletteColor() {
+        boardColorChangedView(ColorPaletteManager.BOARD_COLOR_PALETTE[ColorPaletteManager.DEFAULT_SELECTED_INDEX]);
+        foodColorChangedView(ColorPaletteManager.FOOD_COLOR_PALETTE[ColorPaletteManager.DEFAULT_SELECTED_INDEX]);
+        snakeColorChangedView(ColorPaletteManager.SNAKE_COLOR_PALETTE[ColorPaletteManager.DEFAULT_SELECTED_INDEX]);
+    }
+    
     private void setSettingsComboBoxesModels() {
         view.getSettings().setBoardCmbModel(SettingsParams.getBoardNames(), SettingsParams.DEFAULT_SELECTED_INDEX);
         view.getSettings().setSpeedCmbModel(SettingsParams.getSpeedNames(), SettingsParams.DEFAULT_SELECTED_INDEX);
@@ -240,7 +248,7 @@ public class GameController implements ModelObserver {
         
         view.getBlenderSettings().setPlayBtnListener(e -> {
             playBtnAction(view.getBlenderSettings());
-        });                
+        });
         
         view.getBlenderSettings().setBackBtnListener(e -> {
             backBtnAction(view.getBlenderSettings(), view.getSettings());
@@ -255,6 +263,29 @@ public class GameController implements ModelObserver {
         view.getBlenderSettings().setResetBtnListener(e -> {
             view.getBlenderSettings().getModeList().setSelectedIndex(SettingsParams.DEFAULT_SELECTED_INDEX);
         });
+        
+        view.setBoardColorBtnListener(e -> {
+            view.colorSelection(ColorPaletteManager.BOARD_COLOR_PALETTE, "Board Color Selection", colorChangedListener -> {
+                boardColorChangedView(view.getColorSelectionPanel().getSelectedColor());
+                refreshBoard();
+                view.getContentPane().repaint();
+            });
+        });
+        
+        view.setFoodColorBtnListener(e -> {
+            view.colorSelection(ColorPaletteManager.FOOD_COLOR_PALETTE, "Food Color Selection", colorChangedListener -> {
+                foodColorChangedView(view.getColorSelectionPanel().getSelectedColor());
+                refreshBoard();
+            });
+        });
+        
+        view.setSnakeColorBtnListener(e -> {
+            view.colorSelection(ColorPaletteManager.SNAKE_COLOR_PALETTE, "Snake Color Selection", colorChangedListener -> {
+                snakeColorChangedView(view.getColorSelectionPanel().getSelectedColor());
+                refreshBoard();
+            });
+        });
+        
     }
     
     private void playBtnAction(JDialog fromDialog) {
@@ -270,9 +301,28 @@ public class GameController implements ModelObserver {
         toDialog.setVisible(true);
     }
     
+    private void boardColorChangedView(Color newColor) {
+        model.boardColorChanged(newColor);
+        //view.setBoardColorBtnForeground(newColor); TODO poner?
+        
+        view.setBackgroundColor(newColor);
+    }
+    
+    private void foodColorChangedView(Color newColor) {
+        model.foodColorChanged(newColor);
+        //view.setFoodColorBtnForeground(newColor);
+        
+        view.setScoreColor(newColor);
+    }
+    
+    private void snakeColorChangedView(Color newColor) {
+        model.snakeColorChanged(newColor);
+        //view.setSnakeColorBtnForeground(newColor);
+    }
+    
     private void updateGameParamsFromView() {
 
-        updateGameViewParams(
+        updateGameParams(
             view.getSettings().getBoardCmbSelectedItem(),
             view.getSettings().getSpeedCmbSelectedItem(),
             view.getSettings().getFoodCmbSelectedItem(),
@@ -280,18 +330,34 @@ public class GameController implements ModelObserver {
         );
     }
     
-    private void configureKeyBindings() {
+    public void toggleKeyBindings(boolean enable) {
+        
         InputMap inputMap = view.getBoardPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = view.getBoardPanel().getActionMap();
 
-        inputMap.put(KeyStroke.getKeyStroke("UP"), "moveUp");
-        inputMap.put(KeyStroke.getKeyStroke("W"), "moveUp");
-        inputMap.put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
-        inputMap.put(KeyStroke.getKeyStroke("S"), "moveDown");
-        inputMap.put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
-        inputMap.put(KeyStroke.getKeyStroke("A"), "moveLeft");
-        inputMap.put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
-        inputMap.put(KeyStroke.getKeyStroke("D"), "moveRight");
+        if (enable) {
+            // Activar los key bindings
+            inputMap.put(KeyStroke.getKeyStroke("UP"), "moveUp");
+            inputMap.put(KeyStroke.getKeyStroke("W"), "moveUp");
+            inputMap.put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
+            inputMap.put(KeyStroke.getKeyStroke("S"), "moveDown");
+            inputMap.put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
+            inputMap.put(KeyStroke.getKeyStroke("A"), "moveLeft");
+            inputMap.put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
+            inputMap.put(KeyStroke.getKeyStroke("D"), "moveRight");
+            
+            inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "endGame");
+
+            inputMap.put(KeyStroke.getKeyStroke("SPACE"), "pauseGame"); // Test Line
+            
+        } else {
+            // Desactivar los key bindings
+            inputMap.clear();
+        }
+    }
+    
+    private void configureKeyBindings() {
+        
+        ActionMap actionMap = view.getBoardPanel().getActionMap();
         
         actionMap.put("moveUp", new AbstractAction() {
             @Override
@@ -321,20 +387,16 @@ public class GameController implements ModelObserver {
             }
         });
         
-        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "endGame");
-        
         actionMap.put("endGame", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!model.isGameEnded()) {
+                if (model.isGameActive()) {
                     endGameLoop(false);
                 }
             }
         });
         
         // Test Lines Start
-        inputMap.put(KeyStroke.getKeyStroke("SPACE"), "pauseGame");
-        
         actionMap.put("pauseGame", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -434,6 +496,7 @@ public class GameController implements ModelObserver {
     }
         
     private void startGameLoop() {
+        view.toggleStyleButtons(false);
         timer.start();
         model.startGame();
     }
@@ -442,6 +505,9 @@ public class GameController implements ModelObserver {
         
         System.out.println("Feast: " + isFeast);
         
+        toggleKeyBindings(false);
+        view.toggleStyleButtons(true);
+        
         timer.stop();
         model.gameEnd();
         
@@ -449,7 +515,22 @@ public class GameController implements ModelObserver {
     }
     
     private void updateView(){
+        
         viewSquaresColors.clear();
+        
+        // Snake Body
+        addSquareColorListView(model.getSnake().getBody());
+        
+        // Snake Head
+        addSquareColorView(model.getSnake().getHead());
+        
+        // Food
+        addSquareColorListView(model.getFood());
+        
+        // Specific Mode Lists (Wall...)
+        for (Collection<? extends Square> modeList : model.getSpecificModeLists()) {
+            addSquareColorListView(modeList);
+        }
         
         // Test Lines Start 2
         
@@ -478,20 +559,6 @@ public class GameController implements ModelObserver {
         */
         
         // Test Lines End
-        
-        // Specific Mode Lists (Wall...)
-        for (Collection<? extends Square> modeList : model.getSpecificModeLists()) {
-            addSquareColorListView(modeList);
-        }
-        
-        // Food
-        addSquareColorListView(model.getFood());
-        
-        // Snake Head
-        addSquareColorView(model.getSnake().getHead());
-        
-        // Snake Body
-        addSquareColorListView(model.getSnake().getBody());
         
         view.getBoardPanel().setSquaresColors(viewSquaresColors);
     }
@@ -522,7 +589,7 @@ public class GameController implements ModelObserver {
     private void initializeSwitchSidesTimer() {
         
         switchSidesTimer = new Timer(0, (ActionEvent e) -> {
-            if (!model.isGameEnded()) {
+            if (model.isGameActive()) { // TODO || !isGamePaused?
                 timer.start();
             }
         });

@@ -49,10 +49,8 @@ public class ClassicGame implements SnakeListener {
     // NEW GAME
     
     public void prepareNewGame() {
-        
-        game.getObserver().onNewGame();
 
-        game.setGameEnded(false);
+        game.setGameActive(true);
         game.setScore(0);
         game.initializeCurrentGameHighScore();
         game.setNewHighScore(false);

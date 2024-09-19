@@ -12,11 +12,11 @@ public interface ModelObserver {
     
     // Global (Classic Game)
     void onViewChanged();
-    void onGameEnded(boolean isFeast);
+    void onNewGame();
     void onScoreChanged();
     void onHighScoreInitialized();
     void onHighScoreChanged();
-    void onNewGame();
+    void onGameEnded(boolean isFeast);
     
     // Specific (Twin Game)
     void onSwitchSides();

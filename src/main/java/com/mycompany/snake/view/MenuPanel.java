@@ -20,7 +20,7 @@ public class MenuPanel extends javax.swing.JDialog {
      * Creates new form MenuPanel
      */
     public MenuPanel(SnakeView gameView) {
-        super(gameView, "Game Menu", true);
+        super(gameView, "Game Menu");
         initComponents();
         
         pack();
@@ -50,8 +50,6 @@ public class MenuPanel extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
-
-        scorePic.setBackground(java.awt.Color.red);
 
         javax.swing.GroupLayout scorePicLayout = new javax.swing.GroupLayout(scorePic);
         scorePic.setLayout(scorePicLayout);
@@ -200,7 +198,7 @@ public class MenuPanel extends javax.swing.JDialog {
     private javax.swing.JPanel highScorePic;
     private javax.swing.JButton playBtn;
     private javax.swing.JLabel scoreLabel;
-    private javax.swing.JPanel scorePic;
+    protected javax.swing.JPanel scorePic;
     private javax.swing.JButton settingsBtn;
     // End of variables declaration//GEN-END:variables
 }

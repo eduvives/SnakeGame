@@ -9,7 +9,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
     private int boardWidth;
     private int boardHeight;
     private int squareSize;
-    private Map<Color, List<Point>> squaresColors =  new HashMap<>();
+    private Map<Color, List<Point>> squaresColors =  new LinkedHashMap<>();
     
     /**
      * Creates new form BoardPanel
@@ -52,10 +52,6 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
             .addGap(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-    
-    public void setBackgroundColor(Color color) {
-        setBackground(color);
-    }
     
     public void setBoardWidth(int newWidth) {
         boardWidth = newWidth;
