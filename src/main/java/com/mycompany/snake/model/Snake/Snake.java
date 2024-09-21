@@ -16,7 +16,7 @@ import java.util.LinkedList;
  */
 public class Snake {
     
-    private SnakeListener listener;
+    protected SnakeListener listener;
     
     protected LinkedList<Square> body;
     protected Square head;
@@ -52,16 +52,16 @@ public class Snake {
         listener.onPositionAdded(square);
     }
     
-    protected Point removeLastBody() {
-        Point lastBodyPos = body.removeLast().getLocation();
-        listener.onPositionRemoved(lastBodyPos);
-        return lastBodyPos;
+    protected Square removeLastBody() {
+        Square lastBodyPart = body.removeLast();
+        listener.onPositionRemoved(lastBodyPart.getLocation());
+        return lastBodyPart;
     }
     
-    protected Point removeFirstBody() {
-        Point firstBodyPos = body.removeFirst().getLocation();
-        listener.onPositionRemoved(firstBodyPos);
-        return firstBodyPos;
+    protected Square removeFirstBody() {
+        Square firstBodyPart = body.removeFirst();
+        listener.onPositionRemoved(firstBodyPart.getLocation());
+        return firstBodyPart;
     }
     
     protected void setLocationHead(Point previousPosition, Point newPosition) {

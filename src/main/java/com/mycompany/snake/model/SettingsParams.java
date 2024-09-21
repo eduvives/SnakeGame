@@ -31,7 +31,6 @@ public class SettingsParams {
     public static final Map<String, Integer> SPEEDS = new LinkedHashMap<>();
     
     static {
-        // Inicializar los valores de las velocidades
         SPEEDS.put("Normal", 135);
         SPEEDS.put("Fast", 89);
         SPEEDS.put("Slow", 179);
@@ -45,7 +44,6 @@ public class SettingsParams {
     public static final Map<String, Integer> FOODS = new LinkedHashMap<>();
     
     static {
-        // Inicializar los valores de las velocidades
         FOODS.put("1", 1);
         FOODS.put("3", 3);
         FOODS.put("5", 5);

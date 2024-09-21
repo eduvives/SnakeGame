@@ -7,6 +7,7 @@ package com.mycompany.snake.controller;
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.ModelObserver;
 import com.mycompany.snake.model.SettingsParams;
+import com.mycompany.snake.model.Square.CellType;
 import com.mycompany.snake.model.Square.ColorPaletteManager;
 import com.mycompany.snake.model.Square.Square;
 import com.mycompany.snake.view.SnakeView;
@@ -534,14 +535,12 @@ public class GameController implements ModelObserver {
         
         // Test Lines Start 2
         
-        /*
         List<Square> candidates_test = new ArrayList<>();
         for (Point pos : model.getAvailablePositions()) {
             candidates_test.add(new Square(pos, CellType.TEST));
         }
         testList.clear();
         testList.addAll(candidates_test);
-        */
         
         // Test Lines Start
         

@@ -23,12 +23,14 @@ public class BoundlessGame extends ClassicGame {
         int posX = game.getSnake().getHead().x + newDirection.x;
         int posY = game.getSnake().getHead().y + newDirection.y;
         
+        // Ajustar por teletransporte en el eje X
         if (posX < 0) {
             posX = game.getNumBoardCols() - 1;
         } else if (posX >= game.getNumBoardCols()) {
             posX = 0;
         }
 
+        // Ajustar por teletransporte en el eje Y
         if (posY < 0) {
             posY = game.getNumBoardRows() - 1;
         } else if (posY >= game.getNumBoardRows()) {

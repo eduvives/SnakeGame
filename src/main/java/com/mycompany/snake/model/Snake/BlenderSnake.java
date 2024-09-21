@@ -4,6 +4,7 @@
  */
 package com.mycompany.snake.model.Snake;
 
+import com.mycompany.snake.model.GameMode.SnakeListener;
 import com.mycompany.snake.model.Square.DimensionSquare;
 import com.mycompany.snake.model.Square.CellType;
 import com.mycompany.snake.model.Square.Square;
@@ -34,6 +35,14 @@ public class BlenderSnake extends Snake {
     
     private void setBlenderSnakeModes(List<String> modes) {
         this.modes = modes;
+    }
+    
+    @Override
+    public void setListener(SnakeListener listener) {
+        this.listener = listener;
+        cheeseSnake.listener = listener;
+        dimensionSnake.listener = listener;
+        twinSnake.listener = listener;
     }
 
     public CheeseSnake getCheeseSnake() {
@@ -86,11 +95,11 @@ public class BlenderSnake extends Snake {
             
             int posX = head.x - (i * 2);
             
-            cheeseSnake.emptyBody.addLast(new Square(posX + 1, head.y, CellType.EMPTY));
-            addLastBody(createSnakeBodyPart(posX, head.y));
+            cheeseSnake.addLastBody(new Square(posX + 1, head.y, CellType.EMPTY));
+            cheeseSnake.addLastBody(createSnakeBodyPart(posX, head.y));
         }
         
-        cheeseSnake.nextBodyPartSnake = true;
+        cheeseSnake.nextBodyPartSnake = cheeseSnake.cheeseBody.getFirst().getCellType() == CellType.EMPTY;
     }
     
     private void initializeBodyBlender() { 
@@ -113,29 +122,25 @@ public class BlenderSnake extends Snake {
         
         if (grow) cheeseSnake.growCount += 2;
         
-        if (cheeseSnake.nextBodyPartSnake && cheeseSnake.growCount <= 0) {
-            removeLastBody();
-        }
-        
-        if (!cheeseSnake.nextBodyPartSnake && cheeseSnake.growCount <= 0) {
-            cheeseSnake.emptyBody.removeLast();
+        if (cheeseSnake.growCount <= 0) {
+            cheeseSnake.removeLastBody();
         }
         
         Point previousHeadPos = head.getLocation();
         
         setLocationHead(previousHeadPos, newPos);
         
-        if (cheeseSnake.nextBodyPartSnake) {
-            addFirstBody(createSnakeBodyPart(previousHeadPos));
+        if (cheeseSnake.nextBodyPartSnake) { // If Next Body Part is Snake
+            cheeseSnake.addFirstBody(createSnakeBodyPart(previousHeadPos));
         } else {
-            cheeseSnake.emptyBody.addFirst(new Square(previousHeadPos, CellType.EMPTY));
+            cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
         }
         
         if (cheeseSnake.growCount > 0) {
             cheeseSnake.growCount--;
         }
         
-        cheeseSnake.nextBodyPartSnake = !cheeseSnake.nextBodyPartSnake;
+        cheeseSnake.invertNextBodyPartSnake();
     }
     
     private void moveBlender(Point newPos, boolean grow) {
@@ -151,30 +156,25 @@ public class BlenderSnake extends Snake {
     // TwinSnake - CheeseSnake - DimensionSnake
     
     public void switchSidesTwinCheeseDimension() {
-
-        boolean isFirstBodyPartSnake = !cheeseSnake.nextBodyPartSnake;
-        boolean isLastBodyPartSnake = (!isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 0) || (isFirstBodyPartSnake && cheeseSnake.growCount % 2 == 1);
-
+        
         Point previousHeadPos = head.getLocation();
+        Square lastBodyPart = cheeseSnake.removeLastBody();
         
-        if (isLastBodyPartSnake) {
-            setLocationHead(previousHeadPos, removeLastBody());
-            restoreDirectionBlender(head, cheeseSnake.emptyBody.getLast());
+        // Set Snake Head
+        setLocationHead(previousHeadPos, lastBodyPart);
+        restoreDirectionBlender(head, cheeseSnake.cheeseBody.getLast());
+
+        // Set Snake Tail
+        if (cheeseSnake.isNextBodyPartSnake()) {
+            cheeseSnake.addFirstBody(createSnakeBodyPart(previousHeadPos));
         } else {
-            setLocationHead(previousHeadPos, cheeseSnake.emptyBody.removeLast());
-            restoreDirectionBlender(head, body.getLast());
+            cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
         }
-        
-        if (isFirstBodyPartSnake) {
-            cheeseSnake.emptyBody.addFirst(new Square(previousHeadPos, CellType.EMPTY));
-        } else {
-            addFirstBody(createSnakeBodyPart(previousHeadPos));
-        }
-        
-        cheeseSnake.setNextBodyPartSnake(isLastBodyPartSnake);
 
         Collections.reverse(body);
-        Collections.reverse(cheeseSnake.emptyBody);
+        Collections.reverse(cheeseSnake.cheeseBody);
+        
+        cheeseSnake.nextBodyPartSnake = lastBodyPart.getCellType() == CellType.SNAKE_BODY;
     }
     
     // TwinSnake - DimensionSnake

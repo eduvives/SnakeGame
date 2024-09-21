@@ -53,8 +53,9 @@ public class DimensionGame extends ClassicGame {
         return new DimensionSnake();
     }
     
-    // Establece si, después de moverse la serpiente, la posición previa de cola (última posición del cuerpo de la serpiente) 
-    // debe ser marcado como posición disponible, comprobando si hay algún elemento en esa posición
+    // En la versión normal (no Blender) de este modo, sirve para indicar si, después de moverse la serpiente, 
+    // la posición previa de cola (última posición del cuerpo de la serpiente) debe ser marcado como posición disponible, 
+    // comprobando si hay algún elemento en esa posición
     @Override
     protected boolean isPositionAvailable(Point position) {
         

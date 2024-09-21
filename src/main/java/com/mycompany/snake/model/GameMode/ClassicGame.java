@@ -38,7 +38,6 @@ public class ClassicGame implements SnakeListener {
     
     protected boolean checkFeast() {
         return game.getAvailablePositions().isEmpty() && game.getFood().isEmpty();
-        // return game.getScore() == (game.getNumBoardRows() * game.getNumBoardCols()) - Snake.START_LENGTH;
     }
     
     // Comprueba si hay alguna colisión entre la posición relacionada con la cabeza de la serpiente y la nueva posición proporcionada
@@ -196,7 +195,6 @@ public class ClassicGame implements SnakeListener {
         
         int index = rand.nextInt(game.getAvailablePositions().size());
         return game.getAvailablePositions().remove(index);
-
     }
     
     protected boolean noFoodPositions() {
@@ -214,7 +212,6 @@ public class ClassicGame implements SnakeListener {
         
         int index = rand.nextInt(game.getAvailablePositions().size());
         return game.getAvailablePositions().remove(index);
-
     }
     
     // Métodos Auxiliares Subclases

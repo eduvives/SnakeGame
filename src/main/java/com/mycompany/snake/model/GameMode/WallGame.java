@@ -63,7 +63,7 @@ public class WallGame extends ClassicGame {
     }
     
     protected void placeWall() {
-        if (game.getScore() % 2 == 1) {
+        if (game.getScore() % 2 != 0) {
             spawnRadius = getSpawnRadius();
             createWall();
         }

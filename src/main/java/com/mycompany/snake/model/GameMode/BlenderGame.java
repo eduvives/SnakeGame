@@ -36,6 +36,8 @@ public class BlenderGame extends ClassicGame {
     
     private List<String> modes;
     
+    private boolean invertNextBodyPartSnake;
+    
     public BlenderGame(GameModel game) {
         super(game);
         
@@ -73,7 +75,22 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected Point getNewPos(Point newDirection) {
         
+        invertNextBodyPartSnake = false;
+        
         if (modes.contains("Boundless") || modes.contains("Peaceful")) {
+            if (modes.contains("Cheese")) {
+                
+                int posX = game.getSnake().getHead().x + newDirection.x;
+                int posY = game.getSnake().getHead().y + newDirection.y;
+                
+                boolean isOutOfBoundsX = posX < 0 || posX >= game.getNumBoardCols();
+                boolean isOddNumCols = game.getNumBoardCols() % 2 != 0;
+
+                boolean isOutOfBoundsY = posY < 0 || posY >= game.getNumBoardRows();
+                boolean isOddNumRows = game.getNumBoardRows() % 2 != 0;
+                
+                invertNextBodyPartSnake = (isOutOfBoundsX && isOddNumCols) || (isOutOfBoundsY && isOddNumRows);
+            }
             return boundlessGame.getNewPos(newDirection);
         } else {
             return super.getNewPos(newDirection);
@@ -191,6 +208,10 @@ public class BlenderGame extends ClassicGame {
     protected void snakeMove(Point newPos, boolean isFoodCollision) {
         
         super.snakeMove(newPos, isFoodCollision);
+        
+        if (invertNextBodyPartSnake) {
+            cheeseGame.cheeseSnake.invertNextBodyPartSnake();
+        }
         
         if (modes.contains("Twin")) {
             
@@ -321,7 +342,7 @@ public class BlenderGame extends ClassicGame {
     }
     
     private void placeWallBlender() {
-        if ((modes.contains("Dimension") || game.getScore() % 2 == 1)) {
+        if ((modes.contains("Dimension") || game.getScore() % 2 != 0)) {
             wallGame.spawnRadius = getSpawnRadius();
             createWallBlender();
         }
