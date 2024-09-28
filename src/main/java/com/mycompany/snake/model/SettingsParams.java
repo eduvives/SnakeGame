@@ -54,6 +54,6 @@ public class SettingsParams {
         return FOODS.keySet().toArray(String[]::new);
     }
     
-    public static final String[] MODE_NAMES = {"Classic", "Wall", "Cheese", "Boundless", "Twin", "Statue", "Dimension", "Peaceful", "Blender"};
+    public static final String[] MODE_NAMES = {"Classic", "Wall", "Cheese", "Boundless", "Shrink", "Twin", "Statue", "Dimension", "Peaceful", "Blender"};
     public static final String[] BLENDER_MODE_EXCLUDED_MODES = {"Classic", "Blender"};
 }

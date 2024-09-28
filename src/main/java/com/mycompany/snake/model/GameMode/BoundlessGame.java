@@ -5,6 +5,8 @@
 package com.mycompany.snake.model.GameMode;
 
 import com.mycompany.snake.model.GameModel;
+import com.mycompany.snake.model.Snake.BoundlessSnake;
+import com.mycompany.snake.model.Snake.Snake;
 import java.awt.Point;
 
 /**
@@ -13,8 +15,27 @@ import java.awt.Point;
  */
 public class BoundlessGame extends ClassicGame {
     
+    protected BoundlessSnake boundlessSnake;
+    
     public BoundlessGame(GameModel game) {
         super(game);
+    }
+    
+    @Override
+    public void initializeSnake(){
+        
+        super.initializeSnake();
+        
+        initializeBoundlessSnake();
+    }
+    
+    protected void initializeBoundlessSnake() {
+        boundlessSnake = (BoundlessSnake) game.getSnake();
+    }
+    
+    @Override
+    protected Snake createSnakeInstance() {
+        return new BoundlessSnake();
     }
     
     @Override

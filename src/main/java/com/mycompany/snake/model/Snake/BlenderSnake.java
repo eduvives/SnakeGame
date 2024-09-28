@@ -20,15 +20,19 @@ public class BlenderSnake extends Snake {
     
     private List<String> modes;
     private CheeseSnake cheeseSnake;
-    private DimensionSnake dimensionSnake;
+    private BoundlessSnake boundlessSnake;
+    private ShrinkSnake shrinkSnake;
     private TwinSnake twinSnake;
+    private DimensionSnake dimensionSnake;
     
     public BlenderSnake(List<String> modes) {
         super();
         
         cheeseSnake = new CheeseSnake(this);
-        dimensionSnake = new DimensionSnake(this);
+        boundlessSnake = new BoundlessSnake(this);
+        shrinkSnake = new ShrinkSnake(this);
         twinSnake = new TwinSnake(this);
+        dimensionSnake = new DimensionSnake(this);
         
         setBlenderSnakeModes(modes);
     }
@@ -39,22 +43,34 @@ public class BlenderSnake extends Snake {
     
     @Override
     public void setListener(SnakeListener listener) {
-        this.listener = listener;
+        
+        super.setListener(listener);
+        
         cheeseSnake.listener = listener;
-        dimensionSnake.listener = listener;
+        boundlessSnake.listener = listener;
+        shrinkSnake.listener = listener;
         twinSnake.listener = listener;
+        dimensionSnake.listener = listener;
     }
 
     public CheeseSnake getCheeseSnake() {
         return cheeseSnake;
     }
     
-    public DimensionSnake getDimensionSnake() {
-        return dimensionSnake;
+    public BoundlessSnake getBoundlessSnake() {
+        return boundlessSnake;
+    }
+
+    public ShrinkSnake getShrinkSnake() {
+        return shrinkSnake;
     }
     
     public TwinSnake getTwinSnake() {
         return twinSnake;
+    }
+    
+    public DimensionSnake getDimensionSnake() {
+        return dimensionSnake;
     }
     
     // BlenderSnake - DimensionSnake
@@ -75,6 +91,24 @@ public class BlenderSnake extends Snake {
         } else {
             return new Square(pos, CellType.SNAKE_BODY);
         }   
+    }
+    
+    // BlenderSnake - ShrinkSnake
+    
+    public void reduce() {
+        if (modes.contains("Cheese")) {
+            reduceCheeseShrink();
+        } else {
+            shrinkSnake.reduce();
+        }
+    }
+    
+    private void reduceCheeseShrink() {
+        
+        Square firstBodyPart = cheeseSnake.removeFirstBody();
+                
+        setLocationHead(head.getLocation(), firstBodyPart);
+        cheeseSnake.nextBodyPartSnake = firstBodyPart.getCellType() == CellType.SNAKE_BODY;
     }
     
     // CheeseSnake - DimensionSnake
@@ -99,7 +133,7 @@ public class BlenderSnake extends Snake {
             cheeseSnake.addLastBody(createSnakeBodyPart(posX, head.y));
         }
         
-        cheeseSnake.nextBodyPartSnake = cheeseSnake.cheeseBody.getFirst().getCellType() == CellType.EMPTY;
+        cheeseSnake.nextBodyPartSnake = cheeseSnake.cheeseBody.getFirst().getCellType() != CellType.SNAKE_BODY;
     }
     
     private void initializeBodyBlender() { 
@@ -109,16 +143,16 @@ public class BlenderSnake extends Snake {
     }
     
     @Override
-    public void move(Point newPos, boolean isFoodCollision) {
+    public void move(Point newHeadPos, boolean isFoodCollision) {
         
         if (modes.contains("Cheese")) {
-            moveCheeseDimension(newPos, isFoodCollision);
+            moveCheeseDimension(newHeadPos, isFoodCollision);
         } else {
-            moveBlender(newPos, isFoodCollision);
+            moveBlender(newHeadPos, isFoodCollision);
         }
     }
     
-    private void moveCheeseDimension(Point newPos, boolean grow) {
+    private void moveCheeseDimension(Point newHeadPos, boolean grow) {
         
         if (grow) cheeseSnake.growCount += 2;
         
@@ -128,7 +162,7 @@ public class BlenderSnake extends Snake {
         
         Point previousHeadPos = head.getLocation();
         
-        setLocationHead(previousHeadPos, newPos);
+        setLocationHead(previousHeadPos, newHeadPos);
         
         if (cheeseSnake.nextBodyPartSnake) { // If Next Body Part is Snake
             cheeseSnake.addFirstBody(createSnakeBodyPart(previousHeadPos));
@@ -143,13 +177,13 @@ public class BlenderSnake extends Snake {
         cheeseSnake.invertNextBodyPartSnake();
     }
     
-    private void moveBlender(Point newPos, boolean grow) {
+    private void moveBlender(Point newHeadPos, boolean grow) {
         
         if(!grow) removeLastBody();
         
         Point previousHeadPos = head.getLocation();
         
-        setLocationHead(previousHeadPos, newPos);
+        setLocationHead(previousHeadPos, newHeadPos);
         addFirstBody(createSnakeBodyPart(previousHeadPos));
     }
     
@@ -162,7 +196,6 @@ public class BlenderSnake extends Snake {
         
         // Set Snake Head
         setLocationHead(previousHeadPos, lastBodyPart);
-        restoreDirectionBlender(head, cheeseSnake.cheeseBody.getLast());
 
         // Set Snake Tail
         if (cheeseSnake.isNextBodyPartSnake()) {
@@ -174,6 +207,7 @@ public class BlenderSnake extends Snake {
         Collections.reverse(body);
         Collections.reverse(cheeseSnake.cheeseBody);
         
+        restoreDirection();
         cheeseSnake.nextBodyPartSnake = lastBodyPart.getCellType() == CellType.SNAKE_BODY;
     }
     
@@ -188,32 +222,27 @@ public class BlenderSnake extends Snake {
         
         Collections.reverse(body);
         
-        restoreDirectionBlender(head, body.getFirst());
+        restoreDirection();
     }
     
     // TwinSnake - BoundlessGame
     
-    private void restoreDirectionBlender(Point snakeHead, Point snakeFirstBodyPartPos) {
+    @Override
+    public Point getDefaultDirection() {
         
-        Point defaultDirection = getDefaultDirection(snakeHead, snakeFirstBodyPartPos);
+        Point defaultDirection;
         
-        if (modes.contains("Boundless")) {
-            
-            // Ajustar por teletransporte en el eje X
-            if (defaultDirection.x > 1) {
-                defaultDirection.x = -1;
-            } else if (defaultDirection.x < -1) {
-                defaultDirection.x = 1;
-            }
-
-            // Ajustar por teletransporte en el eje Y
-            if (defaultDirection.y > 1) {
-                defaultDirection.y = -1;
-            } else if (defaultDirection.y < -1) {
-                defaultDirection.y = 1;
-            }
+        if (modes.contains("Cheese")) {
+            defaultDirection = cheeseSnake.getDefaultDirection();
+        } else {
+            defaultDirection = super.getDefaultDirection();
         }
         
-        direction.setLocation(defaultDirection.x, defaultDirection.y);
+        if (modes.contains("Boundless") || modes.contains("Peaceful")) {
+            
+            defaultDirection = boundlessSnake.getDefaultDirectionBoundless(defaultDirection);
+        }
+        
+        return defaultDirection;
     }
 }

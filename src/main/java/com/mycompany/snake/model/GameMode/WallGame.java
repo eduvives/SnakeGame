@@ -55,9 +55,9 @@ public class WallGame extends ClassicGame {
     }
     
     @Override
-    protected void snakeMove(Point newPos, boolean isFoodCollision) {
+    protected void snakeMove(Point newHeadPos, boolean isFoodCollision) {
         
-        super.snakeMove(newPos, isFoodCollision);
+        super.snakeMove(newHeadPos, isFoodCollision);
         
         if (isFoodCollision) placeWall();
     }

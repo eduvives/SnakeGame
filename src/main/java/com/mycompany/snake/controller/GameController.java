@@ -42,7 +42,7 @@ public class GameController implements ModelObserver {
     private List<Square> testList = new ArrayList<>(); // Test Line
     
     private SnakeView view;
-    private Map<Color, List<Point>> viewSquaresColors = new LinkedHashMap<>();
+    private Map<Color, List<Point>> positionsColorsView = new LinkedHashMap<>();
     
     private GameModel model;
     
@@ -163,13 +163,14 @@ public class GameController implements ModelObserver {
         
         // Update Game Timer Delay
         if (!Objects.equals(model.getSpeedName(), speed)) {
-            
             updateGameTimerDelay(SettingsParams.SPEEDS.get(speed));
             model.updateSpeedParam(speed);
-            
-            // Update Switch Sides Timer Delay (Initial Delay)
-            if (mode.equals("Twin") || (mode.equals("Blender") && model.getBlenderSelectedModes().contains("Twin"))) {
-                int newSwitchSidesDelay = (int) Math.round(SettingsParams.SPEEDS.get(speed) * 2.5);
+        }
+        
+        // Update Switch Sides Timer Delay (Initial Delay)
+        if (mode.equals("Twin") || (mode.equals("Blender") && model.getBlenderSelectedModes().contains("Twin"))) {
+            int newSwitchSidesDelay = (int) Math.round(SettingsParams.SPEEDS.get(speed) * 2.5);
+            if (switchSidesTimer.getInitialDelay() != newSwitchSidesDelay) {
                 updateSwitchSidesTimerDelay(newSwitchSidesDelay);
             }
         }
@@ -192,7 +193,7 @@ public class GameController implements ModelObserver {
     private void updateViewBoardParams() {
         view.getBoardPanel().setBoardWidth(boardWidth);
         view.getBoardPanel().setBoardHeight(boardHeight);
-        view.getBoardPanel().setSquareSize(squareSize);
+        view.getBoardPanel().setCellSize(squareSize);
         view.getBoardPanel().setPreferredSize(new Dimension(boardWidth + 1, boardHeight + 1));   
         
         view.getBoardPanel().revalidate();
@@ -304,21 +305,29 @@ public class GameController implements ModelObserver {
     
     private void boardColorChangedView(Color newColor) {
         model.boardColorChanged(newColor);
-        //view.setBoardColorBtnForeground(newColor); TODO poner?
         
-        view.setBackgroundColor(newColor);
+        Color borderColor;
+        Color topMenuColor;
+        
+        if (newColor.equals(Color.BLACK)) {
+            borderColor = Color.GRAY;
+            topMenuColor = Color.DARK_GRAY;
+        } else {
+            borderColor = ColorPaletteManager.darkenColor(newColor, ColorPaletteManager.BORDER_FACTOR);
+            topMenuColor = ColorPaletteManager.darkenColor(newColor, ColorPaletteManager.TOP_MENU_FACTOR);
+        }
+        
+        view.setBackgroundColor(newColor, borderColor, topMenuColor);
     }
     
     private void foodColorChangedView(Color newColor) {
         model.foodColorChanged(newColor);
-        //view.setFoodColorBtnForeground(newColor);
         
         view.setScoreColor(newColor);
     }
     
     private void snakeColorChangedView(Color newColor) {
         model.snakeColorChanged(newColor);
-        //view.setSnakeColorBtnForeground(newColor);
     }
     
     private void updateGameParamsFromView() {
@@ -419,19 +428,28 @@ public class GameController implements ModelObserver {
         int numInputs = inputQueue.size();
         
         if (numInputs == 0) {
-            previousDirection = model.getSnake().getDirection();
+            previousDirection = model.getSnake().getDefaultDirection(); // Obtener la dirección en que apunta la serpiente
         } else {
             previousDirection = (numInputs < MAX_INPUT_QUEUE_SIZE) ? inputQueue.get(numInputs - 1) : inputQueue.get(numInputs - 2);
         }
         
-        // Comprobar que no sea la dirección opuesta
+        // Comprobar que la nueva dirección no sea opuesta a la dirección en que apunta la serpiente
         if (previousDirection.x != -newDirection.x || previousDirection.y != -newDirection.y) {
             
             if (!model.isGameStarted()) {
                 startGameLoop();
             }
             
-            if (!previousDirection.equals(newDirection)) {
+            boolean sameDirection;
+            
+            // Comprobar que la nueva dirección no sea igual a la dirección en que se dirige la serpiente
+            if (numInputs == 0) {
+                sameDirection = model.getSnake().getDirection().equals(newDirection);
+            } else {
+                sameDirection = previousDirection.equals(newDirection);
+            }
+            
+            if (!sameDirection) {
                 if (numInputs >= MAX_INPUT_QUEUE_SIZE) {
                     inputQueue.remove(numInputs - 1);
                 }
@@ -485,7 +503,7 @@ public class GameController implements ModelObserver {
     
     private void initializeHighScoreView() {
         
-        view.getHighScorePanel().setVisible(model.getCurrentGameHighScore() > 0);
+        view.getHighScorePanel().setVisible(model.getCurrentGameHighScore() > 0 || !Objects.equals(model.getModeName(), "Classic"));
         
         updateHighScoreView();
     }
@@ -517,7 +535,7 @@ public class GameController implements ModelObserver {
     
     private void updateView(){
         
-        viewSquaresColors.clear();
+        positionsColorsView.clear();
         
         // Snake Body
         addSquareColorListView(model.getSnake().getBody());
@@ -535,12 +553,14 @@ public class GameController implements ModelObserver {
         
         // Test Lines Start 2
         
+        /*
         List<Square> candidates_test = new ArrayList<>();
         for (Point pos : model.getAvailablePositions()) {
             candidates_test.add(new Square(pos, CellType.TEST));
         }
         testList.clear();
         testList.addAll(candidates_test);
+        */
         
         // Test Lines Start
         
@@ -559,7 +579,7 @@ public class GameController implements ModelObserver {
         
         // Test Lines End
         
-        view.getBoardPanel().setSquaresColors(viewSquaresColors);
+        view.getBoardPanel().setCellColors(positionsColorsView);
     }
     
     private void addSquareColorListView(Collection<? extends Square> squaresList) {
@@ -572,7 +592,7 @@ public class GameController implements ModelObserver {
         Color color = square.getColor();
         Point position = square;
 
-        viewSquaresColors.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
+        positionsColorsView.computeIfAbsent(color, k -> new ArrayList<>()).add(position);
     }
     
     // Métodos Auxiliares Subclases ClassicGame

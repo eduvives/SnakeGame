@@ -31,13 +31,13 @@ public class DimensionSnake extends Snake {
     }
     
     @Override
-    public void move(Point newPos, boolean grow) { // TODO deberia ser protected o no?
+    public void move(Point newHeadPos, boolean grow) {
         
         if(!grow) removeLastBody();
         
         Point previousHeadPos = head.getLocation();
         
-        setLocationHead(previousHeadPos, newPos);
+        setLocationHead(previousHeadPos, newHeadPos);
         addFirstBody(new DimensionSquare(previousHeadPos, CellType.SNAKE_BODY, false));
     }
 }

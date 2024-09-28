@@ -117,6 +117,9 @@ public class ClassicGame implements SnakeListener {
             placeFood();
             isFeast = checkFeast();
         } else {
+            // La condición de colisión debe comprobarse después de moverse, 
+            // para facilitar la detección de sí la serpiente ha chocado con su 
+            // propio cuerpo o la posición se ha desplazado en el último movimiento.
             isCollision = checkCollision(newPos);
         }
         
@@ -141,6 +144,10 @@ public class ClassicGame implements SnakeListener {
     
     private void increaseScore() {
         game.setScore(game.getScore() + 1);
+    }
+    
+    protected void decreaseScore() {
+        game.setScore(game.getScore() - 1);
     }
     
     // PLACE NEW FOOD

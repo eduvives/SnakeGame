@@ -58,9 +58,9 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected void snakeMove(Point newPos, boolean isFoodCollision) {
+    protected void snakeMove(Point newHeadPos, boolean isFoodCollision) {
         
-        super.snakeMove(newPos, isFoodCollision);
+        super.snakeMove(newHeadPos, isFoodCollision);
         
         if (isFoodCollision) placeStatue();
     }
@@ -77,14 +77,6 @@ public class StatueGame extends ClassicGame {
         for (Point bodyPartPos : game.getSnake().getBody()) {
             statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED));
         }
-        
-        /* TODO revisar si este código puede ser útil
-        for (Point bodyPartPos : game.snake.getBody()) {
-            if (statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED))) {
-                game.availablePositions.remove(bodyPartPos);
-            }
-        }
-        */
     }
     
     protected void updateStatues() {

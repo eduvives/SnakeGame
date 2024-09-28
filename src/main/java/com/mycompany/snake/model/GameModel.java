@@ -6,6 +6,7 @@ package com.mycompany.snake.model;
 
 import com.mycompany.snake.model.GameMode.BoundlessGame;
 import com.mycompany.snake.model.GameMode.BlenderGame;
+import com.mycompany.snake.model.GameMode.ShrinkGame;
 import com.mycompany.snake.model.GameMode.CheeseGame;
 import com.mycompany.snake.model.GameMode.StatueGame;
 import com.mycompany.snake.model.GameMode.TwinGame;
@@ -41,6 +42,7 @@ public class GameModel {
     private WallGame wallGame;
     private CheeseGame cheeseGame;
     private BoundlessGame boundlessGame;
+    private ShrinkGame shrinkGame;
     private TwinGame twinGame;
     private StatueGame statueGame;
     private DimensionGame dimensionGame;
@@ -78,6 +80,7 @@ public class GameModel {
         wallGame = new WallGame(this);
         cheeseGame = new CheeseGame(this);
         boundlessGame = new BoundlessGame(this);
+        shrinkGame = new ShrinkGame(this);
         twinGame = new TwinGame(this);
         statueGame = new StatueGame(this);
         dimensionGame = new DimensionGame(this);
@@ -214,6 +217,10 @@ public class GameModel {
     public BoundlessGame getBoundlessGame() {
         return boundlessGame;
     }
+    
+    public ShrinkGame getShrinkGame() {
+        return shrinkGame;
+    }
 
     public TwinGame getTwinGame() {
         return twinGame;
@@ -253,8 +260,8 @@ public class GameModel {
     
     public void updateBlenderSelectedModes(List<String> newBlenderSelectedModes) {
         // Blender Selected Modes Changed
-        blenderSelectedModes = newBlenderSelectedModes; // TODO variable necesaria? o passar lista directamente como parametro a BlenderGame?
-        blenderGame.setBlenderModes(blenderSelectedModes); // TODO revisar
+        blenderSelectedModes = newBlenderSelectedModes;
+        blenderGame.setBlenderModes(blenderSelectedModes);
     }
     
     public void updateGameMode(String modeName) {
@@ -264,6 +271,7 @@ public class GameModel {
             case "Wall" -> gameMode = wallGame;
             case "Cheese" -> gameMode = cheeseGame;
             case "Boundless" -> gameMode = boundlessGame;
+            case "Shrink" -> gameMode = shrinkGame;
             case "Twin" -> gameMode = twinGame;
             case "Statue" -> gameMode = statueGame;
             case "Dimension" -> gameMode = dimensionGame;

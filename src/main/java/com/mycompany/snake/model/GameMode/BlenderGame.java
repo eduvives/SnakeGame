@@ -6,6 +6,7 @@ package com.mycompany.snake.model.GameMode;
 
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.Snake.BlenderSnake;
+import static com.mycompany.snake.model.Snake.CheeseSnake.CHEESE_START_LENGTH;
 import com.mycompany.snake.model.Snake.Snake;
 import com.mycompany.snake.model.Square.DimensionSquare;
 import com.mycompany.snake.model.Square.StatueSquare;
@@ -29,12 +30,15 @@ public class BlenderGame extends ClassicGame {
     private WallGame wallGame;
     private CheeseGame cheeseGame;
     private BoundlessGame boundlessGame;
+    private ShrinkGame shrinkGame;
     private TwinGame twinGame;
     private StatueGame statueGame;
     private DimensionGame dimensionGame;
     private PeacefulGame peacefulGame;
     
     private List<String> modes;
+    
+    private BlenderSnake blenderSnake;
     
     private boolean invertNextBodyPartSnake;
     
@@ -44,6 +48,7 @@ public class BlenderGame extends ClassicGame {
         wallGame = this.game.getWallGame();
         cheeseGame = this.game.getCheeseGame();
         boundlessGame = this.game.getBoundlessGame();
+        shrinkGame = this.game.getShrinkGame();
         twinGame = this.game.getTwinGame();
         statueGame = this.game.getStatueGame();
         dimensionGame = this.game.getDimensionGame();
@@ -150,31 +155,45 @@ public class BlenderGame extends ClassicGame {
     
     // Combined Modes :
     
-    // BlenderGame - CheeseGame - DimensionGame - TwinGame
+    // BlenderGame - CheeseGame - ShrinkGame - TwinGame - DimensionGame
     
     @Override
     public void initializeSnake(){
         
         super.initializeSnake();
         
-        if (modes.contains("Cheese")) postInitializeSnakeBlenderCheeseGame();
-        if (modes.contains("Dimension")) postInitializeSnakeBlenderDimensionGame();
-        if (modes.contains("Twin")) postInitializeSnakeBlenderTwinGame();
+        blenderSnake = (BlenderSnake) game.getSnake();
+        
+        if (modes.contains("Cheese")) initializeBlenderCheeseSnake();
+        if (modes.contains("Boundless")) initializeBlenderBoundlessSnake();
+        if (modes.contains("Shrink")) initializeBlenderShrinkSnake();
+        if (modes.contains("Twin")) initializeBlenderTwinSnake();
+        if (modes.contains("Dimension")) initializeBlenderDimensionSnake();
+        if (modes.contains("Peaceful")) initializeBlenderPeacefulSnake();
     }
     
-    private void postInitializeSnakeBlenderCheeseGame() {
-        BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
+    private void initializeBlenderCheeseSnake() {
         cheeseGame.cheeseSnake = blenderSnake.getCheeseSnake();
     }
     
-    private void postInitializeSnakeBlenderDimensionGame() {
-        BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
+    private void initializeBlenderBoundlessSnake() {
+        boundlessGame.boundlessSnake = blenderSnake.getBoundlessSnake();
+    }
+    
+    private void initializeBlenderShrinkSnake() {
+        shrinkGame.shrinkSnake = blenderSnake.getShrinkSnake();
+    }
+    
+    private void initializeBlenderTwinSnake() {
+        twinGame.twinSnake = blenderSnake.getTwinSnake();
+    }
+    
+    private void initializeBlenderDimensionSnake() {
         dimensionGame.dimensionSnake = blenderSnake.getDimensionSnake();
     }
     
-    private void postInitializeSnakeBlenderTwinGame() {
-        BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
-        twinGame.twinSnake = blenderSnake.getTwinSnake();
+    private void initializeBlenderPeacefulSnake() {
+        peacefulGame.boundlessSnake = blenderSnake.getBoundlessSnake();
     }
     
     @Override
@@ -198,6 +217,11 @@ public class BlenderGame extends ClassicGame {
         } else if (modes.contains("Statue")) {
             positionAvailable &= !statueGame.statues.contains(position);
         }
+        
+        if (modes.contains("Shrink")) {
+            boolean isOutOfBounds = position.y < 0 || position.y >= game.getNumBoardRows() || position.x < 0 || position.x >= game.getNumBoardCols();
+            positionAvailable &= !isOutOfBounds;
+        }
 
         return positionAvailable;
     }
@@ -218,8 +242,6 @@ public class BlenderGame extends ClassicGame {
             twinGame.switchSides = isFoodCollision;
             
             if (isFoodCollision) {
-                
-                BlenderSnake blenderSnake = (BlenderSnake) game.getSnake();
 
                 if (modes.contains("Cheese")) {
                     blenderSnake.switchSidesTwinCheeseDimension();
@@ -390,7 +412,7 @@ public class BlenderGame extends ClassicGame {
         }
     }
     
-    // WallGame - StatueGame
+    // WallGame - StatueGame - ShrinkGame
     
     @Override
     protected boolean checkCollision(Point snakeHeadPos) {
@@ -407,6 +429,24 @@ public class BlenderGame extends ClassicGame {
         
         if (modes.contains("Statue")) {
             collision = collision || checkSnakeListCollision(statueGame.statues, snakeHeadPos);
+        }
+        
+        if (modes.contains("Shrink")) {
+
+            boolean isFinalCollision = false;
+
+            if (collision) {
+                blenderSnake.reduce();
+                if (modes.contains("Cheese")) {
+                    isFinalCollision = cheeseGame.cheeseSnake.getCheeseBody().size() < 2 * (CHEESE_START_LENGTH - 1);
+                    if (!isFinalCollision && (cheeseGame.cheeseSnake.getCheeseBody().size() + cheeseGame.cheeseSnake.getGrowCount()) % 2 != 0) decreaseScore();
+                } else {
+                    isFinalCollision = game.getSnake().getBody().size() < Snake.START_LENGTH - 1;
+                    if (!isFinalCollision) decreaseScore();
+                }
+            }
+        
+            return isFinalCollision;
         }
         
         return collision;

@@ -30,20 +30,18 @@ public class ColorPaletteManager {
         new Color(234, 212, 19), new Color(52, 178, 60), new Color(103, 103, 103), 
         new Color(239, 239, 239)};
     
+    public static final double BORDER_FACTOR = 0.5;
+    public static final double TOP_MENU_FACTOR = 0.3;
+    public static final double WALL_FACTOR = 0.5;
+    
     public void boardColorChanged(Color newColor) {
         
+        CellType.EMPTY.setColor(newColor);
+        
         if (newColor.equals(Color.BLACK)) {
-            CellType.EMPTY.setColor(newColor);
             CellType.WALL_SIMPLE.setColor(Color.GRAY);
         } else {
-            int colorRed = newColor.getRed();
-            int colorGreen = newColor.getGreen();
-            int colorBlue = newColor.getBlue();
-
-            double wallFactor = 0.5;
-
-            CellType.EMPTY.setColor(newColor);
-            CellType.WALL_SIMPLE.setColor(new Color((int) (colorRed * wallFactor), (int) (colorGreen * wallFactor), (int) (colorBlue * wallFactor)));
+            CellType.WALL_SIMPLE.setColor(darkenColor(newColor, WALL_FACTOR));
         }
         
         // TEST LINE TODO
@@ -54,23 +52,43 @@ public class ColorPaletteManager {
         CellType.FOOD.setColor(newColor);
     }
     
+    public static final double HEAD_FACTOR = 0.60;
+    public static final double STATUE_FACTOR = 0.4;
+    public static final double CRACKED_STATUE_FACTOR = 0.65;
+    
     public void snakeColorChanged(Color newColor) {
         
-        int colorRed = newColor.getRed();
-        int colorGreen = newColor.getGreen();
-        int colorBlue = newColor.getBlue();
-        
-        double headFactor = 0.5;
-        double statueFactor = 0.3;
-        double crackedStatueFactor = 0.8; // TODO color cracked más claro que el original (más pastel?) combinar rgb con algo de blanco?
-        
         CellType.SNAKE_BODY.setColor(newColor);
-        CellType.SNAKE_HEAD.setColor(new Color((int) (colorRed * headFactor), (int) (colorGreen * headFactor), (int) (colorBlue * headFactor)));
+        CellType.SNAKE_HEAD.setColor(darkenColor(newColor, HEAD_FACTOR));
         
-        Color statueColor = new Color((int) (colorRed * statueFactor), (int) (colorGreen * statueFactor), (int) (colorBlue * statueFactor));
+        Color statueColor = darkenColor(newColor, STATUE_FACTOR);
         
         CellType.WALL_FILLED.setColor(statueColor);
         CellType.WALL_STATUE.setColor(statueColor);
-        CellType.WALL_CRACKED.setColor(new Color((int) (colorRed * crackedStatueFactor), (int) (colorGreen * crackedStatueFactor), (int) (colorBlue * crackedStatueFactor)));
+        CellType.WALL_CRACKED.setColor(lightenColor(newColor, CRACKED_STATUE_FACTOR));
+    }
+    
+    public static Color darkenColor (Color color, double darkenFactor) {
+        
+        int newColorRed = (int) (color.getRed() * darkenFactor);
+        int newColorGreen = (int) (color.getGreen() * darkenFactor);
+        int newColorBlue = (int) (color.getBlue() * darkenFactor);
+        
+        return new Color(newColorRed, newColorGreen, newColorBlue);
+    }
+    
+    public static Color lightenColor (Color color, double lightenFactor) {
+        
+        int newColorRed = (int) (color.getRed() * lightenFactor + 255 * (1 - lightenFactor));
+        int newColorGreen = (int) (color.getGreen() * lightenFactor + 255 * (1 - lightenFactor));
+        int newColorBlue = (int) (color.getBlue() * lightenFactor + 255 * (1 - lightenFactor));
+        
+        // Comprobación no necesaria, pero se mantiene como buena práctica para proporcionar 
+        // mayor seguridad y robustez a largo plazo
+        newColorRed = Math.min(newColorRed, 255);
+        newColorGreen = Math.min(newColorGreen, 255);
+        newColorBlue = Math.min(newColorBlue, 255);
+        
+        return new Color(newColorRed, newColorGreen, newColorBlue);
     }
 }

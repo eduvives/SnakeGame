@@ -41,10 +41,10 @@ public class CheeseGame extends ClassicGame {
         
         super.initializeSnake();
         
-        postInitializeSnakeCheeseGame();
+        initializeCheeseSnake();
     }
     
-    protected void postInitializeSnakeCheeseGame() {
+    protected void initializeCheeseSnake() {
         cheeseSnake = (CheeseSnake) game.getSnake();
     }
     

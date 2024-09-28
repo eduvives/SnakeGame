@@ -21,8 +21,8 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
 
     private int boardWidth;
     private int boardHeight;
-    private int squareSize;
-    private Map<Color, List<Point>> squaresColors =  new LinkedHashMap<>();
+    private int cellSize;
+    private Map<Color, List<Point>> cellColors =  new LinkedHashMap<>();
     
     /**
      * Creates new form BoardPanel
@@ -61,12 +61,12 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
         boardHeight = newHeight;
     }
     
-    public void setSquareSize(int size) {
-        squareSize = size;
+    public void setCellSize(int size) {
+        cellSize = size;
     }
 
-    public void setSquaresColors(Map<Color, List<Point>> squaresColors) {
-        this.squaresColors = squaresColors;
+    public void setCellColors(Map<Color, List<Point>> cellColors) {
+        this.cellColors = cellColors;
     }
     
     @Override
@@ -78,22 +78,22 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
     public void draw(Graphics g) {
         
         // Obtener todos los elementos agrupados por color
-        for (Color color : squaresColors.keySet()) {
+        for (Color color : cellColors.keySet()) {
             g.setColor(color);
-            List<Point> points = squaresColors.get(color);
+            List<Point> points = cellColors.get(color);
             for (Point point : points) {
-                g.fillRect(point.x * squareSize, point.y * squareSize, squareSize, squareSize); 
+                g.fillRect(point.x * cellSize, point.y * cellSize, cellSize, cellSize); 
             }
         }
         
         g.setColor(new Color(51,51,51));
         
-        for (int i = 0; i <= boardWidth/squareSize; i++) {
-            g.drawLine(i * squareSize, 0, i * squareSize, boardHeight);            
+        for (int i = 0; i <= boardWidth/cellSize; i++) {
+            g.drawLine(i * cellSize, 0, i * cellSize, boardHeight);            
         }
         
-        for (int i = 0; i <= boardHeight/squareSize; i++) {
-            g.drawLine(0, i * squareSize, boardWidth, i * squareSize);
+        for (int i = 0; i <= boardHeight/cellSize; i++) {
+            g.drawLine(0, i * cellSize, boardWidth, i * cellSize);
         }
     }
 

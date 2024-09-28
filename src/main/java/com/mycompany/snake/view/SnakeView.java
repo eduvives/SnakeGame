@@ -210,40 +210,16 @@ public class SnakeView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
     
-    public void setBackgroundColor(Color color) {
+    public void setBackgroundColor(Color color, Color borderColor, Color topMenuColor) {
         
-        if (color.equals(Color.BLACK)) {
-            
-            boardPanel.setBackground(color);
-            this.getContentPane().setBackground(Color.GRAY);
-            
-            topMenu.setBackground(Color.DARK_GRAY);
-            highScorePanel.setBackground(Color.DARK_GRAY);
-            boardColorBtn.setBackground(Color.DARK_GRAY);
-            foodColorBtn.setBackground(Color.DARK_GRAY);
-            snakeColorBtn.setBackground(Color.DARK_GRAY);
-            
-        } else {
-            
-            int colorRed = color.getRed();
-            int colorGreen = color.getGreen();
-            int colorBlue = color.getBlue();
+        boardPanel.setBackground(color);
+        this.getContentPane().setBackground(borderColor);
 
-            double borderFactor = 0.5;
-            double darkFactor = 0.3;
-            
-            boardPanel.setBackground(color);
-            
-            this.getContentPane().setBackground(new Color((int) (colorRed * borderFactor), (int) (colorGreen * borderFactor), (int) (colorBlue * borderFactor)));
-            
-            Color darkColor = new Color((int) (colorRed * darkFactor), (int) (colorGreen * darkFactor), (int) (colorBlue * darkFactor));
-            
-            topMenu.setBackground(darkColor);
-            highScorePanel.setBackground(darkColor);
-            boardColorBtn.setBackground(darkColor);
-            foodColorBtn.setBackground(darkColor);
-            snakeColorBtn.setBackground(darkColor);
-        }
+        topMenu.setBackground(topMenuColor);
+        highScorePanel.setBackground(topMenuColor);
+        boardColorBtn.setBackground(topMenuColor);
+        foodColorBtn.setBackground(topMenuColor);
+        snakeColorBtn.setBackground(topMenuColor);
     }
     
     public void setScoreColor(Color color) {

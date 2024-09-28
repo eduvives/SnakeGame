@@ -32,6 +32,6 @@ public class TwinSnake extends Snake {
         
         Collections.reverse(body);
         
-        restoreDirection(head, body.getFirst());
+        restoreDirection();
     }
 }

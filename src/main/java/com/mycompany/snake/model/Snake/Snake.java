@@ -69,6 +69,26 @@ public class Snake {
         listener.onPositionRemoved(previousPosition);
         listener.onPositionAdded(newPosition);
     }
+    
+    public LinkedList<Square> getBody() {
+        return body;
+    }
+
+    public Square getHead() {
+        return head;
+    }
+
+    public Point getDirection() {
+        return direction;
+    }
+    
+    protected void restoreDirection() {
+        direction.setLocation(getDefaultDirection());
+    }
+    
+    public Point getDefaultDirection() {
+        return new Point(head.x - body.getFirst().x, head.y - body.getFirst().y);
+    }
 
     public void initializeSnake(Point startPos) {
         initializeHead(startPos);
@@ -90,34 +110,14 @@ public class Snake {
             addLastBody(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
         }
     }
-
-    public LinkedList<Square> getBody() {
-        return body;
-    }
-
-    public Square getHead() {
-        return head;
-    }
-
-    public Point getDirection() {
-        return direction;
-    }
     
-    public void move(Point newPos, boolean grow) {
+    public void move(Point newHeadPos, boolean grow) {
         
         if(!grow) removeLastBody();
         
         Point previousHeadPos = head.getLocation();
         
-        setLocationHead(previousHeadPos, newPos);
+        setLocationHead(previousHeadPos, newHeadPos);
         addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
-    }
-    
-    protected void restoreDirection(Point snakeHead, Point snakeFirstBodyPartPos) {
-        direction.setLocation(getDefaultDirection(snakeHead, snakeFirstBodyPartPos));
-    }
-    
-    protected Point getDefaultDirection(Point snakeHead, Point snakeFirstBodyPartPos) { // TODO delete params?
-        return new Point(snakeHead.x - snakeFirstBodyPartPos.x, snakeHead.y - snakeFirstBodyPartPos.y);
     }
 }

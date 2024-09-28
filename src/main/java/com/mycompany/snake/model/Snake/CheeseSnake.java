@@ -17,7 +17,7 @@ public class CheeseSnake extends Snake {
     
     protected LinkedList<Square> cheeseBody;
     
-    protected static final int CHEESE_START_LENGTH = 3;
+    public static final int CHEESE_START_LENGTH = 3;
     protected int growCount;
     protected boolean nextBodyPartSnake;
     
@@ -35,6 +35,10 @@ public class CheeseSnake extends Snake {
 
     public LinkedList<Square> getCheeseBody() {
         return cheeseBody;
+    }
+
+    public int getGrowCount() {
+        return growCount;
     }
     
     public boolean isNextBodyPartSnake() {
@@ -72,7 +76,7 @@ public class CheeseSnake extends Snake {
         
         Square lastBodyPart = cheeseBody.removeLast();
         
-        if (lastBodyPart.getCellType() == CellType.SNAKE_BODY) {            
+        if (lastBodyPart.getCellType() == CellType.SNAKE_BODY) {
             listener.onPositionRemoved(body.removeLast().getLocation());
         }
         
@@ -90,6 +94,11 @@ public class CheeseSnake extends Snake {
         
         return firstBodyPart;
     }
+    
+    @Override
+    public Point getDefaultDirection() {
+        return new Point(head.x - cheeseBody.getFirst().x, head.y - cheeseBody.getFirst().y);
+    }
 
     @Override
     protected void initializeBody() {
@@ -102,11 +111,11 @@ public class CheeseSnake extends Snake {
             addLastBody(new Square(posX, head.y, CellType.SNAKE_BODY));
         }
         
-        nextBodyPartSnake = cheeseBody.getFirst().getCellType() == CellType.EMPTY;
+        nextBodyPartSnake = cheeseBody.getFirst().getCellType() != CellType.SNAKE_BODY;
     }
     
     @Override
-    public void move(Point newPos, boolean grow) {
+    public void move(Point newHeadPos, boolean grow) {
         
         if (grow) growCount += 2;
         
@@ -116,7 +125,7 @@ public class CheeseSnake extends Snake {
         
         Point previousHeadPos = head.getLocation();
         
-        setLocationHead(previousHeadPos, newPos);
+        setLocationHead(previousHeadPos, newHeadPos);
         
         if (nextBodyPartSnake) { // If Next Body Part is Snake
             addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
