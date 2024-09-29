@@ -22,7 +22,7 @@ public class PeacefulGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision(Point snakeHeadPos) {
+    protected boolean checkCollision(Point newHeadPos) {
         return false;
     }
     

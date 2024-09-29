@@ -7,6 +7,7 @@ package com.mycompany.snake.model.GameMode;
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.Snake.CheeseSnake;
 import com.mycompany.snake.model.Snake.Snake;
+import com.mycompany.snake.model.Square.CellType;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,16 @@ public class CheeseGame extends ClassicGame {
     @Override
     protected boolean checkFeast() {
         return foodPositionCandidates.isEmpty() && game.getFood().isEmpty();
+    }
+    
+    // Sobrescritura del método auxiliar para facilitar la adaptación simple del método 
+    // checkSnakeBodyCollision en combinación con el modo Cheese
+    @Override
+    protected int getNumPositionsBodyCollision() {
+        
+        boolean ignoreLastPosition = cheeseSnake.getCheeseBody().getLast().getCellType() == CellType.SNAKE_BODY && cheeseSnake.getGrowCount() <= 0;
+                
+        return ignoreLastPosition ? cheeseSnake.getBody().size() - 1 : cheeseSnake.getBody().size();
     }
     
     @Override

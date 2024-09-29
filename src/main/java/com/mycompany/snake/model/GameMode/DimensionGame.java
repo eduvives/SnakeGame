@@ -28,10 +28,10 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point position) {
+    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point newHeadPos) {
         
         return list.stream()
-        .filter(square -> square.equals(position))
+        .filter(square -> square.equals(newHeadPos))
         .map(square -> (DimensionSquare) square) // Convierte el Square a DimensionSquare
         .anyMatch(dimensionSquare -> !dimensionSquare.isOtherDimension());
     }

@@ -117,12 +117,12 @@ public class BlenderGame extends ClassicGame {
     // DimensionGame
     
     @Override
-    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point position) {
+    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point snakeHeadPos) {
 
         if (modes.contains("Dimension")) {
             
             return list.stream()
-            .filter(square -> square.equals(position))
+            .filter(square -> square.equals(snakeHeadPos))
             .anyMatch(square -> {
                 if (square instanceof DimensionSquareInterface dimensionSquare) {
                     return !dimensionSquare.isOtherDimension();
@@ -131,7 +131,7 @@ public class BlenderGame extends ClassicGame {
             });
             
         } else {
-            return super.checkSnakeListCollision(list, position);
+            return super.checkSnakeListCollision(list, snakeHeadPos);
         }
     }
     
@@ -212,15 +212,15 @@ public class BlenderGame extends ClassicGame {
         // ya que las comprobaciones del modo Dimensión incluyen las del modo Statue. 
         // Al revisar los specificModeLists se accederá a la lista de statues.
         if (modes.contains("Dimension")) {
-            positionAvailable &= !game.getFood().contains(position) 
+            positionAvailable = positionAvailable && !game.getFood().contains(position) 
             && !game.getSpecificModeLists().stream().anyMatch(modeList -> modeList.contains(position));
         } else if (modes.contains("Statue")) {
-            positionAvailable &= !statueGame.statues.contains(position);
+            positionAvailable = positionAvailable && !statueGame.statues.contains(position);
         }
         
         if (modes.contains("Shrink")) {
             boolean isOutOfBounds = position.y < 0 || position.y >= game.getNumBoardRows() || position.x < 0 || position.x >= game.getNumBoardCols();
-            positionAvailable &= !isOutOfBounds;
+            positionAvailable = positionAvailable && !isOutOfBounds;
         }
 
         return positionAvailable;
@@ -415,27 +415,27 @@ public class BlenderGame extends ClassicGame {
     // WallGame - StatueGame - ShrinkGame
     
     @Override
-    protected boolean checkCollision(Point snakeHeadPos) {
+    protected boolean checkCollision(Point newHeadPos) {
         
         if (modes.contains("Peaceful")) {
-            return peacefulGame.checkCollision(snakeHeadPos);
+            return peacefulGame.checkCollision(newHeadPos);
         }
         
-        boolean collision = super.checkCollision(snakeHeadPos);
+        boolean isCollision = super.checkCollision(newHeadPos);
         
         if (modes.contains("Wall")) {
-            collision = collision || checkSnakeListCollision(wallGame.walls, snakeHeadPos);
+            isCollision = isCollision || checkSnakeListCollision(wallGame.walls, newHeadPos);
         }
         
         if (modes.contains("Statue")) {
-            collision = collision || checkSnakeListCollision(statueGame.statues, snakeHeadPos);
+            isCollision = isCollision || checkSnakeListCollision(statueGame.statues, newHeadPos);
         }
         
         if (modes.contains("Shrink")) {
 
             boolean isFinalCollision = false;
 
-            if (collision) {
+            if (isCollision) {
                 blenderSnake.reduce();
                 if (modes.contains("Cheese")) {
                     isFinalCollision = cheeseGame.cheeseSnake.getCheeseBody().size() < 2 * (CHEESE_START_LENGTH - 1);
@@ -449,7 +449,28 @@ public class BlenderGame extends ClassicGame {
             return isFinalCollision;
         }
         
-        return collision;
+        return isCollision;
+    }
+    
+    @Override
+    protected boolean checkSnakePositionCollision(Square square, Point newHeadPos) {
+        
+        boolean isCollision = super.checkSnakePositionCollision(square, newHeadPos);
+        
+        if (modes.contains("Dimension") && square instanceof DimensionSquareInterface dimensionSquare) {
+            isCollision = isCollision && !dimensionSquare.isOtherDimension();
+        }
+        
+        return isCollision;
+    }
+    
+    @Override
+    protected int getNumPositionsBodyCollision() {
+        if (modes.contains("Cheese")) {
+            return cheeseGame.getNumPositionsBodyCollision();
+        } else {
+            return super.getNumPositionsBodyCollision();
+        }
     }
     
     @Override

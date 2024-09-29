@@ -40,9 +40,9 @@ public class ShrinkGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision(Point snakeHeadPos) {
+    protected boolean checkCollision(Point newHeadPos) {
         
-        boolean isCollision = super.checkCollision(snakeHeadPos);
+        boolean isCollision = super.checkCollision(newHeadPos);
         boolean isFinalCollision = false;
         
         if (isCollision) {

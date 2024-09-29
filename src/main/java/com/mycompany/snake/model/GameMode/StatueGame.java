@@ -28,10 +28,10 @@ public class StatueGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision(Point snakeHeadPos) {
+    protected boolean checkCollision(Point newHeadPos) {
         
-        boolean collision = super.checkCollision(snakeHeadPos);
-        boolean statueCollision = checkSnakeListCollision(statues, snakeHeadPos);
+        boolean collision = super.checkCollision(newHeadPos);
+        boolean statueCollision = checkSnakeListCollision(statues, newHeadPos);
         
         return collision || statueCollision;
     }

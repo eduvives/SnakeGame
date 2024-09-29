@@ -11,6 +11,7 @@ import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 
@@ -28,10 +29,10 @@ public class ClassicGame implements SnakeListener {
     
     // CHECKS
     
-    protected boolean checkCollision(Point snakeHeadPos) {
+    protected boolean checkCollision(Point newHeadPos) {
         
-        boolean bodyCollision = checkSnakeListCollision(game.getSnake().getBody(), snakeHeadPos);
-        boolean boundariesCollision = snakeHeadPos.x < 0 || snakeHeadPos.x >= game.getNumBoardCols() || snakeHeadPos.y < 0 || snakeHeadPos.y >= game.getNumBoardRows();
+        boolean bodyCollision = checkSnakeBodyCollision(newHeadPos);
+        boolean boundariesCollision = newHeadPos.x < 0 || newHeadPos.x >= game.getNumBoardCols() || newHeadPos.y < 0 || newHeadPos.y >= game.getNumBoardRows();
         
         return bodyCollision || boundariesCollision;
     }
@@ -40,9 +41,44 @@ public class ClassicGame implements SnakeListener {
         return game.getAvailablePositions().isEmpty() && game.getFood().isEmpty();
     }
     
+    private boolean checkSnakeBodyCollision(Point newHeadPos) {
+        
+        LinkedList<Square> body = game.getSnake().getBody();
+
+        boolean isBodyCollision = false;
+        int numPositions = getNumPositionsBodyCollision();
+        
+        for (int i = 0; i < numPositions; i++) {
+            if (checkSnakePositionCollision(body.get(i), newHeadPos)) {
+                isBodyCollision = true;
+                break; // Salir del bucle al encontrar una colisión
+            }
+        }
+
+        return isBodyCollision;
+    }
+    
+    // Método auxiliar para facilitar la adaptación simple del método checkSnakeBodyCollision en 
+    // combinación con el modo Cheese (clase CheeseGame)
+    protected int getNumPositionsBodyCollision() {
+        
+        // Tal como está implementada la lógica no es necesario contemplar el caso en que haya una colisión 
+        // al mismo tiempo que estamos en una posición de comida, ya se da prioridad a la comida y no se comprueba 
+        // la colisión con otro elemento
+    
+        return game.getSnake().getBody().size() - 1;
+    }
+    
+    
+    // Método auxiliar para facilitar la adaptación del método checkSnakeBodyCollision en la 
+    // clase BlenderGame al estar activo el modo Dimension
+    protected boolean checkSnakePositionCollision(Square square, Point newHeadPos) {
+        return square.equals(newHeadPos);
+    }
+    
     // Comprueba si hay alguna colisión entre la posición relacionada con la cabeza de la serpiente y la nueva posición proporcionada
-    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point position) {
-        return list.contains(position);
+    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point newHeadPos) {
+        return list.contains(newHeadPos);
     }
     
     // NEW GAME
@@ -104,34 +140,39 @@ public class ClassicGame implements SnakeListener {
 
         boolean isFoodCollision = checkSnakeListCollision(game.getFood(), newPos);
         boolean isFeast = false;
-        boolean isCollision = false;
+        boolean isCollision = checkCollision(newPos);
         
+        // La colisión es lo primero en comprobarse para evitar ejecutar código innecesario en caso de detectar una colisión
+        if (isCollision && !isFoodCollision) {
+            game.getObserver().onGameEnded(false);
+            return;
+        }
+            
         if (isFoodCollision) {
+            // La posición de comida se elimina antes del movimiento de la serpiente para que no 
+            // se detecte incorrectamente como una posición ocupada cuando ha dejado de serlo
             game.getFood().remove(newPos);
+            // El incremento de la puntuación (score) se realiza antes del movimiento de la serpiente 
+            // para ser utilizado al generar las paredes en el modo Wall
             increaseScore();
         }
 
         snakeMove(newPos, isFoodCollision);
 
         if (isFoodCollision) {
+            // El método placeFood se llama despues de mover la serpiente para tratar con las posiciones 
+            // disponibles correctas, ya que el movimiento de la serpiente puede cambiarlas
             placeFood();
+            // La comprobación checkFeast debe realizarse después de eliminar la posición actual de comida, 
+            // mover la serpiente y establecer la nueva posición de comida llamando al método placeFood
             isFeast = checkFeast();
-        } else {
-            // La condición de colisión debe comprobarse después de moverse, 
-            // para facilitar la detección de sí la serpiente ha chocado con su 
-            // propio cuerpo o la posición se ha desplazado en el último movimiento.
-            isCollision = checkCollision(newPos);
         }
-        
-        if (isCollision) {
-            game.getObserver().onGameEnded(false);
-        } else {
-            game.getObserver().onViewChanged();
-        }
-        
+
         if (isFeast) {
             game.getObserver().onGameEnded(true);
         }
+
+        game.getObserver().onViewChanged();
     }
     
     protected void snakeMove(Point newPos, boolean isFoodCollision) {
