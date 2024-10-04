@@ -14,4 +14,7 @@ public interface SnakeListener {
     
     void onPositionRemoved(Point position);
     void onPositionAdded(Point position);
+    
+    // Specific (Shrink Game)
+    void onShrink();
 }

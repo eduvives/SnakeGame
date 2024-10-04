@@ -113,7 +113,7 @@ public class ClassicGame implements SnakeListener {
     }
     
     protected boolean isPositionAvailable(Point position) {
-        return !game.getSnake().getBody().contains(position)  && !game.getSnake().getHead().equals(position);
+        return !game.getSnake().getBody().contains(position) && !game.getSnake().getHead().equals(position);
     }
     
     // Métodos Snake Listener
@@ -132,22 +132,28 @@ public class ClassicGame implements SnakeListener {
         game.getAvailablePositions().remove(position);
     }
     
+    @Override
+    public void onShrink() {
+        game.getObserver().onShrink();
+    }
+    
     // GAME LOOP
     
     public void nextLoop() {
         
         Point newPos = getNewPos(game.getSnake().getDirection());
 
-        boolean isFoodCollision = checkSnakeListCollision(game.getFood(), newPos);
-        boolean isFeast = false;
         boolean isCollision = checkCollision(newPos);
         
-        // La colisión es lo primero en comprobarse para evitar ejecutar código innecesario en caso de detectar una colisión
-        if (isCollision && !isFoodCollision) {
+        // La colisión es lo primero en comprobarse para evitar ejecutar código innecesario en caso de ser detectada
+        if (isCollision) {
             game.getObserver().onGameEnded(false);
             return;
         }
-            
+        
+        boolean isFoodCollision = checkSnakeListCollision(game.getFood(), newPos);
+        boolean isFeast = false;
+        
         if (isFoodCollision) {
             // La posición de comida se elimina antes del movimiento de la serpiente para que no 
             // se detecte incorrectamente como una posición ocupada cuando ha dejado de serlo

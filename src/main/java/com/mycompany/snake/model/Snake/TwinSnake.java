@@ -4,8 +4,6 @@
  */
 package com.mycompany.snake.model.Snake;
 
-import com.mycompany.snake.model.Square.CellType;
-import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collections;
 
@@ -28,7 +26,7 @@ public class TwinSnake extends Snake {
         Point previousHeadPos = head.getLocation();
         
         setLocationHead(previousHeadPos, removeLastBody());
-        addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
+        addFirstBody(createSnakeBodyPart(previousHeadPos));
         
         Collections.reverse(body);
         

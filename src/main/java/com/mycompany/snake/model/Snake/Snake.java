@@ -23,7 +23,7 @@ public class Snake {
     protected Point direction;
     
     public static final int START_LENGTH = 4;
-    public static final Point START_DIRECTION = new Point(1, 0);   
+    public static final Point START_DIRECTION = new Point(1, 0);
     
     public Snake() {
         head = new Square();
@@ -40,6 +40,14 @@ public class Snake {
     // Método para asignar el listener
     public void setListener(SnakeListener listener) {
         this.listener = listener;
+    }
+    
+    protected Square createSnakeBodyPart(int col, int row) {
+        return new Square(col, row, CellType.SNAKE_BODY);
+    }
+
+    protected Square createSnakeBodyPart(Point pos) {
+        return new Square(pos, CellType.SNAKE_BODY);
     }
     
     protected void addLastBody(Square square) {
@@ -107,7 +115,7 @@ public class Snake {
     protected void initializeBody() {
         
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            addLastBody(new Square(head.x - i, head.y, CellType.SNAKE_BODY));
+            addLastBody(createSnakeBodyPart(head.x - i, head.y));
         }
     }
     
@@ -118,6 +126,6 @@ public class Snake {
         Point previousHeadPos = head.getLocation();
         
         setLocationHead(previousHeadPos, newHeadPos);
-        addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
+        addFirstBody(createSnakeBodyPart(previousHeadPos));
     }
 }

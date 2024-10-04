@@ -117,21 +117,12 @@ public class BlenderGame extends ClassicGame {
     // DimensionGame
     
     @Override
-    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point snakeHeadPos) {
+    protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point newHeadPos) {
 
         if (modes.contains("Dimension")) {
-            
-            return list.stream()
-            .filter(square -> square.equals(snakeHeadPos))
-            .anyMatch(square -> {
-                if (square instanceof DimensionSquareInterface dimensionSquare) {
-                    return !dimensionSquare.isOtherDimension();
-                }
-                return false;
-            });
-            
+            return dimensionGame.checkSnakeListCollision(list, newHeadPos);
         } else {
-            return super.checkSnakeListCollision(list, snakeHeadPos);
+            return super.checkSnakeListCollision(list, newHeadPos);
         }
     }
     
@@ -216,11 +207,6 @@ public class BlenderGame extends ClassicGame {
             && !game.getSpecificModeLists().stream().anyMatch(modeList -> modeList.contains(position));
         } else if (modes.contains("Statue")) {
             positionAvailable = positionAvailable && !statueGame.statues.contains(position);
-        }
-        
-        if (modes.contains("Shrink")) {
-            boolean isOutOfBounds = position.y < 0 || position.y >= game.getNumBoardRows() || position.x < 0 || position.x >= game.getNumBoardCols();
-            positionAvailable = positionAvailable && !isOutOfBounds;
         }
 
         return positionAvailable;
@@ -434,18 +420,20 @@ public class BlenderGame extends ClassicGame {
         if (modes.contains("Shrink")) {
 
             boolean isFinalCollision = false;
-
+            
             if (isCollision) {
-                blenderSnake.reduce();
+                
                 if (modes.contains("Cheese")) {
-                    isFinalCollision = cheeseGame.cheeseSnake.getCheeseBody().size() < 2 * (CHEESE_START_LENGTH - 1);
-                    if (!isFinalCollision && (cheeseGame.cheeseSnake.getCheeseBody().size() + cheeseGame.cheeseSnake.getGrowCount()) % 2 != 0) decreaseScore();
+                    isFinalCollision = cheeseGame.cheeseSnake.getCheeseBody().size() <= 2 * (CHEESE_START_LENGTH - 1);
+                    if (!isFinalCollision && (cheeseGame.cheeseSnake.getCheeseBody().size() + cheeseGame.cheeseSnake.getGrowCount()) % 2 == 0) decreaseScore();
                 } else {
-                    isFinalCollision = game.getSnake().getBody().size() < Snake.START_LENGTH - 1;
+                    isFinalCollision = game.getSnake().getBody().size() <= Snake.START_LENGTH - 1;
                     if (!isFinalCollision) decreaseScore();
                 }
             }
         
+            shrinkGame.shrinkSnake.setCollision(isCollision && !isFinalCollision);
+            
             return isFinalCollision;
         }
         
@@ -455,13 +443,11 @@ public class BlenderGame extends ClassicGame {
     @Override
     protected boolean checkSnakePositionCollision(Square square, Point newHeadPos) {
         
-        boolean isCollision = super.checkSnakePositionCollision(square, newHeadPos);
-        
-        if (modes.contains("Dimension") && square instanceof DimensionSquareInterface dimensionSquare) {
-            isCollision = isCollision && !dimensionSquare.isOtherDimension();
+        if (modes.contains("Dimension")) {
+            return dimensionGame.checkSnakePositionCollision(square, newHeadPos);
+        } else {
+            return super.checkSnakePositionCollision(square, newHeadPos);
         }
-        
-        return isCollision;
     }
     
     @Override

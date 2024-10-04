@@ -22,6 +22,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -281,6 +282,10 @@ public class GameModel {
         }
 
         this.modeName = modeName;
+    }
+    
+    public boolean isModeActive(String modeName) {
+        return Objects.equals(getModeName(), modeName) || (Objects.equals(getModeName(), "Blender") && getBlenderSelectedModes().contains(modeName));
     }
     
     // Game Logic

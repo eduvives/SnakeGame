@@ -5,7 +5,6 @@
 package com.mycompany.snake.model.Snake;
 
 import com.mycompany.snake.model.GameMode.SnakeListener;
-import com.mycompany.snake.model.Square.DimensionSquare;
 import com.mycompany.snake.model.Square.CellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
@@ -75,40 +74,24 @@ public class BlenderSnake extends Snake {
     
     // BlenderSnake - DimensionSnake
 
-    private Square createSnakeBodyPart(int col, int row) {
+    @Override
+    protected Square createSnakeBodyPart(int col, int row) {
         
         if (modes.contains("Dimension")) {
-            return new DimensionSquare(col, row, CellType.SNAKE_BODY, false);
+            return dimensionSnake.createSnakeBodyPart(col, row);
         } else {
-            return new Square(col, row, CellType.SNAKE_BODY);
+            return super.createSnakeBodyPart(col, row);
         }   
     }
 
-    private Square createSnakeBodyPart(Point pos) {
+    @Override
+    protected Square createSnakeBodyPart(Point pos) {
         
         if (modes.contains("Dimension")) {
-            return new DimensionSquare(pos, CellType.SNAKE_BODY, false);
+            return dimensionSnake.createSnakeBodyPart(pos);
         } else {
-            return new Square(pos, CellType.SNAKE_BODY);
+            return super.createSnakeBodyPart(pos);
         }   
-    }
-    
-    // BlenderSnake - ShrinkSnake
-    
-    public void reduce() {
-        if (modes.contains("Cheese")) {
-            reduceCheeseShrink();
-        } else {
-            shrinkSnake.reduce();
-        }
-    }
-    
-    private void reduceCheeseShrink() {
-        
-        Square firstBodyPart = cheeseSnake.removeFirstBody();
-                
-        setLocationHead(head.getLocation(), firstBodyPart);
-        cheeseSnake.nextBodyPartSnake = firstBodyPart.getCellType() == CellType.SNAKE_BODY;
     }
     
     // CheeseSnake - DimensionSnake
@@ -160,14 +143,19 @@ public class BlenderSnake extends Snake {
             cheeseSnake.removeLastBody();
         }
         
-        Point previousHeadPos = head.getLocation();
-        
-        setLocationHead(previousHeadPos, newHeadPos);
-        
-        if (cheeseSnake.nextBodyPartSnake) { // If Next Body Part is Snake
-            cheeseSnake.addFirstBody(createSnakeBodyPart(previousHeadPos));
-        } else {
-            cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
+        if (!modes.contains("Shrink") || !shrinkSnake.collision){
+            
+            Point previousHeadPos = head.getLocation();
+
+            setLocationHead(previousHeadPos, newHeadPos);
+
+            if (cheeseSnake.nextBodyPartSnake) { // If Next Body Part is Snake
+                cheeseSnake.addFirstBody(createSnakeBodyPart(previousHeadPos));
+            } else {
+                cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
+            }
+        } else { // If isShrinkMode + isCollision
+            listener.onShrink();
         }
         
         if (cheeseSnake.growCount > 0) {
@@ -181,10 +169,16 @@ public class BlenderSnake extends Snake {
         
         if(!grow) removeLastBody();
         
-        Point previousHeadPos = head.getLocation();
-        
-        setLocationHead(previousHeadPos, newHeadPos);
-        addFirstBody(createSnakeBodyPart(previousHeadPos));
+        if (!modes.contains("Shrink") || !shrinkSnake.collision){
+            
+            Point previousHeadPos = head.getLocation();
+
+            setLocationHead(previousHeadPos, newHeadPos);
+            addFirstBody(createSnakeBodyPart(previousHeadPos));
+            
+        } else { // If isShrinkMode + isCollision
+            listener.onShrink();
+        }
     }
     
     // TwinSnake - CheeseSnake - DimensionSnake

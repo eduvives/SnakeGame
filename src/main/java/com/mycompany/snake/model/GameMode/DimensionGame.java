@@ -9,6 +9,7 @@ import com.mycompany.snake.model.Snake.DimensionSnake;
 import com.mycompany.snake.model.Snake.Snake;
 import com.mycompany.snake.model.Square.DimensionSquare;
 import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.DimensionSquareInterface;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collection;
@@ -28,12 +29,20 @@ public class DimensionGame extends ClassicGame {
     }
     
     @Override
+    protected boolean checkSnakePositionCollision(Square square, Point newHeadPos) {
+        
+        return super.checkSnakePositionCollision(square, newHeadPos) && 
+                square instanceof DimensionSquareInterface dimensionSquare &&
+                !dimensionSquare.isOtherDimension();
+    }
+    
+    @Override
     protected boolean checkSnakeListCollision(Collection<? extends Square> list, Point newHeadPos) {
         
         return list.stream()
         .filter(square -> square.equals(newHeadPos))
-        .map(square -> (DimensionSquare) square) // Convierte el Square a DimensionSquare
-        .anyMatch(dimensionSquare -> !dimensionSquare.isOtherDimension());
+        .anyMatch(square -> square instanceof DimensionSquareInterface dimensionSquare
+            && !dimensionSquare.isOtherDimension());
     }
     
     @Override
@@ -73,13 +82,15 @@ public class DimensionGame extends ClassicGame {
     protected void toggleGameDimension() {
         
         for (Square bodyPart : game.getSnake().getBody()) {
-            DimensionSquare bodyPartDim = (DimensionSquare) bodyPart;
-            bodyPartDim.toggleDimension();
+            if (bodyPart instanceof DimensionSquareInterface bodyPartDim) {
+                bodyPartDim.toggleDimension();
+            }
         }
         
         for (Square food : game.getFood()) {
-            DimensionSquare foodDim = (DimensionSquare) food;
-            foodDim.toggleDimension();
+            if (food instanceof DimensionSquareInterface foodDim) {
+                foodDim.toggleDimension();
+            }
         }
     }
     

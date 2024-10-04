@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,10 +53,22 @@ public class GameController implements ModelObserver {
     private int squareSize;
     private boolean isBoardUpdated;
     
-    // Game Logic
+    // Game Loop Timers
     private Timer timer;
-    private List<Point> inputQueue = new ArrayList<>();
+    private Timer switchSidesTimer;
+    
+    // User Inputs
     private static final int MAX_INPUT_QUEUE_SIZE = 2;
+    private LinkedList<Point> inputQueue = new LinkedList<>();
+    
+    // User Inputs Shrink Mode
+    // Atributos para ampliar el procesamiento de inputs del usuario cuando el modo Shrink está activo, 
+    // almacenando direcciones que podrían no ser válidas al recibirlas, pero sí tras una colisión.
+    // En caso de no estar activo el modo Shrink, podemos saber con total certeza la dirección en la que se dirigirá 
+    // la serpiente en todo momento (al finalizar el juego en colisionar) y, por tanto, podemos ahorrarnos 
+    // comprobaciones y gestiones innecesarias.
+    private boolean shrinkModeActive;
+    private LinkedList<Point> reserveInputQueue = new LinkedList<>();
     
     public GameController(SnakeView view, GameModel model) {
         
@@ -92,7 +105,7 @@ public class GameController implements ModelObserver {
     
     @Override
     public void onNewGame() {
-
+        System.out.println("shrinkModeActive: "+shrinkModeActive);
         if (!isBoardUpdated) {
             updateViewBoardParams();
         }
@@ -102,6 +115,7 @@ public class GameController implements ModelObserver {
     
     private void clearUserInputs() {
         inputQueue.clear();
+        if (shrinkModeActive) reserveInputQueue.clear();
     }
     
     @Override
@@ -158,6 +172,11 @@ public class GameController implements ModelObserver {
             model.updateFoodParam(food);
         }
         
+        // Update Game Mode
+        if (!Objects.equals(model.getModeName(), mode)) {
+            model.updateGameMode(mode);
+        }
+        
         // Update Blender Selected Modes
         checkBlenderSelectedModes(mode);
         
@@ -168,16 +187,11 @@ public class GameController implements ModelObserver {
         }
         
         // Update Switch Sides Timer Delay (Initial Delay)
-        if (mode.equals("Twin") || (mode.equals("Blender") && model.getBlenderSelectedModes().contains("Twin"))) {
+        if (model.isModeActive("Twin")) {
             int newSwitchSidesDelay = (int) Math.round(SettingsParams.SPEEDS.get(speed) * 2.5);
             if (switchSidesTimer.getInitialDelay() != newSwitchSidesDelay) {
                 updateSwitchSidesTimerDelay(newSwitchSidesDelay);
             }
-        }
-        
-        // Update Game Mode
-        if (!Objects.equals(model.getModeName(), mode)) {
-            model.updateGameMode(mode);
         }
     }
     
@@ -291,9 +305,10 @@ public class GameController implements ModelObserver {
     }
     
     private void playBtnAction(JDialog fromDialog) {
-        updateGameParamsFromView();
         
+        updateGameParamsFromView();
         model.newGame();
+        
         // Al no abrir y cerrar las ventanas con mucha frecuencia, seguimos usando dispose() y así aprovechamos la animación de creación de ventana.
         fromDialog.dispose();
     }
@@ -331,13 +346,15 @@ public class GameController implements ModelObserver {
     }
     
     private void updateGameParamsFromView() {
-
+        
         updateGameParams(
             view.getSettings().getBoardCmbSelectedItem(),
             view.getSettings().getSpeedCmbSelectedItem(),
             view.getSettings().getFoodCmbSelectedItem(),
             view.getSettings().getModeCmbSelectedItem()
         );
+        
+        shrinkModeActive = model.isModeActive("Shrink");
     }
     
     public void toggleKeyBindings(boolean enable) {
@@ -422,40 +439,124 @@ public class GameController implements ModelObserver {
         // Test Lines End
     }
     
-    private void handleDirectionChange(Point newDirection) {
+    // El valor de retorno indica si el input era válido y, por tanto, si ha sido añadido a la cola de inputs del usuario
+    private boolean handleDirectionChange(Point newDirection) {
         
-        Point previousDirection;
+        if (!model.isGameStarted() && !oppositeDirection(model.getSnake().getDefaultDirection(), newDirection)) {
+            startGameLoop();
+        }
+        
+        boolean validInput = checkValidInput(newDirection);
+        
         int numInputs = inputQueue.size();
         
-        if (numInputs == 0) {
-            previousDirection = model.getSnake().getDefaultDirection(); // Obtener la dirección en que apunta la serpiente
+        if (validInput) {
+            
+            if (numInputs < MAX_INPUT_QUEUE_SIZE) {
+                inputQueue.addLast(newDirection);
+            } else {
+                
+                int lastInputIndex = MAX_INPUT_QUEUE_SIZE - 1;
+                
+                if (!Objects.equals(inputQueue.get(lastInputIndex), newDirection)) {
+                    inputQueue.set(lastInputIndex, newDirection);
+                }
+            }
+        }
+        
+        if (shrinkModeActive && (!validInput || numInputs >= 1)) {
+            addReserveInput(newDirection);
+        }
+        
+        return validInput;
+    }
+    
+    private boolean checkValidInput (Point newDirection) {
+        
+        Point previousPointingDirection;
+        Point previousHeadingDirection;
+        
+        if (inputQueue.isEmpty()) {
+            // Obtener la dirección en que apunta la serpiente en este momento
+            previousPointingDirection = model.getSnake().getDefaultDirection();
+            previousHeadingDirection = shrinkModeActive ? model.getSnake().getDirection() : previousPointingDirection;
         } else {
-            previousDirection = (numInputs < MAX_INPUT_QUEUE_SIZE) ? inputQueue.get(numInputs - 1) : inputQueue.get(numInputs - 2);
+            // Obtener la dirección en que apuntará la serpiente tras el próximo movimiento
+            previousPointingDirection = previousHeadingDirection = inputQueue.getFirst();
         }
         
         // Comprobar que la nueva dirección no sea opuesta a la dirección en que apunta la serpiente
-        if (previousDirection.x != -newDirection.x || previousDirection.y != -newDirection.y) {
-            
-            if (!model.isGameStarted()) {
-                startGameLoop();
-            }
-            
-            boolean sameDirection;
-            
-            // Comprobar que la nueva dirección no sea igual a la dirección en que se dirige la serpiente
-            if (numInputs == 0) {
-                sameDirection = model.getSnake().getDirection().equals(newDirection);
-            } else {
-                sameDirection = previousDirection.equals(newDirection);
-            }
-            
-            if (!sameDirection) {
-                if (numInputs >= MAX_INPUT_QUEUE_SIZE) {
-                    inputQueue.remove(numInputs - 1);
-                }
-                inputQueue.add(newDirection);
+        boolean oppositeDirection = oppositeDirection(previousPointingDirection, newDirection);
+        
+        // Comprobar que la nueva dirección no sea igual a la dirección en que se dirige la serpiente
+        boolean sameDirection = sameDirection(previousHeadingDirection, newDirection);
+        
+        return !oppositeDirection && !sameDirection;
+    }
+    
+    private boolean oppositeDirection(Point previousDirection, Point newDirection) {
+        return previousDirection.x == -newDirection.x && previousDirection.y == -newDirection.y;
+    }
+    
+    private boolean sameDirection(Point previousDirection, Point newDirection) {
+        return previousDirection.equals(newDirection);
+    }
+    
+    private void addReserveInput(Point newPoint) {
+        
+        reserveInputQueue.remove(newPoint);
+        reserveInputQueue.addLast(newPoint);
+    }
+    
+    @Override
+    public void onShrink() {
+        revalidateInputQueue();
+    }
+    
+    // La llamada a este método implica que el primer input ha provocado una colisión en modo Shrink.
+    // Al permitir un máximo de dos inputs seguidos, debemos comprobar si hay más inputs en cola y, 
+    // en tal caso, obtener el último input válido introducido por el usuario de entre los inputs de reserva, 
+    // ya que el input de la cola podría no ser válido tras la colisión.
+    private synchronized void revalidateInputQueue() { // TODO funciona? // TODO más de un input al llamar revalidateInputQueue?
+        
+        System.out.println("input  :"+inputQueue);
+        System.out.println("shrink :"+reserveInputQueue);
+        System.out.println("*****");
+        
+        inputQueue.clear();
+        
+        for (int j = reserveInputQueue.size() - 1; j >= 0; j--) {
+            Point reserveInput = reserveInputQueue.get(j);
+            if (checkValidInput(reserveInput)) {
+                inputQueue.addLast(reserveInput);
+                break; // Salimos al encontrar el último válido
             }
         }
+        
+        /*
+        int firstInputindex = -1;
+        
+        // Buscar el primer Point válido
+        for (int i = 0; i < reserveInputQueue.size(); i++) {
+            Point reserveInput = reserveInputQueue.get(i);
+            if (checkValidInput(reserveInput)) {
+                inputQueue.addLast(reserveInput);
+                firstInputindex = i;
+                break; // Salimos cuando encontramos el primer válido
+            }
+        }
+        
+        // Si encontramos el primer Point válido, buscamos el último desde el final
+        if (firstInputindex != -1) {
+            for (int j = reserveInputQueue.size() - 1; j > firstInputindex; j--) {
+                Point reserveInput = reserveInputQueue.get(j);
+                if (checkValidInput(reserveInput)) {
+                    inputQueue.addLast(reserveInput);
+                    break; // Salimos al encontrar el último válido
+                }
+            }
+        }
+        */
     }
     
     // Métodos Timer
@@ -469,11 +570,17 @@ public class GameController implements ModelObserver {
         
         return (ActionEvent e) -> {
             
+            System.out.println("input  :"+inputQueue);
+            System.out.println("shrink :"+reserveInputQueue);
+            System.out.println("-----");
+            
             if (!inputQueue.isEmpty()) {
-                model.getSnake().getDirection().setLocation(inputQueue.remove(0));
+                model.getSnake().getDirection().setLocation(inputQueue.pollFirst());
             }
             
             model.nextLoop();
+            
+            if (shrinkModeActive) reserveInputQueue.clear();
         };
     }
     
@@ -597,11 +704,9 @@ public class GameController implements ModelObserver {
     
     // Métodos Auxiliares Subclases ClassicGame
     
-    private Timer switchSidesTimer;
-    
     @Override
     public void onSwitchSides() {
-        inputQueue.clear();
+        clearUserInputs();
         switchingSidesPause(); // Simular una pausa
     }
     

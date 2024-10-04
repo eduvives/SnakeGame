@@ -6,6 +6,7 @@ package com.mycompany.snake.model.Snake;
 
 import com.mycompany.snake.model.Square.DimensionSquare;
 import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 
 /**
@@ -23,10 +24,20 @@ public class DimensionSnake extends Snake {
     }
     
     @Override
+    protected Square createSnakeBodyPart(int col, int row) {
+        return new DimensionSquare(col, row, CellType.SNAKE_BODY, false);
+    }
+
+    @Override
+    protected Square createSnakeBodyPart(Point pos) {
+        return new DimensionSquare(pos, CellType.SNAKE_BODY, false);
+    }
+    
+    @Override
     protected void initializeBody() {
         
         for (int i = 1; i <= START_LENGTH - 1; i++) {
-            addLastBody(new DimensionSquare(head.x - i, head.y, CellType.SNAKE_BODY, false));
+            addLastBody(createSnakeBodyPart(head.x - i, head.y));
         }
     }
     
@@ -38,6 +49,6 @@ public class DimensionSnake extends Snake {
         Point previousHeadPos = head.getLocation();
         
         setLocationHead(previousHeadPos, newHeadPos);
-        addFirstBody(new DimensionSquare(previousHeadPos, CellType.SNAKE_BODY, false));
+        addFirstBody(createSnakeBodyPart(previousHeadPos));
     }
 }

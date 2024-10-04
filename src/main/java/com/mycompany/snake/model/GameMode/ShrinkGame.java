@@ -40,24 +40,22 @@ public class ShrinkGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision(Point newHeadPos) {
+    protected boolean checkCollision(Point newHeadPos) { // TODO error food and colision dimension
         
         boolean isCollision = super.checkCollision(newHeadPos);
         boolean isFinalCollision = false;
         
         if (isCollision) {
-            shrinkSnake.reduce();
-            isFinalCollision = game.getSnake().getBody().size() < START_LENGTH - 1;
             
-            if (!isFinalCollision) decreaseScore();
+            isFinalCollision = game.getSnake().getBody().size() <= START_LENGTH - 1;
+            
+            if (!isFinalCollision) {
+                decreaseScore();
+            }
         }
         
+        shrinkSnake.setCollision(isCollision && !isFinalCollision);
+        
         return isFinalCollision;
-    }
-    
-    @Override
-    protected boolean isPositionAvailable(Point position) {
-        boolean isOutOfBounds = position.y < 0 || position.y >= game.getNumBoardRows() || position.x < 0 || position.x >= game.getNumBoardCols();
-        return super.isPositionAvailable(position) && !isOutOfBounds;
     }
 }

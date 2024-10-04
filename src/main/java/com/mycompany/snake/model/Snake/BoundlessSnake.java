@@ -43,8 +43,4 @@ public class BoundlessSnake extends Snake {
         
         return defaultDirection;
     }
-    
-    public void reduce() {
-        setLocationHead(head.getLocation(), removeFirstBody());
-    }
 }

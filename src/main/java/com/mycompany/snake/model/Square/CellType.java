@@ -12,14 +12,21 @@ import java.awt.Color;
  */
 public enum CellType {
 
+    // SNAKE
     EMPTY,
     SNAKE_HEAD,
     SNAKE_BODY,
+    
+    // FOOD
     FOOD,
+    
+    // WALL & STATUE
     WALL_SIMPLE,
     WALL_FILLED,
-    WALL_STATUE,   
+    WALL_STATUE,
     WALL_CRACKED,
+    
+    // TEST TODO
     TEST;
     
     private Color color;

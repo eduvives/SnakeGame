@@ -108,7 +108,7 @@ public class CheeseSnake extends Snake {
             int posX = head.x - (i * 2);
             
             addLastBody(new Square(posX + 1, head.y, CellType.EMPTY));
-            addLastBody(new Square(posX, head.y, CellType.SNAKE_BODY));
+            addLastBody(createSnakeBodyPart(posX, head.y));
         }
         
         nextBodyPartSnake = cheeseBody.getFirst().getCellType() != CellType.SNAKE_BODY;
@@ -128,7 +128,7 @@ public class CheeseSnake extends Snake {
         setLocationHead(previousHeadPos, newHeadPos);
         
         if (nextBodyPartSnake) { // If Next Body Part is Snake
-            addFirstBody(new Square(previousHeadPos, CellType.SNAKE_BODY));
+            addFirstBody(createSnakeBodyPart(previousHeadPos));
         } else {
             addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
         }

@@ -20,4 +20,7 @@ public interface ModelObserver {
     
     // Specific (Twin Game)
     void onSwitchSides();
+    
+    // Specific (Shrink Game)
+    void onShrink();
 }
