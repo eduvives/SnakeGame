@@ -4,6 +4,8 @@
  */
 package com.mycompany.snake.model.Square;
 
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import java.awt.Color;
 import java.awt.Point;
 
@@ -25,6 +27,16 @@ public class DimensionSquare extends Square implements DimensionSquareInterface 
         super(pos, cellType);
         this.otherDimension = otherDimension;
     }
+    
+    public DimensionSquare(int col, int row, CellType cellType, SpecificCellType specificCellType, boolean otherDimension) {
+        super(col, row, cellType, specificCellType);
+        this.otherDimension = otherDimension;
+    }
+    
+    public DimensionSquare(Point pos, CellType cellType, SpecificCellType specificCellType, boolean otherDimension) {
+        super(pos, cellType, specificCellType);
+        this.otherDimension = otherDimension;
+    }
 
     @Override
     public boolean isOtherDimension() {
@@ -39,7 +51,7 @@ public class DimensionSquare extends Square implements DimensionSquareInterface 
     @Override
     public Color getColor() {
         
-        Color squareColor = cellType.getColor();
+        Color squareColor = super.getColor();
         
         if (otherDimension) {
             return new Color(squareColor.getRed(), squareColor.getGreen(), squareColor.getBlue(), ALPHA_OTHER_DIMENSION);

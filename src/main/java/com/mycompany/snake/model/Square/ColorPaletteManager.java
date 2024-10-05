@@ -4,6 +4,8 @@
  */
 package com.mycompany.snake.model.Square;
 
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
+import static com.mycompany.snake.model.Square.CellConfiguration.setSpecificCellTypeColor;
 import java.awt.Color;
 
 /**
@@ -36,20 +38,20 @@ public class ColorPaletteManager {
     
     public void boardColorChanged(Color newColor) {
         
-        CellType.EMPTY.setColor(newColor);
+        setSpecificCellTypeColor(SpecificCellType.EMPTY_BODY, newColor);
         
         if (newColor.equals(Color.BLACK)) {
-            CellType.WALL_SIMPLE.setColor(Color.GRAY);
+            setSpecificCellTypeColor(SpecificCellType.WALL, Color.GRAY);
         } else {
-            CellType.WALL_SIMPLE.setColor(darkenColor(newColor, WALL_FACTOR));
+            setSpecificCellTypeColor(SpecificCellType.WALL, darkenColor(newColor, WALL_FACTOR));
         }
         
         // TEST LINE TODO
-        CellType.TEST.setColor(Color.CYAN);
+         setSpecificCellTypeColor(SpecificCellType.TEST, Color.CYAN);
     }
     
     public void foodColorChanged(Color newColor) {
-        CellType.FOOD.setColor(newColor);
+        setSpecificCellTypeColor(SpecificCellType.FOOD, newColor);
     }
     
     public static final double HEAD_FACTOR = 0.60;
@@ -57,15 +59,15 @@ public class ColorPaletteManager {
     public static final double CRACKED_STATUE_FACTOR = 0.65;
     
     public void snakeColorChanged(Color newColor) {
-        
-        CellType.SNAKE_BODY.setColor(newColor);
-        CellType.SNAKE_HEAD.setColor(darkenColor(newColor, HEAD_FACTOR));
+
+        setSpecificCellTypeColor(SpecificCellType.SNAKE_BODY, newColor);
+        setSpecificCellTypeColor(SpecificCellType.SNAKE_HEAD, darkenColor(newColor, HEAD_FACTOR));
         
         Color statueColor = darkenColor(newColor, STATUE_FACTOR);
-        
-        CellType.WALL_FILLED.setColor(statueColor);
-        CellType.WALL_STATUE.setColor(statueColor);
-        CellType.WALL_CRACKED.setColor(lightenColor(newColor, CRACKED_STATUE_FACTOR));
+
+        setSpecificCellTypeColor(SpecificCellType.FILLED_STATUE, statueColor);
+        setSpecificCellTypeColor(SpecificCellType.STATUE, statueColor);
+        setSpecificCellTypeColor(SpecificCellType.CRACKED_STATUE, lightenColor(newColor, CRACKED_STATUE_FACTOR));
     }
     
     public static Color darkenColor (Color color, double darkenFactor) {

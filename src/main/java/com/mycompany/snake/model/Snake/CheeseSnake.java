@@ -4,7 +4,8 @@
  */
 package com.mycompany.snake.model.Snake;
 
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -54,7 +55,7 @@ public class CheeseSnake extends Snake {
         
         cheeseBody.addLast(square);
         
-        if (square.getCellType() == CellType.SNAKE_BODY) {
+        if (square.getSpecificCellType() == SpecificCellType.SNAKE_BODY) { // TODO SNAKE_HEAD? no crec
             body.addLast(square);
             listener.onPositionAdded(square);
         }
@@ -65,7 +66,7 @@ public class CheeseSnake extends Snake {
         
         cheeseBody.addFirst(square);
         
-        if (square.getCellType() == CellType.SNAKE_BODY) {
+        if (square.getSpecificCellType() == SpecificCellType.SNAKE_BODY) {
             body.addFirst(square);
             listener.onPositionAdded(square);
         }
@@ -76,7 +77,7 @@ public class CheeseSnake extends Snake {
         
         Square lastBodyPart = cheeseBody.removeLast();
         
-        if (lastBodyPart.getCellType() == CellType.SNAKE_BODY) {
+        if (lastBodyPart.getSpecificCellType() == SpecificCellType.SNAKE_BODY) {
             listener.onPositionRemoved(body.removeLast().getLocation());
         }
         
@@ -88,7 +89,7 @@ public class CheeseSnake extends Snake {
         
         Square firstBodyPart = cheeseBody.removeFirst();
         
-        if (firstBodyPart.getCellType() == CellType.SNAKE_BODY) {
+        if (firstBodyPart.getSpecificCellType() == SpecificCellType.SNAKE_BODY) {
             listener.onPositionRemoved(body.removeFirst().getLocation());
         }
         
@@ -107,11 +108,11 @@ public class CheeseSnake extends Snake {
             
             int posX = head.x - (i * 2);
             
-            addLastBody(new Square(posX + 1, head.y, CellType.EMPTY));
+            addLastBody(new Square(posX + 1, head.y, CellType.SNAKE, SpecificCellType.EMPTY_BODY));
             addLastBody(createSnakeBodyPart(posX, head.y));
         }
         
-        nextBodyPartSnake = cheeseBody.getFirst().getCellType() != CellType.SNAKE_BODY;
+        nextBodyPartSnake = cheeseBody.getFirst().getSpecificCellType() != SpecificCellType.SNAKE_BODY;
     }
     
     @Override
@@ -130,7 +131,7 @@ public class CheeseSnake extends Snake {
         if (nextBodyPartSnake) { // If Next Body Part is Snake
             addFirstBody(createSnakeBodyPart(previousHeadPos));
         } else {
-            addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
+            addFirstBody(new Square(previousHeadPos, CellType.SNAKE, SpecificCellType.EMPTY_BODY));
         }
         
         if (growCount > 0) {

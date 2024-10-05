@@ -5,7 +5,8 @@
 package com.mycompany.snake.model.Snake;
 
 import com.mycompany.snake.model.Square.DimensionSquare;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 
@@ -25,12 +26,12 @@ public class DimensionSnake extends Snake {
     
     @Override
     protected Square createSnakeBodyPart(int col, int row) {
-        return new DimensionSquare(col, row, CellType.SNAKE_BODY, false);
+        return new DimensionSquare(col, row, CellType.SNAKE, SpecificCellType.SNAKE_BODY, false);
     }
 
     @Override
     protected Square createSnakeBodyPart(Point pos) {
-        return new DimensionSquare(pos, CellType.SNAKE_BODY, false);
+        return new DimensionSquare(pos, CellType.SNAKE, SpecificCellType.SNAKE_BODY, false);
     }
     
     @Override

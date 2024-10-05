@@ -6,7 +6,7 @@ package com.mycompany.snake.model.GameMode;
 
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.Snake.Snake;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collection;

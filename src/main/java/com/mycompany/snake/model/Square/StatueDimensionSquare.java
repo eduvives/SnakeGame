@@ -4,6 +4,8 @@
  */
 package com.mycompany.snake.model.Square;
 
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import java.awt.Color;
 import java.awt.Point;
 
@@ -15,13 +17,23 @@ public class StatueDimensionSquare extends StatueSquare implements DimensionSqua
     
     protected boolean otherDimension;
     
-    public StatueDimensionSquare(int col, int row, CellType cellType, boolean otherDimension) {
-        super(col, row, cellType);
+    public StatueDimensionSquare(int col, int row, boolean otherDimension) {
+        super(col, row);
         this.otherDimension = otherDimension;
     }
     
-    public StatueDimensionSquare(Point pos, CellType cellType, boolean otherDimension) {
-        super(pos, cellType);
+    public StatueDimensionSquare(Point pos, boolean otherDimension) {
+        super(pos);
+        this.otherDimension = otherDimension;
+    }
+    
+    public StatueDimensionSquare(int col, int row, SpecificCellType specificCellType, boolean otherDimension) {
+        super(col, row, specificCellType);
+        this.otherDimension = otherDimension;
+    }
+    
+    public StatueDimensionSquare(Point pos, SpecificCellType specificCellType, boolean otherDimension) {
+        super(pos, specificCellType);
         this.otherDimension = otherDimension;
     }
     
@@ -38,7 +50,7 @@ public class StatueDimensionSquare extends StatueSquare implements DimensionSqua
     @Override
     public Color getColor() {
         
-        Color squareColor = cellType.getColor();
+        Color squareColor = super.getColor();
         
         if (otherDimension) {
             return new Color(squareColor.getRed(), squareColor.getGreen(), squareColor.getBlue(), DimensionSquare.ALPHA_OTHER_DIMENSION);

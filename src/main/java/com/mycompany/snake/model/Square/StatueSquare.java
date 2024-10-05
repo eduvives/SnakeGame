@@ -4,29 +4,32 @@
  */
 package com.mycompany.snake.model.Square;
 
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import java.awt.Point;
-import java.util.Set;
 
 /**
  *
  * @author Eduard
  */
 public class StatueSquare extends Square {
-    
-    protected static final Set<CellType> ALLOWED_CELL_TYPES = Set.of(
-        CellType.WALL_FILLED, 
-        CellType.WALL_STATUE, 
-        CellType.WALL_CRACKED
-    );
-    
+
     private int foodBeforeBreak;
     
-    public StatueSquare(int col, int row, CellType cellType) {
-        super(col, row, validateCellType(cellType));
+    public StatueSquare(int col, int row) {
+        super(col, row, CellType.STATUE);
     }
     
-    public StatueSquare(Point pos, CellType cellType) {
-        super(pos, validateCellType(cellType));
+    public StatueSquare(Point pos) {
+        super(pos, CellType.STATUE);
+    }
+    
+    public StatueSquare(int col, int row, SpecificCellType specificCellType) {
+        super(col, row, CellType.STATUE, specificCellType);
+    }
+    
+    public StatueSquare(Point pos, SpecificCellType specificCellType) {
+        super(pos, CellType.STATUE, specificCellType);
     }
 
     public int getFoodBeforeBreak() {
@@ -39,12 +42,5 @@ public class StatueSquare extends Square {
     
     public void decreaseFoodBeforeBreak() {
         foodBeforeBreak -= 1;
-    }
-    
-    protected static CellType validateCellType(CellType cellType) {
-        if (!ALLOWED_CELL_TYPES.contains(cellType)) {
-            throw new IllegalArgumentException("Invalid CellType for StatueSquare: " + cellType);
-        }
-        return cellType;
     }
 }

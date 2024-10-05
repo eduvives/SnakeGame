@@ -5,7 +5,8 @@
 package com.mycompany.snake.model.Snake;
 
 import com.mycompany.snake.model.GameMode.SnakeListener;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.Collections;
@@ -112,11 +113,11 @@ public class BlenderSnake extends Snake {
             
             int posX = head.x - (i * 2);
             
-            cheeseSnake.addLastBody(new Square(posX + 1, head.y, CellType.EMPTY));
+            cheeseSnake.addLastBody(new Square(posX + 1, head.y, CellType.SNAKE, SpecificCellType.EMPTY_BODY));
             cheeseSnake.addLastBody(createSnakeBodyPart(posX, head.y));
         }
         
-        cheeseSnake.nextBodyPartSnake = cheeseSnake.cheeseBody.getFirst().getCellType() != CellType.SNAKE_BODY;
+        cheeseSnake.nextBodyPartSnake = cheeseSnake.cheeseBody.getFirst().getSpecificCellType() != SpecificCellType.SNAKE_BODY;
     }
     
     private void initializeBodyBlender() { 
@@ -152,7 +153,7 @@ public class BlenderSnake extends Snake {
             if (cheeseSnake.nextBodyPartSnake) { // If Next Body Part is Snake
                 cheeseSnake.addFirstBody(createSnakeBodyPart(previousHeadPos));
             } else {
-                cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
+                cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.SNAKE, SpecificCellType.EMPTY_BODY));
             }
         } else { // If isShrinkMode + isCollision
             listener.onShrink();
@@ -195,14 +196,14 @@ public class BlenderSnake extends Snake {
         if (cheeseSnake.isNextBodyPartSnake()) {
             cheeseSnake.addFirstBody(createSnakeBodyPart(previousHeadPos));
         } else {
-            cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.EMPTY));
+            cheeseSnake.addFirstBody(new Square(previousHeadPos, CellType.SNAKE, SpecificCellType.EMPTY_BODY));
         }
 
         Collections.reverse(body);
         Collections.reverse(cheeseSnake.cheeseBody);
         
         restoreDirection();
-        cheeseSnake.nextBodyPartSnake = lastBodyPart.getCellType() == CellType.SNAKE_BODY;
+        cheeseSnake.nextBodyPartSnake = lastBodyPart.getSpecificCellType() == SpecificCellType.SNAKE_BODY;
     }
     
     // TwinSnake - DimensionSnake

@@ -5,7 +5,7 @@
 package com.mycompany.snake.model.GameMode;
 
 import com.mycompany.snake.model.GameModel;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class WallGame extends ClassicGame {
         if (wallPos != null) {
 
             // Create New Wall
-            walls.add(new Square(wallPos, CellType.WALL_SIMPLE));
+            walls.add(new Square(wallPos, CellType.WALL));
 
             // Update Spawn Walls List
             for (int x = -1; x <= 1; x++) {

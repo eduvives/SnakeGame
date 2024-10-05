@@ -5,7 +5,8 @@
 package com.mycompany.snake.model.Snake;
 
 import com.mycompany.snake.model.GameMode.SnakeListener;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ public class Snake {
     public static final Point START_DIRECTION = new Point(1, 0);
     
     public Snake() {
-        head = new Square();
+        head = new Square(CellType.SNAKE, SpecificCellType.SNAKE_HEAD);
         body = new LinkedList<>();
         direction = new Point();
     }
@@ -43,11 +44,11 @@ public class Snake {
     }
     
     protected Square createSnakeBodyPart(int col, int row) {
-        return new Square(col, row, CellType.SNAKE_BODY);
+        return new Square(col, row, CellType.SNAKE, SpecificCellType.SNAKE_BODY);
     }
 
     protected Square createSnakeBodyPart(Point pos) {
-        return new Square(pos, CellType.SNAKE_BODY);
+        return new Square(pos, CellType.SNAKE, SpecificCellType.SNAKE_BODY);
     }
     
     protected void addLastBody(Square square) {
@@ -107,8 +108,7 @@ public class Snake {
         
         head.setLocation(startPos);
         listener.onPositionAdded(startPos);
-        
-        head.setCellType(CellType.SNAKE_HEAD);
+
         direction.setLocation(START_DIRECTION);
     }
     

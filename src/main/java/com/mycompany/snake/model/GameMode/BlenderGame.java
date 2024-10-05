@@ -11,7 +11,8 @@ import com.mycompany.snake.model.Snake.Snake;
 import com.mycompany.snake.model.Square.DimensionSquare;
 import com.mycompany.snake.model.Square.StatueSquare;
 import com.mycompany.snake.model.Square.DimensionSquareInterface;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import com.mycompany.snake.model.Square.StatueDimensionSquare;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
@@ -242,14 +243,14 @@ public class BlenderGame extends ClassicGame {
         }
         
         if (isFoodCollision) {
-            if (modes.contains("Statue")) {
-                placeStatueBlender();
-            }
-
+            
             if (modes.contains("Dimension")) {
-
                 dimensionGame.toggleGameDimension();
                 toggleDimensionSpecificModeLists();
+            }
+            
+            if (modes.contains("Statue")) {
+                placeStatueBlender();
             }
 
             if (modes.contains("Wall")) {
@@ -277,21 +278,21 @@ public class BlenderGame extends ClassicGame {
     
     // WallGame - StatueGame - DimensionGame - BoundlessGame
     
-    private Square createSimpleWall(Point pos) {
-        
+    private StatueSquare createStatueSquare(Point pos) {
+
         if (modes.contains("Dimension")) {
-            return new DimensionSquare(pos, CellType.WALL_SIMPLE, false);
+            return new StatueDimensionSquare(pos, true);
         } else {
-            return new Square(pos, CellType.WALL_SIMPLE);
+            return new StatueSquare(pos);
         }
     }
     
-    private StatueSquare createFilledWall(Point pos) {
-
+    private Square createWallSquare(Point pos) {
+        
         if (modes.contains("Dimension")) {
-            return new StatueDimensionSquare(pos, CellType.WALL_FILLED, false);
+            return new DimensionSquare(pos, CellType.WALL, false);
         } else {
-            return new StatueSquare(pos, CellType.WALL_FILLED);
+            return new Square(pos, CellType.WALL);
         }
     }
     
@@ -300,7 +301,7 @@ public class BlenderGame extends ClassicGame {
         updateStatuesBlender();
         
         for (Point bodyPartPos : game.getSnake().getBody()) {
-            statueGame.statues.add(createFilledWall(bodyPartPos));
+            statueGame.statues.add(createStatueSquare(bodyPartPos));
         }
     }
     
@@ -309,11 +310,12 @@ public class BlenderGame extends ClassicGame {
         Set<Square> snakeBodySet = new HashSet<>(game.getSnake().getBody());
         
         Set<StatueSquare> statuesNotFilled = new HashSet<>(statueGame.statues);
-        statuesNotFilled.removeIf(statue -> snakeBodySet.contains(statue) && statue.getCellType() == CellType.WALL_FILLED);
+        // Comprobación por si el modo Dimensión está activo. El cuerpo de la serpiente podría estar en celdas NO FILLED de la otra dimensión.
+        statuesNotFilled.removeIf(statue -> snakeBodySet.contains(statue) && statue.getSpecificCellType() == SpecificCellType.FILLED_STATUE);
         
         for (StatueSquare statueSquare : statuesNotFilled) {
             
-            if (statueSquare.getCellType() == CellType.WALL_FILLED) {
+            if (statueSquare.getSpecificCellType() == SpecificCellType.FILLED_STATUE) {
                 statueSquare.setFoodBeforeBreak(statueGame.generateNumFoodBeforeBreak());
             }
             
@@ -322,11 +324,11 @@ public class BlenderGame extends ClassicGame {
             
             if (foodBeforeBreak > 1) {
                 
-                statueSquare.setCellType(CellType.WALL_STATUE);
+                statueSquare.setSpecificCellType(SpecificCellType.STATUE);
                 
             } else if (foodBeforeBreak == 1) {
                 
-                statueSquare.setCellType(CellType.WALL_CRACKED);
+                statueSquare.setSpecificCellType(SpecificCellType.CRACKED_STATUE);
                 
             } else if (foodBeforeBreak == 0) {
                 
@@ -387,7 +389,7 @@ public class BlenderGame extends ClassicGame {
         if (wallPos != null) {
 
             // Create New Wall
-            wallGame.walls.add(createSimpleWall(wallPos));
+            wallGame.walls.add(createWallSquare(wallPos));
             
             // Update Spawn Walls List
             for (int x = -1; x <= 1; x++) {

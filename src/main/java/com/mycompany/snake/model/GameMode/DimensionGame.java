@@ -8,7 +8,7 @@ import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.Snake.DimensionSnake;
 import com.mycompany.snake.model.Snake.Snake;
 import com.mycompany.snake.model.Square.DimensionSquare;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
 import com.mycompany.snake.model.Square.DimensionSquareInterface;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;

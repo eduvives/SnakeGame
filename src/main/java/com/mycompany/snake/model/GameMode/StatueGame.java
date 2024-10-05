@@ -6,7 +6,8 @@ package com.mycompany.snake.model.GameMode;
 
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.Square.StatueSquare;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.SpecificCellType;
 import com.mycompany.snake.model.Square.Square;
 import java.awt.Point;
 import java.util.HashSet;
@@ -75,7 +76,7 @@ public class StatueGame extends ClassicGame {
     protected void sculptStatue() {
         
         for (Point bodyPartPos : game.getSnake().getBody()) {
-            statues.add(new StatueSquare(bodyPartPos, CellType.WALL_FILLED));
+            statues.add(new StatueSquare(bodyPartPos));
         }
     }
     
@@ -88,7 +89,7 @@ public class StatueGame extends ClassicGame {
         
         for (StatueSquare statueSquare : statuesNotFilled) {
             
-            if (statueSquare.getCellType() == CellType.WALL_FILLED) {
+            if (statueSquare.getSpecificCellType() == SpecificCellType.FILLED_STATUE) {
                 statueSquare.setFoodBeforeBreak(generateNumFoodBeforeBreak());
             }
             
@@ -97,11 +98,11 @@ public class StatueGame extends ClassicGame {
             
             if (foodBeforeBreak > 1) {
                 
-                statueSquare.setCellType(CellType.WALL_STATUE);
+                statueSquare.setSpecificCellType(SpecificCellType.STATUE);
                 
             } else if (foodBeforeBreak == 1) {
                 
-                statueSquare.setCellType(CellType.WALL_CRACKED);
+                statueSquare.setSpecificCellType(SpecificCellType.CRACKED_STATUE);
                 
             } else if (foodBeforeBreak == 0) {
                 

@@ -7,7 +7,7 @@ package com.mycompany.snake.controller;
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.ModelObserver;
 import com.mycompany.snake.model.SettingsParams;
-import com.mycompany.snake.model.Square.CellType;
+import com.mycompany.snake.model.Square.CellConfiguration.CellType;
 import com.mycompany.snake.model.Square.ColorPaletteManager;
 import com.mycompany.snake.model.Square.Square;
 import com.mycompany.snake.view.SnakeView;
