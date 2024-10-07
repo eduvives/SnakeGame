@@ -105,7 +105,7 @@ public class GameController implements ModelObserver {
     
     @Override
     public void onNewGame() {
-        System.out.println("shrinkModeActive: "+shrinkModeActive);
+        
         if (!isBoardUpdated) {
             updateViewBoardParams();
         }
@@ -514,49 +514,23 @@ public class GameController implements ModelObserver {
     }
     
     // La llamada a este método implica que el primer input ha provocado una colisión en modo Shrink.
-    // Al permitir un máximo de dos inputs seguidos, debemos comprobar si hay más inputs en cola y, 
+    // Al permitir un máximo de dos inputs seguidos, debemos comprobar si hay inputs de reserva y,
     // en tal caso, obtener el último input válido introducido por el usuario de entre los inputs de reserva, 
     // ya que el input de la cola podría no ser válido tras la colisión.
-    private synchronized void revalidateInputQueue() { // TODO funciona? // TODO más de un input al llamar revalidateInputQueue?
-        
-        System.out.println("input  :"+inputQueue);
-        System.out.println("shrink :"+reserveInputQueue);
-        System.out.println("*****");
+    private synchronized void revalidateInputQueue() {
         
         inputQueue.clear();
         
-        for (int j = reserveInputQueue.size() - 1; j >= 0; j--) {
-            Point reserveInput = reserveInputQueue.get(j);
+        // Buscamos el último input válido.
+        // Tal como está implementada la lógica, si no se hubiera producido la colisión este input 
+        // habría sido el próximo, al sustituir a los anteriores inputs válidos.
+        for (int i = reserveInputQueue.size() - 1; i >= 0; i--) {
+            Point reserveInput = reserveInputQueue.get(i);
             if (checkValidInput(reserveInput)) {
                 inputQueue.addLast(reserveInput);
                 break; // Salimos al encontrar el último válido
             }
         }
-        
-        /*
-        int firstInputindex = -1;
-        
-        // Buscar el primer Point válido
-        for (int i = 0; i < reserveInputQueue.size(); i++) {
-            Point reserveInput = reserveInputQueue.get(i);
-            if (checkValidInput(reserveInput)) {
-                inputQueue.addLast(reserveInput);
-                firstInputindex = i;
-                break; // Salimos cuando encontramos el primer válido
-            }
-        }
-        
-        // Si encontramos el primer Point válido, buscamos el último desde el final
-        if (firstInputindex != -1) {
-            for (int j = reserveInputQueue.size() - 1; j > firstInputindex; j--) {
-                Point reserveInput = reserveInputQueue.get(j);
-                if (checkValidInput(reserveInput)) {
-                    inputQueue.addLast(reserveInput);
-                    break; // Salimos al encontrar el último válido
-                }
-            }
-        }
-        */
     }
     
     // Métodos Timer
@@ -569,10 +543,6 @@ public class GameController implements ModelObserver {
     private ActionListener getGameLoopListener() {
         
         return (ActionEvent e) -> {
-            
-            System.out.println("input  :"+inputQueue);
-            System.out.println("shrink :"+reserveInputQueue);
-            System.out.println("-----");
             
             if (!inputQueue.isEmpty()) {
                 model.getSnake().getDirection().setLocation(inputQueue.pollFirst());
@@ -713,7 +683,7 @@ public class GameController implements ModelObserver {
     private void initializeSwitchSidesTimer() {
         
         switchSidesTimer = new Timer(0, (ActionEvent e) -> {
-            if (model.isGameActive()) { // TODO || !isGamePaused?
+            if (model.isGameActive()) {
                 timer.start();
             }
         });

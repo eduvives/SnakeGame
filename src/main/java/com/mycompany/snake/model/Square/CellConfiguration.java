@@ -38,7 +38,7 @@ public class CellConfiguration {
     }
     
     // Asocia cada tipo general de celda con sus tipos específicos
-    protected static final Map<CellType, Set<SpecificCellType>> specificTypes = Map.of(
+    public static final Map<CellType, Set<SpecificCellType>> specificTypes = Map.of(
         CellType.SNAKE, Set.of(SpecificCellType.SNAKE_HEAD, SpecificCellType.SNAKE_BODY, SpecificCellType.EMPTY_BODY),
         CellType.FOOD, Set.of(SpecificCellType.FOOD),
         CellType.WALL, Set.of(SpecificCellType.WALL),
@@ -47,7 +47,7 @@ public class CellConfiguration {
     );
     
     // Asocia cada tipo general de celda con su tipo específico por defecto
-    protected static final Map<CellType, SpecificCellType> defaultSpecificTypes = Map.of(
+    public static final Map<CellType, SpecificCellType> defaultSpecificTypes = Map.of(
         CellType.SNAKE, SpecificCellType.SNAKE_BODY,
         CellType.FOOD, SpecificCellType.FOOD,
         CellType.WALL, SpecificCellType.WALL,

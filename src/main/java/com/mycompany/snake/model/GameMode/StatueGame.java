@@ -111,8 +111,9 @@ public class StatueGame extends ClassicGame {
             }
         }
     }
-    
-    protected int generateNumFoodBeforeBreak() { // TODO (tal vez así esta bien :) o tal vez falta buscar una mejor ecuación que cuanto mayor sea el número menor sea la probabilidad de obtenerlo
+    // Devuelve un número aleatorio entre los valores de las constantes MIN_FOOD_BEFORE_BREAK y MAX_FOOD_BEFORE_BREAK (incluidos).
+    // El valor devuelto indicará el número de frutas que debe comer la serpiente para que se rompa la celda de estatua.
+    protected int generateNumFoodBeforeBreak() {
         
         Random random = new Random();
         return random.nextInt(MAX_FOOD_BEFORE_BREAK - MIN_FOOD_BEFORE_BREAK + 1) + MIN_FOOD_BEFORE_BREAK;

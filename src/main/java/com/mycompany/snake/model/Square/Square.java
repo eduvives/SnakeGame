@@ -58,7 +58,7 @@ public class Square extends Point {
         this.specificCellType = specificCellType;
     }
 
-    public SpecificCellType getSpecificCellType() { // TODO protected?
+    public SpecificCellType getSpecificCellType() {
         return specificCellType;
     }
 

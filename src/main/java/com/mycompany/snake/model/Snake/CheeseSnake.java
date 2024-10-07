@@ -55,7 +55,7 @@ public class CheeseSnake extends Snake {
         
         cheeseBody.addLast(square);
         
-        if (square.getSpecificCellType() == SpecificCellType.SNAKE_BODY) { // TODO SNAKE_HEAD? no crec
+        if (square.getSpecificCellType() == SpecificCellType.SNAKE_BODY) {
             body.addLast(square);
             listener.onPositionAdded(square);
         }

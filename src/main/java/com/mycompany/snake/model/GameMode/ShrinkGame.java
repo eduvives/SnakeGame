@@ -40,7 +40,7 @@ public class ShrinkGame extends ClassicGame {
     }
     
     @Override
-    protected boolean checkCollision(Point newHeadPos) { // TODO error food and colision dimension
+    protected boolean checkCollision(Point newHeadPos) {
         
         boolean isCollision = super.checkCollision(newHeadPos);
         boolean isFinalCollision = false;

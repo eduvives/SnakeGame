@@ -255,14 +255,14 @@ public class ClassicGame implements SnakeListener {
         return game.getAvailablePositions().isEmpty();
     }
     
-    // TODO not used
+    // Not used
     private Point getRandomAvailablePosition() {
         
         if (game.getAvailablePositions().isEmpty()) {
             return null;
         }
         
-        Random rand = new Random();   
+        Random rand = new Random();
         
         int index = rand.nextInt(game.getAvailablePositions().size());
         return game.getAvailablePositions().remove(index);

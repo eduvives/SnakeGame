@@ -213,11 +213,11 @@ public class BlenderSnake extends Snake {
         Point previousHeadPos = head.getLocation();
         
         setLocationHead(previousHeadPos, removeLastBody());
-        addFirstBody(createSnakeBodyPart(previousHeadPos));
+        addFirstBody(createSnakeBodyPart(previousHeadPos)); // Llama al método "createSnakeBodyPart" de Blender
         
         Collections.reverse(body);
         
-        restoreDirection();
+        restoreDirection(); // Llama al método "restoreDirection" de Snake + "getDefaultDirection" de Blender
     }
     
     // TwinSnake - BoundlessGame

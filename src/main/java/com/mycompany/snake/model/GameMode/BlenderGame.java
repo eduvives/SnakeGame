@@ -233,7 +233,7 @@ public class BlenderGame extends ClassicGame {
                 if (modes.contains("Cheese")) {
                     blenderSnake.switchSidesTwinCheeseDimension();
                 } else {
-                    blenderSnake.switchSidesBlender(); // TODO revisar que funcione
+                    blenderSnake.switchSidesBlender();
                 }
 
                 if (modes.contains("Statue")) {
