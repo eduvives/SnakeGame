@@ -7,7 +7,6 @@ package com.mycompany.snake.controller;
 import com.mycompany.snake.model.GameModel;
 import com.mycompany.snake.model.ModelObserver;
 import com.mycompany.snake.model.SettingsParams;
-import com.mycompany.snake.model.Square.CellConfiguration.CellType;
 import com.mycompany.snake.model.Square.ColorPaletteManager;
 import com.mycompany.snake.model.Square.Square;
 import com.mycompany.snake.view.SnakeView;
@@ -39,8 +38,6 @@ import javax.swing.Timer;
  * @author Eduard
  */
 public class GameController implements ModelObserver {
-    
-    private List<Square> testList = new ArrayList<>(); // Test Line
     
     private SnakeView view;
     private Map<Color, List<Point>> positionsColorsView = new LinkedHashMap<>();
@@ -373,8 +370,6 @@ public class GameController implements ModelObserver {
             inputMap.put(KeyStroke.getKeyStroke("D"), "moveRight");
             
             inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "endGame");
-
-            inputMap.put(KeyStroke.getKeyStroke("SPACE"), "pauseGame"); // Test Line
             
         } else {
             // Desactivar los key bindings
@@ -422,21 +417,6 @@ public class GameController implements ModelObserver {
                 }
             }
         });
-        
-        // Test Lines Start
-        actionMap.put("pauseGame", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (model.isGameStarted()) {
-                    if (timer.isRunning()) {
-                        timer.stop();
-                    } else {
-                       timer.start();
-                    }
-                }
-            }
-        });
-        // Test Lines End
     }
     
     // El valor de retorno indica si el input era válido y, por tanto, si ha sido añadido a la cola de inputs del usuario
@@ -627,34 +607,6 @@ public class GameController implements ModelObserver {
         for (Collection<? extends Square> modeList : model.getSpecificModeLists()) {
             addSquareColorListView(modeList);
         }
-        
-        // Test Lines Start 2
-        
-        /*
-        List<Square> candidates_test = new ArrayList<>();
-        for (Point pos : model.getAvailablePositions()) {
-            candidates_test.add(new Square(pos, CellType.TEST));
-        }
-        testList.clear();
-        testList.addAll(candidates_test);
-        */
-        
-        // Test Lines Start
-        
-        addSquareColorListView(testList);
-        
-        testList.clear();
-        
-        /*
-        List<Square> candidates_test = new ArrayList<>();
-        for (Point pos : candidates) {
-            candidates_test.add(new Square(pos, CellType.TEST));
-        }
-        game.testList.clear();
-        game.testList.addAll(candidates_test);
-        */
-        
-        // Test Lines End
         
         view.getBoardPanel().setCellColors(positionsColorsView);
     }

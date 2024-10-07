@@ -20,8 +20,7 @@ public class CellConfiguration {
         SNAKE,
         FOOD,
         WALL,
-        STATUE,
-        TEST; // TODO TEST DELETE
+        STATUE
     }
 
     // Tipo específico de celda
@@ -33,8 +32,7 @@ public class CellConfiguration {
         WALL,
         FILLED_STATUE,
         STATUE,
-        CRACKED_STATUE,
-        TEST; // TODO TEST DELETE
+        CRACKED_STATUE
     }
     
     // Asocia cada tipo general de celda con sus tipos específicos
@@ -42,8 +40,7 @@ public class CellConfiguration {
         CellType.SNAKE, Set.of(SpecificCellType.SNAKE_HEAD, SpecificCellType.SNAKE_BODY, SpecificCellType.EMPTY_BODY),
         CellType.FOOD, Set.of(SpecificCellType.FOOD),
         CellType.WALL, Set.of(SpecificCellType.WALL),
-        CellType.STATUE, Set.of(SpecificCellType.FILLED_STATUE, SpecificCellType.STATUE, SpecificCellType.CRACKED_STATUE),
-        CellType.TEST, Set.of(SpecificCellType.TEST) // TODO TEST DELETE
+        CellType.STATUE, Set.of(SpecificCellType.FILLED_STATUE, SpecificCellType.STATUE, SpecificCellType.CRACKED_STATUE)
     );
     
     // Asocia cada tipo general de celda con su tipo específico por defecto
@@ -51,8 +48,7 @@ public class CellConfiguration {
         CellType.SNAKE, SpecificCellType.SNAKE_BODY,
         CellType.FOOD, SpecificCellType.FOOD,
         CellType.WALL, SpecificCellType.WALL,
-        CellType.STATUE, SpecificCellType.FILLED_STATUE,
-        CellType.TEST, SpecificCellType.TEST // TODO TEST DELETE
+        CellType.STATUE, SpecificCellType.FILLED_STATUE
     );
     
     // Verifica si un tipo específico de celda es válido, es decir, si el tipo específico de celda pertenece al tipo general de celda indicado

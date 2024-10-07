@@ -21,7 +21,6 @@ public class SettingsParams {
         BOARDS.put("Medium", new int[]{595, 525, 35}); // { Board_Width, Board_Height, Square_Size }
         BOARDS.put("Easy", new int[]{580, 522, 58}); 
         BOARDS.put("Difficult", new int[]{600, 525, 25});
-        BOARDS.put("Test", new int[]{406, 116, 58});
     }
     
     public static String[] getBoardNames() {
@@ -34,7 +33,6 @@ public class SettingsParams {
         SPEEDS.put("Normal", 135);
         SPEEDS.put("Fast", 89);
         SPEEDS.put("Slow", 179);
-        SPEEDS.put("Test", 1000);
     }
     
     public static String[] getSpeedNames() {

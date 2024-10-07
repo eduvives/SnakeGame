@@ -45,9 +45,6 @@ public class ColorPaletteManager {
         } else {
             setSpecificCellTypeColor(SpecificCellType.WALL, darkenColor(newColor, WALL_FACTOR));
         }
-        
-        // TEST LINE TODO
-         setSpecificCellTypeColor(SpecificCellType.TEST, Color.CYAN);
     }
     
     public void foodColorChanged(Color newColor) {
