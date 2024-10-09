@@ -9,12 +9,15 @@ import com.mycompany.snake.model.ModelObserver;
 import com.mycompany.snake.model.SettingsParams;
 import com.mycompany.snake.model.Square.ColorPaletteManager;
 import com.mycompany.snake.model.Square.Square;
+import com.mycompany.snake.view.BoardPanel;
 import com.mycompany.snake.view.SnakeView;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,12 +47,6 @@ public class GameController implements ModelObserver {
     
     private GameModel model;
     
-    // View
-    private int boardWidth;
-    private int boardHeight;
-    private int squareSize;
-    private boolean isBoardUpdated;
-    
     // Game Loop Timers
     private Timer timer;
     private Timer switchSidesTimer;
@@ -77,7 +74,6 @@ public class GameController implements ModelObserver {
         initializeGameTimer();
         initializeSwitchSidesTimer();
         initializeGameParams();
-        updateViewBoardParams();
         initializeGamePaletteColor();
         
         setViewListeners();
@@ -102,10 +98,6 @@ public class GameController implements ModelObserver {
     
     @Override
     public void onNewGame() {
-        
-        if (!isBoardUpdated) {
-            updateViewBoardParams();
-        }
         clearUserInputs();
         toggleKeyBindings(true);
     }
@@ -153,15 +145,12 @@ public class GameController implements ModelObserver {
             
             int [] boardSize = SettingsParams.BOARDS.get(board);
             
-            boardWidth = boardSize[0];
-            boardHeight = boardSize[1];
-            squareSize = boardSize[2];
-            isBoardUpdated = false;
-            
-            int numBoardCols = boardWidth / squareSize;
-            int numBoardRows = boardHeight / squareSize;
+            int numBoardCols = boardSize[0];
+            int numBoardRows = boardSize[1];
         
             model.updateBoardParams(board, numBoardCols, numBoardRows);
+
+            updateViewBoardSizeParams();
         }
         
         // Update Num Food
@@ -201,17 +190,28 @@ public class GameController implements ModelObserver {
         }
     }
     
-    private void updateViewBoardParams() {
+    private void updateViewBoardSizeParams() {
+        
+        int padding = view.isExpanded() ? BoardPanel.PADDING_LARGE : BoardPanel.PADDING_SMALL;
+        
+        if (Objects.equals(model.getBoardName(), "Easy")) padding += 8;
+                
+        int availableWidth = view.getWidth() - 2 * padding;
+        int availableHeight = view.getHeight() - SnakeView.TOP_MENU_HEIGHT - 2 * padding;
+
+        int squareSize = Math.min(availableWidth / model.getNumBoardCols(), availableHeight / model.getNumBoardRows());
+        int boardWidth = squareSize * model.getNumBoardCols();
+        int boardHeight = squareSize * model.getNumBoardRows();
+
+        view.getBoardPanel().setCellSize(squareSize);
         view.getBoardPanel().setBoardWidth(boardWidth);
         view.getBoardPanel().setBoardHeight(boardHeight);
-        view.getBoardPanel().setCellSize(squareSize);
+        
         view.getBoardPanel().setPreferredSize(new Dimension(boardWidth + 1, boardHeight + 1));   
         
         view.getBoardPanel().revalidate();
         view.getBoardPanel().repaint();
         view.pack();
-        
-        isBoardUpdated = true;
     }
     
     private void initializeGamePaletteColor() {
@@ -234,6 +234,18 @@ public class GameController implements ModelObserver {
     }
         
     private void setViewListeners() {
+        
+        view.setDoubleClickListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Verificar si es un doble clic
+                if (e.getClickCount() == 2) {
+                    view.toggleExpanded();
+                    view.updateFrameSize();
+                    updateViewBoardSizeParams();
+                }
+            }
+        });
         
         view.getMenu().setPlayBtnListener(e -> {
             playBtnAction(view.getMenu());
@@ -298,7 +310,6 @@ public class GameController implements ModelObserver {
                 refreshBoard();
             });
         });
-        
     }
     
     private void playBtnAction(JDialog fromDialog) {

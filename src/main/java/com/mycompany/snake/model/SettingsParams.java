@@ -15,12 +15,12 @@ public class SettingsParams {
     
     public static final int DEFAULT_SELECTED_INDEX = 0;
     
-    public static final Map<String, int[]> BOARDS = new LinkedHashMap<>(); // col & row = 17 15 / 10 9 / 24 21
+    public static final Map<String, int[]> BOARDS = new LinkedHashMap<>();
     
     static {
-        BOARDS.put("Medium", new int[]{595, 525, 35}); // { Board_Width, Board_Height, Square_Size }
-        BOARDS.put("Easy", new int[]{580, 522, 58}); 
-        BOARDS.put("Difficult", new int[]{600, 525, 25});
+        BOARDS.put("Medium", new int[]{17, 15}); // { col & row }
+        BOARDS.put("Easy", new int[]{10, 9}); 
+        BOARDS.put("Difficult", new int[]{24, 21});
     }
     
     public static String[] getBoardNames() {

@@ -19,6 +19,9 @@ import java.util.Map;
  */
 public class BoardPanel extends javax.swing.JPanel implements ActionListener {
 
+    public static final int PADDING_SMALL = 32;
+    public static final int PADDING_LARGE = 45;
+    
     private int boardWidth;
     private int boardHeight;
     private int cellSize;
@@ -56,7 +59,7 @@ public class BoardPanel extends javax.swing.JPanel implements ActionListener {
     public void setBoardWidth(int newWidth) {
         boardWidth = newWidth;
     }
-    
+
     public void setBoardHeight(int newHeight) {
         boardHeight = newHeight;
     }
